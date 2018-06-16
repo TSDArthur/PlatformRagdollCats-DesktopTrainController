@@ -41,6 +41,12 @@
             this.btnStopRead = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.groupTsk = new System.Windows.Forms.GroupBox();
+            this.btnAPOFF = new System.Windows.Forms.Button();
+            this.btnKeyLock = new System.Windows.Forms.Button();
+            this.btnEmeOff = new System.Windows.Forms.Button();
+            this.btnAPON = new System.Windows.Forms.Button();
+            this.btnKeyUnlock = new System.Windows.Forms.Button();
+            this.btnEmeOn = new System.Windows.Forms.Button();
             this.listBoxTsk = new System.Windows.Forms.ListBox();
             this.txtBoxSend = new System.Windows.Forms.TextBox();
             this.txtBoxRecieve = new System.Windows.Forms.TextBox();
@@ -60,6 +66,7 @@
             this.txtBoxPwr = new System.Windows.Forms.TextBox();
             this.tmrUpdate = new System.Windows.Forms.Timer(this.components);
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.txtBoxConstSpeed = new System.Windows.Forms.TextBox();
             this.toolScripMain.SuspendLayout();
             this.groupTsk.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -152,6 +159,13 @@
             // groupTsk
             // 
             this.groupTsk.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+            this.groupTsk.Controls.Add(this.txtBoxConstSpeed);
+            this.groupTsk.Controls.Add(this.btnAPOFF);
+            this.groupTsk.Controls.Add(this.btnKeyLock);
+            this.groupTsk.Controls.Add(this.btnEmeOff);
+            this.groupTsk.Controls.Add(this.btnAPON);
+            this.groupTsk.Controls.Add(this.btnKeyUnlock);
+            this.groupTsk.Controls.Add(this.btnEmeOn);
             this.groupTsk.Controls.Add(this.listBoxTsk);
             this.groupTsk.Controls.Add(this.txtBoxSend);
             this.groupTsk.Controls.Add(this.txtBoxRecieve);
@@ -171,12 +185,72 @@
             this.groupTsk.Controls.Add(this.txtBoxPwr);
             this.groupTsk.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.groupTsk.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.groupTsk.Location = new System.Drawing.Point(0, 86);
+            this.groupTsk.Location = new System.Drawing.Point(0, 83);
             this.groupTsk.Name = "groupTsk";
             this.groupTsk.Size = new System.Drawing.Size(643, 539);
             this.groupTsk.TabIndex = 2;
             this.groupTsk.TabStop = false;
             this.groupTsk.Text = "Task Monitor";
+            // 
+            // btnAPOFF
+            // 
+            this.btnAPOFF.Location = new System.Drawing.Point(536, 509);
+            this.btnAPOFF.Name = "btnAPOFF";
+            this.btnAPOFF.Size = new System.Drawing.Size(100, 23);
+            this.btnAPOFF.TabIndex = 39;
+            this.btnAPOFF.Text = "AP OFF";
+            this.btnAPOFF.UseVisualStyleBackColor = true;
+            this.btnAPOFF.Click += new System.EventHandler(this.btnAPOFF_Click);
+            // 
+            // btnKeyLock
+            // 
+            this.btnKeyLock.Location = new System.Drawing.Point(324, 509);
+            this.btnKeyLock.Name = "btnKeyLock";
+            this.btnKeyLock.Size = new System.Drawing.Size(100, 23);
+            this.btnKeyLock.TabIndex = 38;
+            this.btnKeyLock.Text = "KEY LOCK";
+            this.btnKeyLock.UseVisualStyleBackColor = true;
+            this.btnKeyLock.Click += new System.EventHandler(this.btnKeyLock_Click);
+            // 
+            // btnEmeOff
+            // 
+            this.btnEmeOff.Location = new System.Drawing.Point(112, 509);
+            this.btnEmeOff.Name = "btnEmeOff";
+            this.btnEmeOff.Size = new System.Drawing.Size(100, 23);
+            this.btnEmeOff.TabIndex = 37;
+            this.btnEmeOff.Text = "Eme OFF";
+            this.btnEmeOff.UseVisualStyleBackColor = true;
+            this.btnEmeOff.Click += new System.EventHandler(this.btnEmeOff_Click);
+            // 
+            // btnAPON
+            // 
+            this.btnAPON.Location = new System.Drawing.Point(430, 509);
+            this.btnAPON.Name = "btnAPON";
+            this.btnAPON.Size = new System.Drawing.Size(100, 23);
+            this.btnAPON.TabIndex = 36;
+            this.btnAPON.Text = "AP ON";
+            this.btnAPON.UseVisualStyleBackColor = true;
+            this.btnAPON.Click += new System.EventHandler(this.btnAPON_Click);
+            // 
+            // btnKeyUnlock
+            // 
+            this.btnKeyUnlock.Location = new System.Drawing.Point(218, 509);
+            this.btnKeyUnlock.Name = "btnKeyUnlock";
+            this.btnKeyUnlock.Size = new System.Drawing.Size(100, 23);
+            this.btnKeyUnlock.TabIndex = 35;
+            this.btnKeyUnlock.Text = "KEY UNLOCK";
+            this.btnKeyUnlock.UseVisualStyleBackColor = true;
+            this.btnKeyUnlock.Click += new System.EventHandler(this.btnKeyUnlock_Click);
+            // 
+            // btnEmeOn
+            // 
+            this.btnEmeOn.Location = new System.Drawing.Point(6, 509);
+            this.btnEmeOn.Name = "btnEmeOn";
+            this.btnEmeOn.Size = new System.Drawing.Size(100, 23);
+            this.btnEmeOn.TabIndex = 4;
+            this.btnEmeOn.Text = "Eme ON";
+            this.btnEmeOn.UseVisualStyleBackColor = true;
+            this.btnEmeOn.Click += new System.EventHandler(this.btnEmeOn_Click);
             // 
             // listBoxTsk
             // 
@@ -184,28 +258,28 @@
             this.listBoxTsk.ItemHeight = 17;
             this.listBoxTsk.Location = new System.Drawing.Point(6, 23);
             this.listBoxTsk.Name = "listBoxTsk";
-            this.listBoxTsk.Size = new System.Drawing.Size(630, 412);
+            this.listBoxTsk.Size = new System.Drawing.Size(630, 395);
             this.listBoxTsk.TabIndex = 34;
             // 
             // txtBoxSend
             // 
-            this.txtBoxSend.Location = new System.Drawing.Point(218, 447);
+            this.txtBoxSend.Location = new System.Drawing.Point(162, 422);
             this.txtBoxSend.Name = "txtBoxSend";
             this.txtBoxSend.ReadOnly = true;
-            this.txtBoxSend.Size = new System.Drawing.Size(206, 23);
+            this.txtBoxSend.Size = new System.Drawing.Size(156, 23);
             this.txtBoxSend.TabIndex = 32;
             // 
             // txtBoxRecieve
             // 
-            this.txtBoxRecieve.Location = new System.Drawing.Point(6, 447);
+            this.txtBoxRecieve.Location = new System.Drawing.Point(6, 422);
             this.txtBoxRecieve.Name = "txtBoxRecieve";
             this.txtBoxRecieve.ReadOnly = true;
-            this.txtBoxRecieve.Size = new System.Drawing.Size(206, 23);
+            this.txtBoxRecieve.Size = new System.Drawing.Size(150, 23);
             this.txtBoxRecieve.TabIndex = 31;
             // 
             // btnHornSt
             // 
-            this.btnHornSt.Location = new System.Drawing.Point(536, 505);
+            this.btnHornSt.Location = new System.Drawing.Point(536, 480);
             this.btnHornSt.Name = "btnHornSt";
             this.btnHornSt.Size = new System.Drawing.Size(100, 23);
             this.btnHornSt.TabIndex = 15;
@@ -216,7 +290,7 @@
             // 
             // btnNeu
             // 
-            this.btnNeu.Location = new System.Drawing.Point(112, 505);
+            this.btnNeu.Location = new System.Drawing.Point(112, 480);
             this.btnNeu.Name = "btnNeu";
             this.btnNeu.Size = new System.Drawing.Size(100, 23);
             this.btnNeu.TabIndex = 14;
@@ -226,7 +300,7 @@
             // 
             // txtBoxPowerHandle
             // 
-            this.txtBoxPowerHandle.Location = new System.Drawing.Point(430, 447);
+            this.txtBoxPowerHandle.Location = new System.Drawing.Point(430, 422);
             this.txtBoxPowerHandle.Name = "txtBoxPowerHandle";
             this.txtBoxPowerHandle.ReadOnly = true;
             this.txtBoxPowerHandle.Size = new System.Drawing.Size(100, 23);
@@ -234,7 +308,7 @@
             // 
             // txtBoxBrakeHandle
             // 
-            this.txtBoxBrakeHandle.Location = new System.Drawing.Point(536, 447);
+            this.txtBoxBrakeHandle.Location = new System.Drawing.Point(536, 422);
             this.txtBoxBrakeHandle.Name = "txtBoxBrakeHandle";
             this.txtBoxBrakeHandle.ReadOnly = true;
             this.txtBoxBrakeHandle.Size = new System.Drawing.Size(100, 23);
@@ -242,7 +316,7 @@
             // 
             // btnFor
             // 
-            this.btnFor.Location = new System.Drawing.Point(6, 505);
+            this.btnFor.Location = new System.Drawing.Point(6, 480);
             this.btnFor.Name = "btnFor";
             this.btnFor.Size = new System.Drawing.Size(100, 23);
             this.btnFor.TabIndex = 11;
@@ -252,7 +326,7 @@
             // 
             // btnUp
             // 
-            this.btnUp.Location = new System.Drawing.Point(324, 505);
+            this.btnUp.Location = new System.Drawing.Point(324, 480);
             this.btnUp.Name = "btnUp";
             this.btnUp.Size = new System.Drawing.Size(100, 23);
             this.btnUp.TabIndex = 10;
@@ -262,7 +336,7 @@
             // 
             // btnDown
             // 
-            this.btnDown.Location = new System.Drawing.Point(430, 505);
+            this.btnDown.Location = new System.Drawing.Point(430, 480);
             this.btnDown.Name = "btnDown";
             this.btnDown.Size = new System.Drawing.Size(100, 23);
             this.btnDown.TabIndex = 9;
@@ -272,7 +346,7 @@
             // 
             // btnBack
             // 
-            this.btnBack.Location = new System.Drawing.Point(218, 505);
+            this.btnBack.Location = new System.Drawing.Point(218, 480);
             this.btnBack.Name = "btnBack";
             this.btnBack.Size = new System.Drawing.Size(100, 23);
             this.btnBack.TabIndex = 8;
@@ -282,7 +356,7 @@
             // 
             // txtBoxSpdLimit
             // 
-            this.txtBoxSpdLimit.Location = new System.Drawing.Point(536, 476);
+            this.txtBoxSpdLimit.Location = new System.Drawing.Point(536, 451);
             this.txtBoxSpdLimit.Name = "txtBoxSpdLimit";
             this.txtBoxSpdLimit.ReadOnly = true;
             this.txtBoxSpdLimit.Size = new System.Drawing.Size(100, 23);
@@ -290,7 +364,7 @@
             // 
             // txtBoxSpeed
             // 
-            this.txtBoxSpeed.Location = new System.Drawing.Point(430, 476);
+            this.txtBoxSpeed.Location = new System.Drawing.Point(430, 451);
             this.txtBoxSpeed.Name = "txtBoxSpeed";
             this.txtBoxSpeed.ReadOnly = true;
             this.txtBoxSpeed.Size = new System.Drawing.Size(100, 23);
@@ -298,7 +372,7 @@
             // 
             // txtBoxSignalDis
             // 
-            this.txtBoxSignalDis.Location = new System.Drawing.Point(324, 476);
+            this.txtBoxSignalDis.Location = new System.Drawing.Point(324, 451);
             this.txtBoxSignalDis.Name = "txtBoxSignalDis";
             this.txtBoxSignalDis.ReadOnly = true;
             this.txtBoxSignalDis.Size = new System.Drawing.Size(100, 23);
@@ -306,7 +380,7 @@
             // 
             // txtBoxSignal
             // 
-            this.txtBoxSignal.Location = new System.Drawing.Point(218, 476);
+            this.txtBoxSignal.Location = new System.Drawing.Point(218, 451);
             this.txtBoxSignal.Name = "txtBoxSignal";
             this.txtBoxSignal.ReadOnly = true;
             this.txtBoxSignal.Size = new System.Drawing.Size(100, 23);
@@ -314,7 +388,7 @@
             // 
             // txtBoxReserver
             // 
-            this.txtBoxReserver.Location = new System.Drawing.Point(112, 476);
+            this.txtBoxReserver.Location = new System.Drawing.Point(112, 451);
             this.txtBoxReserver.Name = "txtBoxReserver";
             this.txtBoxReserver.ReadOnly = true;
             this.txtBoxReserver.Size = new System.Drawing.Size(100, 23);
@@ -322,7 +396,7 @@
             // 
             // txtBoxPwr
             // 
-            this.txtBoxPwr.Location = new System.Drawing.Point(6, 476);
+            this.txtBoxPwr.Location = new System.Drawing.Point(6, 451);
             this.txtBoxPwr.Name = "txtBoxPwr";
             this.txtBoxPwr.ReadOnly = true;
             this.txtBoxPwr.Size = new System.Drawing.Size(100, 23);
@@ -343,12 +417,20 @@
             this.pictureBox1.TabIndex = 3;
             this.pictureBox1.TabStop = false;
             // 
+            // txtBoxConstSpeed
+            // 
+            this.txtBoxConstSpeed.Location = new System.Drawing.Point(324, 422);
+            this.txtBoxConstSpeed.Name = "txtBoxConstSpeed";
+            this.txtBoxConstSpeed.ReadOnly = true;
+            this.txtBoxConstSpeed.Size = new System.Drawing.Size(100, 23);
+            this.txtBoxConstSpeed.TabIndex = 40;
+            // 
             // formMonitor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-            this.ClientSize = new System.Drawing.Size(643, 625);
+            this.ClientSize = new System.Drawing.Size(643, 622);
             this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.groupTsk);
             this.Controls.Add(this.toolScripMain);
@@ -403,6 +485,13 @@
 		private System.Windows.Forms.TextBox txtBoxSend;
 		private System.Windows.Forms.TextBox txtBoxRecieve;
 		private System.Windows.Forms.ListBox listBoxTsk;
+		private System.Windows.Forms.Button btnEmeOn;
+		private System.Windows.Forms.Button btnAPOFF;
+		private System.Windows.Forms.Button btnKeyLock;
+		private System.Windows.Forms.Button btnEmeOff;
+		private System.Windows.Forms.Button btnAPON;
+		private System.Windows.Forms.Button btnKeyUnlock;
+		private System.Windows.Forms.TextBox txtBoxConstSpeed;
 	}
 }
 

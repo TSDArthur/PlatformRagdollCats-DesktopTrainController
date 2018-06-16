@@ -129,7 +129,7 @@ namespace OpenBve
         /// <returns></returns>
         private string ReadSerialData()
         {
-            string value = "";
+            string value = String.Empty;
             try
             {
 				port.ReceivedBytesThreshold = port.ReadBufferSize;
@@ -153,7 +153,7 @@ namespace OpenBve
         {
 			string value = this.ReadSerialData();
 			taskRecord += value;
-			if (taskRecord.Length < 3) return;
+			if (taskRecord.Substring(taskRecord.Length-1,1)!="!") return;
 			Action<string> setValueAction = text =>
 			{
 				this.txtBoxRecieve.Text = text;
@@ -174,13 +174,13 @@ namespace OpenBve
 
 		private void doEvents(string frame)
 		{
-			string mcuFrame = FrameCoverter.CoverterToMCUFrame();
-			FrameCoverter.ApplyOperation(frame);
+			string mcuFrame = FrameCoverter.GetDataToArduino();
+			FrameCoverter.RecieceFrame(frame);
 			port.Write(mcuFrame);
 			this.txtBoxSend.Text = mcuFrame;
 			this.listBoxTsk.Items.Insert(0, DateTime.Now.ToString() + " >> Send:" + mcuFrame);
 			this.listBoxTsk.SelectedIndex = this.listBoxTsk.Items.Count - 1;
-			if (listBoxTsk.Items.Count > 20) listBoxTsk.Items.Clear();
+			if (listBoxTsk.Items.Count > 25) listBoxTsk.Items.Clear();
 			return;
 		}
 
@@ -211,6 +211,7 @@ namespace OpenBve
 				txtBoxSpdLimit.Text = TrainFunctions.GetSpeedLimit().ToString();
 				txtBoxBrakeHandle.Text = TrainManager.PlayerTrain.Handles.Brake.Actual.ToString();
 				txtBoxPowerHandle.Text = TrainManager.PlayerTrain.Handles.Power.Actual.ToString();
+				txtBoxConstSpeed.Text = TrainFunctions.GetConstSpeed().ToString();
 				//
 				btnBack.Enabled = true;
 				btnDown.Enabled = true;
@@ -279,7 +280,7 @@ namespace OpenBve
 		{
 			this.cmbSerials.Items.AddRange(SerialPort.GetPortNames());
 			this.cmbSerials.SelectedIndex = this.cmbSerials.Items.Count - 1;
-			FrameCoverter.Initial();
+			TrainFunctions.AttachMainTimerInterrupt(500);
 		}
 
 		private void cmbSerials_TextChanged(object sender, EventArgs e)
@@ -321,6 +322,36 @@ namespace OpenBve
 		private void btnHornSt_MouseUp(object sender, MouseEventArgs e)
 		{
 			TrainFunctions.HornStop();
+		}
+
+		private void btnEmeOn_Click(object sender, EventArgs e)
+		{
+			TrainFunctions.SetEmergency(1);
+		}
+
+		private void btnEmeOff_Click(object sender, EventArgs e)
+		{
+			TrainFunctions.SetEmergency(0);
+		}
+
+		private void btnKeyUnlock_Click(object sender, EventArgs e)
+		{
+			TrainFunctions.SetMasterKey(1);
+		}
+
+		private void btnKeyLock_Click(object sender, EventArgs e)
+		{
+			TrainFunctions.SetMasterKey(0);
+		}
+
+		private void btnAPON_Click(object sender, EventArgs e)
+		{
+			TrainFunctions.SetAutoPilot(TrainFunctions.GetSpeed());
+		}
+
+		private void btnAPOFF_Click(object sender, EventArgs e)
+		{
+			TrainFunctions.SetAutoPilot(0);
 		}
 	}
 }

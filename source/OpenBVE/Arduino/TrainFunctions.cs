@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
+using System.Timers;
 using OpenBve;
 using OpenBveApi.Runtime;
 
@@ -9,19 +11,115 @@ namespace OpenBve
 {
 	public partial class TrainFunctions
 	{
+		static private TrainManager.Train nowControl;
+		//for autopilot
+		static int constSpeed = 0;
+		static int TimerTick = 500;
+		private static int inTimer = 0;
+		private static bool initTimer = false;
+		private static double destSpeed = 0;
+		private static System.Threading.Timer APTimer;
+		//for master key
+		private static bool MasterKey = true;
+		//for main timer
+		private static int inTimer_Main = 0;
+		private static System.Threading.Timer MainTimer;
+		//for emergenct
+		private static bool Emergency = false;
+		//for horn
+		private static bool inHorn = false;
+		//for signal
+		private static bool inRedLight = false;
+		/// <summary>
+		/// setup ap timer
+		/// </summary>
+		static private void APAttachTimerInterrupt(int Tick)
+		{
+			try
+			{
+				initTimer = true;
+				inTimer = 0;
+				APTimer = new System.Threading.Timer(new System.Threading.TimerCallback(AutoPilotProcess),null, TimerTick, TimerTick);
+			}
+			catch (Exception ex){}
+		}
+
+		/// <summary>
+		/// setup main timer
+		/// </summary>
+		static public void AttachMainTimerInterrupt(int Tick)
+		{
+			try
+			{
+				inTimer_Main = 0;
+				MainTimer = new System.Threading.Timer(new System.Threading.TimerCallback(MainTimerProcess), null, TimerTick, TimerTick);
+			}
+			catch (Exception ex) { }
+		}
+
+		/// <summary>
+		/// main timer interrupt
+		/// </summary>
+		static private void MainTimerProcess(object state)
+		{
+			if (Interlocked.Exchange(ref inTimer_Main, 1) == 0)
+			{
+				try
+				{
+					nowControl = TrainManager.PlayerTrain;
+					//Master key
+					if (!MasterKey)
+					{
+						SetAutoPilot(0);
+						SetBrake(0);
+						SetPower(0);
+						ReverserNeutral();
+					}
+
+					//emergency
+					if (Emergency)
+					{
+						SetAutoPilot(0);
+						TrainManager.ApplyEmergencyBrake(nowControl);
+					}
+					else
+					{
+						TrainManager.UnapplyEmergencyBrake(nowControl);
+					}
+
+					//signal
+					if (GetSignal() == 0) inRedLight = true;
+					else
+					{
+						if (inRedLight)
+						{
+							SetBrake(nowControl.Specs.MaximumBrakeNotch);
+							SetReverser(0);
+							SetAutoPilot(0);
+						}
+						inRedLight = false;
+					}
+				}
+				catch (Exception ex) { }
+				Interlocked.Exchange(ref inTimer_Main, 0);
+			}
+		}
+
 		/// <summary>
 		/// power up
 		/// </summary>
 		static public void PowerUp()
 		{
-			TrainManager.Train nowControl = new TrainManager.Train();
-			nowControl = TrainManager.PlayerTrain;
-			int currretPower = nowControl.Handles.Power.Actual;
-			int currentBrake = nowControl.Handles.Brake.Actual;
-			if (nowControl.Handles.EmergencyBrake.Actual) TrainManager.UnapplyEmergencyBrake(nowControl);
-			if (currentBrake > 0) TrainManager.ApplyNotch(nowControl, 0, true, -1, true);
-			else TrainManager.ApplyNotch(nowControl, 1, true, 0, true);
-			return;
+			try
+			{
+				int currretPower = nowControl.Handles.Power.Actual;
+				int currentBrake = nowControl.Handles.Brake.Actual;
+				if (nowControl.Handles.EmergencyBrake.Actual) TrainManager.UnapplyEmergencyBrake(nowControl);
+				if (currentBrake > 0) TrainManager.ApplyNotch(nowControl, 0, true, -1, true);
+				else TrainManager.ApplyNotch(nowControl, 1, true, 0, true);
+				return;
+			}
+			catch (Exception ex) { }
 		}
 
 		/// <summary>
@@ -29,13 +127,41 @@ namespace OpenBve
 		/// </summary>
 		static public void PowerDown()
 		{
-			TrainManager.Train nowControl = new TrainManager.Train();
-			nowControl = TrainManager.PlayerTrain;
-			int currretPower = nowControl.Handles.Power.Actual;
-			int currentBrake = nowControl.Handles.Brake.Actual;
-			if (currretPower > 0) TrainManager.ApplyNotch(nowControl, -1, true, 0, true);
-			else TrainManager.ApplyNotch(nowControl, 0, true, 1, true);
-			return;
+			try
+			{
+				int currretPower = nowControl.Handles.Power.Actual;
+				int currentBrake = nowControl.Handles.Brake.Actual;
+				if (currretPower > 0) TrainManager.ApplyNotch(nowControl, -1, true, 0, true);
+				else TrainManager.ApplyNotch(nowControl, 0, true, 1, true);
+				return;
+			}
+			catch (Exception ex) { }
+		}
+
+		/// <summary>
+		/// set power
+		/// </summary>
+		static public void SetPower(int value)
+		{
+			try
+			{
+				TrainManager.ApplyNotch(nowControl, value < 0 ? 0 : value, false, 0, true);
+				return;
+			}
+			catch (Exception ex) { }
+		}
+
+		/// <summary>
+		/// set power
+		/// </summary>
+		static public void SetBrake(int value)
+		{
+			try
+			{
+				TrainManager.ApplyNotch(nowControl, 0, true, value < 0 ? 0 : value, false);
+				return;
+			}
+			catch (Exception ex) { }
 		}
 
 		/// <summary>
@@ -43,11 +169,13 @@ namespace OpenBve
 		/// </summary>
 		static public void ReverserForward()
 		{
-			TrainManager.Train nowControl = new TrainManager.Train();
-			nowControl = TrainManager.PlayerTrain;
-			TrainManager.ApplyReverser(nowControl, 1, true);
-			TrainManager.ApplyReverser(nowControl, 1, true);
-			return;
+			try
+			{
+				TrainManager.ApplyReverser(nowControl, 1, true);
+				TrainManager.ApplyReverser(nowControl, 1, true);
+				return;
+			}
+			catch (Exception ex) { }
 		}
 
 		/// <summary>
@@ -55,12 +183,14 @@ namespace OpenBve
 		/// </summary>
 		static public void ReverserNeutral()
 		{
-			TrainManager.Train nowControl = new TrainManager.Train();
-			nowControl = TrainManager.PlayerTrain;
-			TrainManager.ApplyReverser(nowControl, 1, true);
-			TrainManager.ApplyReverser(nowControl, 1, true);
-			TrainManager.ApplyReverser(nowControl, -1, true);
-			return;
+			try
+			{
+				TrainManager.ApplyReverser(nowControl, 1, true);
+				TrainManager.ApplyReverser(nowControl, 1, true);
+				TrainManager.ApplyReverser(nowControl, -1, true);
+				return;
+			}
+			catch(Exception ex) { }
 		}
 
 		/// <summary>
@@ -68,11 +198,26 @@ namespace OpenBve
 		/// </summary>
 		static public void ReverserBackward()
 		{
-			TrainManager.Train nowControl = new TrainManager.Train();
-			nowControl = TrainManager.PlayerTrain;
-			TrainManager.ApplyReverser(nowControl,-1, true);
-			TrainManager.ApplyReverser(nowControl, -1, true);
-			return;
+			try
+			{
+				TrainManager.ApplyReverser(nowControl, -1, true);
+				TrainManager.ApplyReverser(nowControl, -1, true);
+				return;
+			}
+			catch (Exception ex) { }
+		}
+
+		/// <summary>
+		/// set reverser
+		/// </summary>
+		static public void SetReverser(int value)
+		{
+			try
+			{
+				TrainManager.ApplyReverser(nowControl, value, false);
+				return;
+			}
+			catch (Exception ex) { }
 		}
 
 		/// <summary>
@@ -80,10 +225,13 @@ namespace OpenBve
 		/// </summary>
 		static public int GetSpeed()
 		{
-			TrainManager.Train nowControl = new TrainManager.Train();
-			nowControl = TrainManager.PlayerTrain;
-			int currentDriveCar = nowControl.DriverCar;
-			return (int)(nowControl.Cars[currentDriveCar].Specs.CurrentSpeed * 3.6);
+			try
+			{
+				int currentDriveCar = nowControl.DriverCar;
+				return (int)(nowControl.Cars[currentDriveCar].Specs.CurrentSpeed * 3.6);
+			}
+			catch (Exception ex) { }
+			return 0;
 		}
 
 		/// <summary>
@@ -91,9 +239,12 @@ namespace OpenBve
 		/// </summary>
 		static public int GetReverser()
 		{
-			TrainManager.Train nowControl = new TrainManager.Train();
-			nowControl = TrainManager.PlayerTrain;
-			return nowControl.Handles.Reverser.Actual == -1 ? 0 : (nowControl.Handles.Reverser.Actual == 0 ? 1 : 2);
+			try
+			{
+				return nowControl.Handles.Reverser.Actual;
+			}
+			catch(Exception ex) { }
+			return 0;
 		}
 
 		/// <summary>
@@ -101,12 +252,29 @@ namespace OpenBve
 		/// </summary>
 		static public int GetPower()
 		{
-			TrainManager.Train nowControl = new TrainManager.Train();
-			nowControl=TrainManager.PlayerTrain;
-			int currretPower = nowControl.Handles.Power.Actual;
-			int currentBrake = nowControl.Handles.Brake.Actual;
-			if (currretPower > 0) return currretPower;
-			else return -1 * currentBrake;
+			try
+			{
+				int currretPower = nowControl.Handles.Power.Actual;
+				int currentBrake = nowControl.Handles.Brake.Actual;
+				return currretPower;
+			}
+			catch (Exception ex) { }
+			return 0;
+		}
+
+		/// <summary>
+		/// get now brake notch
+		/// </summary>
+		static public int GetBrake()
+		{
+			try
+			{
+				int currretPower = nowControl.Handles.Power.Actual;
+				int currentBrake = nowControl.Handles.Brake.Actual;
+				return currentBrake;
+			}
+			catch (Exception ex) { }
+			return 0;
 		}
 
 		/// <summary>
@@ -114,11 +282,14 @@ namespace OpenBve
 		/// </summary>
 		static public int GetSpeedLimit()
 		{
-			TrainManager.Train nowControl = new TrainManager.Train();
-			nowControl = TrainManager.PlayerTrain;
-			int ret=(int)Math.Min(Math.Abs(nowControl.CurrentSectionLimit*3.6),Math .Abs (nowControl.CurrentRouteLimit * 3.6));
-			if (ret > 350 || ret < 0) return 30;
-			return ret;
+			try
+			{
+				int ret = (int)Math.Min(Math.Abs(nowControl.CurrentSectionLimit * 3.6), Math.Abs(nowControl.CurrentRouteLimit * 3.6));
+				if (ret > 350 || ret < 0) return 30;
+				return ret;
+			}
+			catch(Exception ex) { }
+			return 30;
 		}
 
 		/// <summary>
@@ -126,9 +297,12 @@ namespace OpenBve
 		/// </summary>
 		static public int GetSignal()
 		{
-			TrainManager.Train nowControl = new TrainManager.Train();
-			nowControl = TrainManager.PlayerTrain;
-			return Game.Sections[Game.Sections[nowControl.CurrentSectionIndex].NextSection].CurrentAspect;
+			try
+			{
+				return Game.Sections[Game.Sections[nowControl.CurrentSectionIndex].NextSection].CurrentAspect;
+			}
+			catch(Exception ex) { }
+			return 0;
 		}
 
 		/// <summary>
@@ -136,9 +310,12 @@ namespace OpenBve
 		/// </summary>
 		static public int GetSignalDis()
 		{
-			TrainManager.Train nowControl = new TrainManager.Train();
-			nowControl = TrainManager.PlayerTrain;
-			return (int)((Game.Sections[Game.Sections[nowControl.CurrentSectionIndex].NextSection].TrackPosition*3.6 - nowControl.Cars[nowControl.DriverCar].FrontAxle.Follower.TrackPosition * 3.6));
+			try
+			{
+				return (int)((Game.Sections[Game.Sections[nowControl.CurrentSectionIndex].NextSection].TrackPosition * 3.6 - nowControl.Cars[nowControl.DriverCar].FrontAxle.Follower.TrackPosition * 3.6));
+			}
+			catch(Exception ex) { }
+			return 0;
 		}
 
 		/// <summary>
@@ -146,10 +323,12 @@ namespace OpenBve
 		/// </summary>
 		static public void HornStart()
 		{
-			TrainManager.Train nowControl = new TrainManager.Train();
-			nowControl = TrainManager.PlayerTrain;
-			nowControl.Cars[nowControl.DriverCar].Horns[0].Play();
-			return;
+			try
+			{
+				nowControl.Cars[nowControl.DriverCar].Horns[0].Play();
+				return;
+			}
+			catch(Exception ex) { }
 		}
 
 		/// <summary>
@@ -157,10 +336,163 @@ namespace OpenBve
 		/// </summary>
 		static public void HornStop()
 		{
-			TrainManager.Train nowControl = new TrainManager.Train();
-			nowControl = TrainManager.PlayerTrain;
-			nowControl.Cars[nowControl.DriverCar].Horns[0].Stop();
-			return;
+			try
+			{
+				nowControl.Cars[nowControl.DriverCar].Horns[0].Stop();
+				return;
+			}
+			catch(Exception ex) { }
 		}
+
+		/// <summary>
+		/// set horn
+		/// </summary>
+		static public void SetHorn(int value)
+		{
+			try
+			{
+				if (value == 0)
+				{
+					inHorn = false;
+					HornStop();
+				}
+				else
+				{
+					if (!inHorn)
+					{
+						HornStart();
+						inHorn = true;
+					}
+				}
+			}
+			catch(Exception ex) { }
+		}
+
+		/// <summary>
+		/// set autopilot state
+		/// </summary>
+		static public void SetAutoPilot(int setSpeed)
+		{
+			try
+			{
+				constSpeed = setSpeed;
+				if (setSpeed <= 0)
+				{
+					if (initTimer)
+						APTimer.Change(0, Timeout.Infinite);
+				}
+				else
+				{
+					if (!initTimer)
+						APAttachTimerInterrupt(TimerTick);
+					else
+						APTimer.Change(TimerTick, TimerTick);
+					destSpeed = constSpeed / 3.6;
+				}
+				return;
+			}
+			catch(Exception ex) { }
+		}
+
+		/// <summary>
+		/// autopilot process
+		/// </summary>
+		static private void AutoPilotProcess(object state)
+		{
+			if (Interlocked.Exchange(ref inTimer, 1) == 0)
+			{
+				if (constSpeed > 0)
+				{
+					try
+					{
+						//PID const
+						//set destSpeed
+						destSpeed = Math.Min(GetSpeedLimit() / 3.6, constSpeed / 3.6);
+						//get accurate speed
+						int currentDriveCar = TrainManager.PlayerTrain.DriverCar;
+						double currentSpeed = (TrainManager.PlayerTrain.Cars[currentDriveCar].Specs.CurrentSpeed);
+						double accSpeed = TrainManager.PlayerTrain.Cars[currentDriveCar].Specs.CurrentAcceleration;
+						//
+						if (inRedLight)
+						{
+							if (GetSignalDis() / currentSpeed <= 15 && Math.Abs(currentSpeed / (Math.Abs(accSpeed) + 1e-5)) <= 30) destSpeed = 0;
+							else destSpeed = Math.Min(30 / 3.6, destSpeed);
+						}
+						//
+						double relativeSpeed = destSpeed - currentSpeed;
+						double K1 = 0.8;
+						//PID control
+						if (relativeSpeed > 0)
+						{
+							SetBrake(0);
+							if (accSpeed < 0) PowerUp();
+							if (accSpeed > 0)
+							{
+								if (Math.Abs(relativeSpeed / accSpeed) <= K1) PowerDown();
+								else PowerUp();
+							}
+						}
+						else if (relativeSpeed < 0)
+						{
+							SetPower(0);
+							if (accSpeed > 0) PowerDown();
+							if (accSpeed < 0)
+							{
+								if (Math.Abs(relativeSpeed / accSpeed) <= K1) PowerUp();
+								else PowerDown();
+							}
+						}
+					}
+					catch (Exception ex) { }
+				}
+				Interlocked.Exchange(ref inTimer, 0);
+			}
+		}
+
+		static public int GetConstSpeed()
+		{
+			return (int)(destSpeed * 3.6);
+		}
+
+		/// <summary>
+		/// set master key
+		/// </summary>
+		static public void SetMasterKey(int value)
+		{
+			try
+			{
+				MasterKey = value == 0 ? false : true;
+				if (!MasterKey)
+				{
+					SetAutoPilot(0);
+					SetBrake(0);
+					SetPower(0);
+					ReverserNeutral();
+				}
+			}
+			catch(Exception ex) { }
+		}
+
+		/// <summary>
+		/// set emergency
+		/// </summary>
+		static public void SetEmergency(int value)
+		{
+			try
+			{
+				Emergency = value == 0 ? false : true;
+				TrainManager.Train nowControl = TrainManager.PlayerTrain;
+				if (Emergency)
+				{
+					TrainManager.ApplyEmergencyBrake(nowControl);
+				}
+				else
+				{
+					TrainManager.UnapplyEmergencyBrake(nowControl);
+				}
+			}
+			catch(Exception ex) { }
+		}
+
 	}
 }
