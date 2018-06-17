@@ -356,7 +356,7 @@
             this.btnBack.Name = "btnBack";
             this.btnBack.Size = new System.Drawing.Size(100, 23);
             this.btnBack.TabIndex = 8;
-            this.btnBack.Text = "BACKWARD";
+            this.btnBack.Text = "REVERSE";
             this.btnBack.UseVisualStyleBackColor = true;
             this.btnBack.Click += new System.EventHandler(this.btnBack_Click);
             // 

@@ -241,7 +241,10 @@ namespace OpenBve
 		{
 			try
 			{
-				return Int32.Parse(nowControl.Handles.Reverser.Driver.ToString());
+				TrainManager.ReverserPosition ReverserPos = nowControl.Handles.Reverser.Driver;
+				TrainManager.ReverserPosition Reverse = TrainManager.ReverserPosition.Reverse;
+				TrainManager.ReverserPosition Neutral = TrainManager.ReverserPosition.Neutral;
+				return ReverserPos == Reverse ? -1 : (ReverserPos == Neutral ? 0 : 1);
 			}
 			catch(Exception ex) { }
 			return 0;
