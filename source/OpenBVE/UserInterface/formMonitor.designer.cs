@@ -41,6 +41,7 @@
             this.btnStopRead = new System.Windows.Forms.ToolStripButton();
             this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.groupTsk = new System.Windows.Forms.GroupBox();
+            this.txtBoxConstSpeed = new System.Windows.Forms.TextBox();
             this.btnAPOFF = new System.Windows.Forms.Button();
             this.btnKeyLock = new System.Windows.Forms.Button();
             this.btnEmeOff = new System.Windows.Forms.Button();
@@ -66,7 +67,6 @@
             this.txtBoxPwr = new System.Windows.Forms.TextBox();
             this.tmrUpdate = new System.Windows.Forms.Timer(this.components);
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
-            this.txtBoxConstSpeed = new System.Windows.Forms.TextBox();
             this.toolScripMain.SuspendLayout();
             this.groupTsk.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
@@ -185,12 +185,20 @@
             this.groupTsk.Controls.Add(this.txtBoxPwr);
             this.groupTsk.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.groupTsk.Font = new System.Drawing.Font("微软雅黑", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
-            this.groupTsk.Location = new System.Drawing.Point(0, 83);
+            this.groupTsk.Location = new System.Drawing.Point(0, 87);
             this.groupTsk.Name = "groupTsk";
-            this.groupTsk.Size = new System.Drawing.Size(643, 539);
+            this.groupTsk.Size = new System.Drawing.Size(643, 535);
             this.groupTsk.TabIndex = 2;
             this.groupTsk.TabStop = false;
             this.groupTsk.Text = "Task Monitor";
+            // 
+            // txtBoxConstSpeed
+            // 
+            this.txtBoxConstSpeed.Location = new System.Drawing.Point(324, 422);
+            this.txtBoxConstSpeed.Name = "txtBoxConstSpeed";
+            this.txtBoxConstSpeed.ReadOnly = true;
+            this.txtBoxConstSpeed.Size = new System.Drawing.Size(100, 23);
+            this.txtBoxConstSpeed.TabIndex = 40;
             // 
             // btnAPOFF
             // 
@@ -417,14 +425,6 @@
             this.pictureBox1.TabIndex = 3;
             this.pictureBox1.TabStop = false;
             // 
-            // txtBoxConstSpeed
-            // 
-            this.txtBoxConstSpeed.Location = new System.Drawing.Point(324, 422);
-            this.txtBoxConstSpeed.Name = "txtBoxConstSpeed";
-            this.txtBoxConstSpeed.ReadOnly = true;
-            this.txtBoxConstSpeed.Size = new System.Drawing.Size(100, 23);
-            this.txtBoxConstSpeed.TabIndex = 40;
-            // 
             // formMonitor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -440,7 +440,7 @@
             this.MaximizeBox = false;
             this.Name = "formMonitor";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Controller Monitor";
+            this.Text = "Controller Monitor V2";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.frmMain_FormClosing);
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.formCM_FormClosed);
             this.Load += new System.EventHandler(this.formCM_Load);

@@ -20,7 +20,7 @@ namespace OpenBve
 		private static double destSpeed = 0;
 		private static System.Threading.Timer APTimer;
 		//for master key
-		private static bool MasterKey = true;
+		private static bool MasterKey = false;
 		//for main timer
 		private static int inTimer_Main = 0;
 		private static System.Threading.Timer MainTimer;
@@ -379,7 +379,7 @@ namespace OpenBve
 				if (setSpeed <= 0)
 				{
 					if (initTimer)
-						APTimer.Change(0, Timeout.Infinite);
+						APTimer.Change(Timeout.Infinite, Timeout.Infinite);
 				}
 				else
 				{

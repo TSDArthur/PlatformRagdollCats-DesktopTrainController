@@ -73,9 +73,9 @@ namespace OpenBve
 		const string END_SYM = "!";
 		const string NO_DATA = "";
 		//
-		int[] trainData = new int[TRAIN_DATA_NUMBER];
+		static private int[] trainData = new int[TRAIN_DATA_NUMBER];
 		//
-		int[] dataDefault = new int[TRAIN_DATA_NUMBER] {
+		static private int[] dataDefault = new int[TRAIN_DATA_NUMBER] {
 			SPEED_MIN, REVERSER_NEUTRAL, POWER_MIN, BRAKE_MIN,
 			SIGNAL_RED, SIGNAL_DISTANCE_DE, SPEED_LIMIT_DEF, HORN_OFF,
 			SPEED_CONST_MIN, MASTER_KEY_OFF, EMERGENCY_OFF
@@ -160,7 +160,7 @@ namespace OpenBve
 				case SPEED_LIMIT:
 					return TrainFunctions.GetSpeedLimit().ToString();
 			}
-			return NO_DATA;
+			return trainData[dataID].ToString();
 		}
 		//
 		static public string GetDataToArduino()
