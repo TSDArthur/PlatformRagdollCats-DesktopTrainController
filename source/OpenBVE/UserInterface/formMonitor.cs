@@ -174,8 +174,8 @@ namespace OpenBve
 
 		private void doEvents(string frame)
 		{
-			string mcuFrame = FrameCoverter.GetDataToArduino();
-			FrameCoverter.RecieceFrame(frame);
+			string mcuFrame = DataCoverter.GetDataToArduino();
+			DataCoverter.RecieceFrame(frame);
 			port.Write(mcuFrame);
 			this.txtBoxSend.Text = mcuFrame;
 			this.listBoxTsk.Items.Insert(0, DateTime.Now.ToString() + " >> Send:" + mcuFrame);
@@ -186,12 +186,12 @@ namespace OpenBve
 
 		private void btnHornSt_Click(object sender, EventArgs e)
 		{
-			TrainFunctions.HornStart();
+			TrainMethods.HornStart();
 		}
 
 		private void btnHornEd_Click(object sender, EventArgs e)
 		{
-			TrainFunctions.HornStop();
+			TrainMethods.HornStop();
 		}
 
 		private void btnTimer_Click(object sender, EventArgs e)
@@ -203,15 +203,14 @@ namespace OpenBve
 		{
 			try
 			{
-				txtBoxPwr.Text = TrainFunctions.GetPower().ToString();
-				txtBoxReserver.Text = TrainFunctions.GetReverser().ToString();
-				txtBoxSignal.Text = TrainFunctions.GetSignal().ToString();
-				txtBoxSignalDis.Text = TrainFunctions.GetSignalDis().ToString();
-				txtBoxSpeed.Text = TrainFunctions.GetSpeed().ToString();
-				txtBoxSpdLimit.Text = TrainFunctions.GetSpeedLimit().ToString();
-				txtBoxBrakeHandle.Text = TrainManager.PlayerTrain.Handles.Brake.Actual.ToString();
-				txtBoxPowerHandle.Text = TrainManager.PlayerTrain.Handles.Power.Actual.ToString();
-				txtBoxConstSpeed.Text = TrainFunctions.GetConstSpeed().ToString();
+				txtBoxReserver.Text = "REV : " + TrainMethods.GetReverser().ToString();
+				txtBoxSignal.Text = "SIG : " + TrainMethods.GetSignal().ToString();
+				txtBoxSignalDis.Text = "SIG_DIS : " + TrainMethods.GetSignalDis().ToString();
+				txtBoxSpeed.Text = "SPD : " + TrainMethods.GetSpeed().ToString();
+				txtBoxSpdLimit.Text = "SPD_LIM : " + TrainMethods.GetSpeedLimit().ToString();
+				txtBoxBrakeHandle.Text = "BKE : " + TrainMethods.GetBrake().ToString();
+				txtBoxPowerHandle.Text = "PWR : " + TrainMethods.GetPower().ToString();
+				txtBoxConstSpeed.Text = "CON_SPD : " + TrainMethods.GetConstSpeed().ToString();
 				//
 				btnBack.Enabled = true;
 				btnDown.Enabled = true;
@@ -219,6 +218,12 @@ namespace OpenBve
 				btnHornSt.Enabled = true;
 				btnNeu.Enabled = true;
 				btnUp.Enabled = true;
+				btnAPOFF.Enabled = true;
+				btnAPON.Enabled = true;
+				btnEmeOn.Enabled = true;
+				btnEmeOff.Enabled = true;
+				btnKeyLock.Enabled = true;
+				btnKeyUnlock.Enabled = true;
 			}
 			catch (Exception ex)
 			{
@@ -229,6 +234,12 @@ namespace OpenBve
 				btnHornSt.Enabled = false;
 				btnNeu.Enabled = false;
 				btnUp.Enabled = false;
+				btnAPOFF.Enabled = false;
+				btnAPON.Enabled = false;
+				btnEmeOn.Enabled = false;
+				btnEmeOff.Enabled = false;
+				btnKeyLock.Enabled = false;
+				btnKeyUnlock.Enabled = false;
 			}
 
 			if (SerialPort.GetPortNames().Length > cmbSerials.Items.Count)
@@ -248,27 +259,27 @@ namespace OpenBve
 
 		private void btnFor_Click(object sender, EventArgs e)
 		{
-			TrainFunctions.ReverserForward();
+			TrainMethods.ReverserForward();
 		}
 
 		private void btnNeu_Click(object sender, EventArgs e)
 		{
-			TrainFunctions.ReverserNeutral();
+			TrainMethods.ReverserNeutral();
 		}
 
 		private void btnBack_Click(object sender, EventArgs e)
 		{
-			TrainFunctions.ReverserBackward();
+			TrainMethods.ReverserBackward();
 		}
 
 		private void btnUp_Click(object sender, EventArgs e)
 		{
-			TrainFunctions.PowerUp();
+			TrainMethods.PowerUp();
 		}
 
 		private void btnDown_Click(object sender, EventArgs e)
 		{
-			TrainFunctions.PowerDown();
+			TrainMethods.PowerDown();
 		}
 
 		private void formCM_FormClosed(object sender, FormClosedEventArgs e)
@@ -280,7 +291,7 @@ namespace OpenBve
 		{
 			this.cmbSerials.Items.AddRange(SerialPort.GetPortNames());
 			this.cmbSerials.SelectedIndex = this.cmbSerials.Items.Count - 1;
-			TrainFunctions.AttachMainTimerInterrupt(500);
+			TrainMethods.AttachMainTimerInterrupt(500);
 		}
 
 		private void cmbSerials_TextChanged(object sender, EventArgs e)
@@ -316,42 +327,42 @@ namespace OpenBve
 
 		private void btnHornSt_MouseDown(object sender, MouseEventArgs e)
 		{
-			TrainFunctions.HornStart();
+			TrainMethods.HornStart();
 		}
 
 		private void btnHornSt_MouseUp(object sender, MouseEventArgs e)
 		{
-			TrainFunctions.HornStop();
+			TrainMethods.HornStop();
 		}
 
 		private void btnEmeOn_Click(object sender, EventArgs e)
 		{
-			TrainFunctions.SetEmergency(1);
+			TrainMethods.SetEmergency(1);
 		}
 
 		private void btnEmeOff_Click(object sender, EventArgs e)
 		{
-			TrainFunctions.SetEmergency(0);
+			TrainMethods.SetEmergency(0);
 		}
 
 		private void btnKeyUnlock_Click(object sender, EventArgs e)
 		{
-			TrainFunctions.SetMasterKey(1);
+			TrainMethods.SetMasterKey(1);
 		}
 
 		private void btnKeyLock_Click(object sender, EventArgs e)
 		{
-			TrainFunctions.SetMasterKey(0);
+			TrainMethods.SetMasterKey(0);
 		}
 
 		private void btnAPON_Click(object sender, EventArgs e)
 		{
-			TrainFunctions.SetAutoPilot(TrainFunctions.GetSpeed());
+			TrainMethods.SetAutoPilot(TrainMethods.GetSpeed());
 		}
 
 		private void btnAPOFF_Click(object sender, EventArgs e)
 		{
-			TrainFunctions.SetAutoPilot(0);
+			TrainMethods.SetAutoPilot(0);
 		}
 	}
 }

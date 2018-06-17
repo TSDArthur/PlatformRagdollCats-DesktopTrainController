@@ -9,7 +9,7 @@ using OpenBveApi.Runtime;
 
 namespace OpenBve
 {
-	public partial class TrainFunctions
+	public partial class TrainMethods
 	{
 		static private TrainManager.Train nowControl;
 		//for autopilot
@@ -112,8 +112,8 @@ namespace OpenBve
 		{
 			try
 			{
-				int currretPower = nowControl.Handles.Power.Actual;
-				int currentBrake = nowControl.Handles.Brake.Actual;
+				int currretPower = nowControl.Handles.Power.Driver;
+				int currentBrake = nowControl.Handles.Brake.Driver;
 				if (nowControl.Handles.EmergencyBrake.Actual) TrainManager.UnapplyEmergencyBrake(nowControl);
 				if (currentBrake > 0) TrainManager.ApplyNotch(nowControl, 0, true, -1, true);
 				else TrainManager.ApplyNotch(nowControl, 1, true, 0, true);
@@ -129,8 +129,8 @@ namespace OpenBve
 		{
 			try
 			{
-				int currretPower = nowControl.Handles.Power.Actual;
-				int currentBrake = nowControl.Handles.Brake.Actual;
+				int currretPower = nowControl.Handles.Power.Driver;
+				int currentBrake = nowControl.Handles.Brake.Driver;
 				if (currretPower > 0) TrainManager.ApplyNotch(nowControl, -1, true, 0, true);
 				else TrainManager.ApplyNotch(nowControl, 0, true, 1, true);
 				return;
@@ -241,7 +241,7 @@ namespace OpenBve
 		{
 			try
 			{
-				return nowControl.Handles.Reverser.Actual;
+				return nowControl.Handles.Reverser.Driver;
 			}
 			catch(Exception ex) { }
 			return 0;
@@ -254,8 +254,8 @@ namespace OpenBve
 		{
 			try
 			{
-				int currretPower = nowControl.Handles.Power.Actual;
-				int currentBrake = nowControl.Handles.Brake.Actual;
+				int currretPower = nowControl.Handles.Power.Driver;
+				int currentBrake = nowControl.Handles.Brake.Driver;
 				return currretPower;
 			}
 			catch (Exception ex) { }
@@ -269,8 +269,8 @@ namespace OpenBve
 		{
 			try
 			{
-				int currretPower = nowControl.Handles.Power.Actual;
-				int currentBrake = nowControl.Handles.Brake.Actual;
+				int currretPower = nowControl.Handles.Power.Driver;
+				int currentBrake = nowControl.Handles.Brake.Driver;
 				return currentBrake;
 			}
 			catch (Exception ex) { }

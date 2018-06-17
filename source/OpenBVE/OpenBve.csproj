@@ -111,8 +111,8 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Arduino\FrameCoverter.cs" />
-    <Compile Include="Arduino\TrainFunctions.cs" />
+    <Compile Include="Arduino\DataCoverter.cs" />
+    <Compile Include="Arduino\TrainMethods.cs" />
     <Compile Include="Game\AI\AI.cs" />
     <Compile Include="Game\AI\AI.PreTrain.cs">
       <DependentUpon>AI.cs</DependentUpon>

@@ -7,7 +7,7 @@ using OpenBveApi.Runtime;
 
 namespace OpenBve
 {
-	public partial class FrameCoverter
+	public partial class DataCoverter
 	{
 		/*
 		#define SPEED 0
@@ -81,16 +81,19 @@ namespace OpenBve
 			SPEED_CONST_MIN, MASTER_KEY_OFF, EMERGENCY_OFF
 		};
 		//
-		static public void RecieceFrame(string frame)
+		/// <summary>
+		/// send data from MCU to here
+		/// </summary>
+		static public void RecieceFrame(string data)
 		{
 			int st = 0, ed = 0;
 			int strLength = 0;
 			int operationNum = 0;
 			string[] operation = new string[TRAIN_DATA_NUMBER];
-			strLength = frame.Length;
+			strLength = data.Length;
 			for (int i = 0; i < strLength; i++)
 			{
-				if (frame.Substring(i, 1) == START_SYM)
+				if (data.Substring(i, 1) == START_SYM)
 				{
 					st = i;
 					break;
@@ -99,81 +102,91 @@ namespace OpenBve
 			//
 			for (int i = 0; i < strLength; i++)
 			{
-				if (frame.Substring(i, 1) == END_SYM)
+				if (data.Substring(i, 1) == END_SYM)
 				{
 					ed = i;
 					break;
 				}
 			}
 			if (ed < st) return;
-			frame = frame.Substring(st + 1, ed - st - 1);
-			operation = frame.Split(FILTER);
+			data = data.Substring(st + 1, ed - st - 1);
+			operation = data.Split(FILTER);
 			operationNum = operation.Length;
 			for (int i = 0; i < operationNum; i++)
 			{
+				trainData[i] = Int32.Parse(operation[i]);
 				SendControlToTrain(i, Int32.Parse(operation[i]));
 			}
 		}
 		//
+		/// <summary>
+		/// send operation data to train
+		/// </summary>
 		static private void SendControlToTrain(int dataID, int value)
 		{
 			switch (dataID)
 			{
 				case REVERSER:
-					TrainFunctions.SetReverser(value);
+					TrainMethods.SetReverser(value);
 					break;
 				case POWER:
-					TrainFunctions.SetPower(value);
+					TrainMethods.SetPower(value);
 					break;
 				case BRAKE:
-					TrainFunctions.SetBrake(value);
+					TrainMethods.SetBrake(value);
 					break;
 				case HORN:
-					TrainFunctions.SetHorn(value);
+					TrainMethods.SetHorn(value);
 					break;
 				case MASTER_KEY:
-					TrainFunctions.SetMasterKey(value);
+					TrainMethods.SetMasterKey(value);
 					break;
 				case EMERGENCY:
-					TrainFunctions.SetEmergency(value);
+					TrainMethods.SetEmergency(value);
 					break;
 			}
 		}
 		//
+		/// <summary>
+		/// get train data by dataID
+		/// </summary>
 		static public string GetData(int dataID)
 		{
 			//SPEED, POWER, BRAKE, REVERSER, SIGNAL, SIGNAL_DISTANCE, SPEED_LIMIT
 			switch (dataID)
 			{
 				case SPEED:
-					return TrainFunctions.GetSpeed().ToString();
+					return TrainMethods.GetSpeed().ToString();
 				case POWER:
-					return TrainFunctions.GetPower().ToString();
+					return TrainMethods.GetPower().ToString();
 				case BRAKE:
-					return TrainFunctions.GetBrake().ToString();
+					return TrainMethods.GetBrake().ToString();
 				case REVERSER:
-					return TrainFunctions.GetReverser().ToString();
+					return TrainMethods.GetReverser().ToString();
 				case SIGNAL:
-						return TrainFunctions.GetSignal().ToString();
+						return TrainMethods.GetSignal().ToString();
 				case SIGNAL_DISTANCE:
-					return TrainFunctions.GetSignalDis().ToString();
+					return TrainMethods.GetSignalDis().ToString();
 				case SPEED_LIMIT:
-					return TrainFunctions.GetSpeedLimit().ToString();
+					return TrainMethods.GetSpeedLimit().ToString();
 			}
 			return trainData[dataID].ToString();
 		}
 		//
+		/// <summary>
+		/// get data string send to MCU
+		/// </summary>
 		static public string GetDataToArduino()
 		{
-			string frame = NO_DATA;
-			frame += START_SYM;
+			string data = NO_DATA;
+			data += START_SYM;
 			for (int i = 0; i < TRAIN_DATA_NUMBER; i++)
 			{
-				frame += GetData(i);
-				frame += FILTER;
+				data += GetData(i);
+				data += FILTER;
 			}
-			frame += END_SYM;
-			return frame;
+			data += END_SYM;
+			return data;
 		}
 	}
 }
