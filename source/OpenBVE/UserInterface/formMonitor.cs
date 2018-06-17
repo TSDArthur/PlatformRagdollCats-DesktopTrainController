@@ -203,13 +203,15 @@ namespace OpenBve
 		{
 			try
 			{
+				//invoke the TrainManager to throw a error
+				TrainManager.Train trainInfo = TrainManager.PlayerTrain;
 				txtBoxReserver.Text = "REV : " + TrainMethods.GetReverser().ToString();
 				txtBoxSignal.Text = "SIG : " + TrainMethods.GetSignal().ToString();
 				txtBoxSignalDis.Text = "SIG_DIS : " + TrainMethods.GetSignalDis().ToString();
 				txtBoxSpeed.Text = "SPD : " + TrainMethods.GetSpeed().ToString();
 				txtBoxSpdLimit.Text = "SPD_LIM : " + TrainMethods.GetSpeedLimit().ToString();
 				txtBoxBrakeHandle.Text = "BKE : " + TrainMethods.GetBrake().ToString();
-				txtBoxPowerHandle.Text = "PWR : " + TrainMethods.GetPower().ToString();
+				txtBoxPowerHandle.Text = "PWR : " + trainInfo.Handles.Power.Driver.ToString();
 				txtBoxConstSpeed.Text = "CON_SPD : " + TrainMethods.GetConstSpeed().ToString();
 				//
 				btnBack.Enabled = true;

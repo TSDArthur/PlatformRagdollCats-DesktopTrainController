@@ -93,7 +93,7 @@ namespace OpenBve
 					{
 						if (inRedLight)
 						{
-							SetBrake(nowControl.Specs.MaximumBrakeNotch);
+							SetBrake(nowControl.Handles.Brake.MaximumNotch);
 							SetReverser(0);
 							SetAutoPilot(0);
 						}
@@ -115,8 +115,8 @@ namespace OpenBve
 				int currretPower = nowControl.Handles.Power.Driver;
 				int currentBrake = nowControl.Handles.Brake.Driver;
 				if (nowControl.Handles.EmergencyBrake.Actual) TrainManager.UnapplyEmergencyBrake(nowControl);
-				if (currentBrake > 0) TrainManager.ApplyNotch(nowControl, 0, true, -1, true);
-				else TrainManager.ApplyNotch(nowControl, 1, true, 0, true);
+				if (currentBrake > 0) nowControl.ApplyNotch(0, true, -1, true);
+				else nowControl.ApplyNotch(1, true, 0, true);
 				return;
 			}
 			catch (Exception ex) { }
@@ -131,8 +131,8 @@ namespace OpenBve
 			{
 				int currretPower = nowControl.Handles.Power.Driver;
 				int currentBrake = nowControl.Handles.Brake.Driver;
-				if (currretPower > 0) TrainManager.ApplyNotch(nowControl, -1, true, 0, true);
-				else TrainManager.ApplyNotch(nowControl, 0, true, 1, true);
+				if (currretPower > 0) nowControl.ApplyNotch( -1, true, 0, true);
+				else nowControl.ApplyNotch( 0, true, 1, true);
 				return;
 			}
 			catch (Exception ex) { }
@@ -145,7 +145,7 @@ namespace OpenBve
 		{
 			try
 			{
-				TrainManager.ApplyNotch(nowControl, value < 0 ? 0 : value, false, 0, true);
+				nowControl.ApplyNotch( value < 0 ? 0 : value, false, 0, true);
 				return;
 			}
 			catch (Exception ex) { }
@@ -158,7 +158,7 @@ namespace OpenBve
 		{
 			try
 			{
-				TrainManager.ApplyNotch(nowControl, 0, true, value < 0 ? 0 : value, false);
+				nowControl.ApplyNotch( 0, true, value < 0 ? 0 : value, false);
 				return;
 			}
 			catch (Exception ex) { }
@@ -241,7 +241,7 @@ namespace OpenBve
 		{
 			try
 			{
-				return nowControl.Handles.Reverser.Driver;
+				return Int32.Parse(nowControl.Handles.Reverser.Driver.ToString());
 			}
 			catch(Exception ex) { }
 			return 0;

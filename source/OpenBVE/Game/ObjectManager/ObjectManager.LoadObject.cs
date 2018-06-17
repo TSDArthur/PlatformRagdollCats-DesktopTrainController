@@ -1,6 +1,6 @@
 ﻿using System;
 using OpenBveApi.Math;
-
+using OpenBve.Formats.MsTs;
 namespace OpenBve
 {
 	/// <summary>The ObjectManager is the root class containing functions to load and manage objects within the simulation world</summary>
@@ -133,6 +133,9 @@ namespace OpenBve
 				case ".obj":
 					Result = WavefrontObjParser.ReadObject(FileName, Encoding, LoadMode, ForceTextureRepeatX, ForceTextureRepeatY);
 					break;
+				case ".s":
+					Result = MsTsShapeParser.ReadObject(FileName);
+					break;
 				default:
 					Interface.AddMessage(Interface.MessageType.Error, false, "The file extension is not supported: " + FileName);
 					return null;
@@ -199,6 +202,7 @@ namespace OpenBve
 					Result = XObjectParser.ReadObject(FileName, Encoding, LoadMode, ForceTextureRepeatX, ForceTextureRepeatY);
 					break;
 				case ".animated":
+				case ".s":
 					Interface.AddMessage(Interface.MessageType.Error, false, "Tried to load an animated object even though only static objects are allowed: " + FileName);
 					return null;
 				case ".obj":

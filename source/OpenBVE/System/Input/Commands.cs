@@ -56,6 +56,10 @@ namespace OpenBve {
 			HornMusic,
 			/// <summary>Enables or disables the constant-speed device</summary>
 			DeviceConstSpeed,
+			/// <summary>Increases the locomotive brake notch</summary>
+			LocoBrakeIncrease,
+			/// <summary>Decreases the locomotive brake notch</summary>
+			LocoBrakeDecrease,
 
 			//Simulation controls
 			/// <summary>Change to the interior (Cab) camera mode</summary>
@@ -150,6 +154,8 @@ namespace OpenBve {
 			DebugNormals,
 			/// <summary>Shows or hides debug information on the brake-system performance</summary>
 			DebugBrakeSystems,
+			/// <summary>Shows or hides the ATS (plugin) debugn screen</summary>
+			DebugATS,
 			/// <summary>Shows or hides a visual representation of all events on the track</summary>
 			ShowEvents,
 			/*

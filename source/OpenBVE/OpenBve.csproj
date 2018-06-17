@@ -100,9 +100,9 @@
     <Reference Include="PIEHid32Net">
       <HintPath>..\..\dependencies\PIEHid32Net.dll</HintPath>
     </Reference>
-    <Reference Include="SharpCompress.Unsigned, Version=0.11.2.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="SharpCompress, Version=0.21.1.0, Culture=neutral, PublicKeyToken=afb0a02973931d96, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Dependencies\SharpCompress.Unsigned.dll</HintPath>
+      <HintPath>..\..\dependencies\SharpCompress.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -209,6 +209,7 @@
     <Compile Include="Graphics\Renderer\Structures.cs" />
     <Compile Include="Graphics\Renderer\Objects.cs" />
     <Compile Include="Parsers\Object\Generic\WavefrontObjParser.cs" />
+    <Compile Include="Parsers\Object\MSTS\ShapeParser.cs" />
     <Compile Include="Parsers\Route\BVE\CsvRwRouteParser.ApplyRouteData.cs" />
     <Compile Include="Parsers\Route\BVE\CsvRwRouteParser.CompatibilityObjects.cs" />
     <Compile Include="Parsers\Route\BVE\CsvRwRouteParser.Expression.cs" />
@@ -262,16 +263,26 @@
     <Compile Include="Simulation\TrainManager\Train\BrakeSystem.AirBrake.cs" />
     <Compile Include="Simulation\TrainManager\Train\BrakeSystem.cs" />
     <Compile Include="Simulation\TrainManager\Train\DefaultSafetySystems.cs" />
-    <Compile Include="Simulation\TrainManager\Train\EbHandleBehaviour.cs" />
-    <Compile Include="Simulation\TrainManager\Train\Handles.cs" />
     <Compile Include="Simulation\TrainManager\Passengers.cs" />
     <Compile Include="Simulation\TrainManager\Station.cs" />
+    <Compile Include="Simulation\TrainManager\Train\Hnadles\Handles.Abstract.cs" />
+    <Compile Include="Simulation\TrainManager\Train\Hnadles\Handles.AirBrake.cs" />
+    <Compile Include="Simulation\TrainManager\Train\Hnadles\Handles.AirBrake.States.cs" />
+    <Compile Include="Simulation\TrainManager\Train\Hnadles\Handles.Brake.cs" />
+    <Compile Include="Simulation\TrainManager\Train\Hnadles\Handles.cs" />
+    <Compile Include="Simulation\TrainManager\Train\Hnadles\Handles.Eb.Behaviour.cs" />
+    <Compile Include="Simulation\TrainManager\Train\Hnadles\Handles.EmergencyBrake.cs" />
+    <Compile Include="Simulation\TrainManager\Train\Hnadles\Handles.HoldBrake.cs" />
+    <Compile Include="Simulation\TrainManager\Train\Hnadles\Handles.LocoBrake.cs" />
+    <Compile Include="Simulation\TrainManager\Train\Hnadles\Handles.LocoBrake.Types.cs" />
+    <Compile Include="Simulation\TrainManager\Train\Hnadles\Handles.Power.cs" />
+    <Compile Include="Simulation\TrainManager\Train\Hnadles\Handles.Reverser.cs" />
+    <Compile Include="Simulation\TrainManager\Train\Hnadles\Handles.Reverser.Positions.cs" />
     <Compile Include="Simulation\TrainManager\Train\Horn.cs" />
     <Compile Include="Simulation\TrainManager\Train\PassAlarm.cs" />
     <Compile Include="Simulation\TrainManager\Train\Reverser.cs" />
     <Compile Include="Simulation\TrainManager\Train\StopSkipMode.cs" />
     <Compile Include="Simulation\TrainManager\Train\Train.cs" />
-    <Compile Include="Simulation\TrainManager\Train\Train.Handles.cs" />
     <Compile Include="Simulation\TrainManager\Train\Train.Specs.cs" />
     <Compile Include="Simulation\TrainManager\Train\Train.States.cs" />
     <Compile Include="Simulation\World\BackgroundManager.cs" />
@@ -480,6 +491,10 @@
       <Project>{27134980-4415-4375-A564-40A9014DFA5F}</Project>
       <Name>OpenBveApi</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Plugins\Formats.Msts\Formats.Msts.csproj">
+      <Project>{e81b7bd8-a326-47d3-b7ee-e9c7d4d119fa}</Project>
+      <Name>Formats.Msts</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
@@ -489,6 +504,7 @@
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>AssemblyInfo.cs</LastGenOutput>
     </Content>
+    <None Include="Resources\Banner.bmp" />
     <None Include="Resources\Switch.png" />
     <None Include="Resources\Connected.png" />
     <None Include="Resources\Device.png" />

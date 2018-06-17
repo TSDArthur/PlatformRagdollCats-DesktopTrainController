@@ -3,15 +3,14 @@ using OpenBveApi.Colors;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using Vector3 = OpenBveApi.Math.Vector3;
+using OpenBveApi.Objects;
 
 namespace OpenBve
 {
 	internal static partial class Renderer
 	{
-
-
-
 		internal static OutputMode CurrentOutputMode = OutputMode.Default;
+		internal static OutputMode PreviousOutputMode = OutputMode.Default;
 		//Set LoadTextureImmediatelyMode to NotYet for the first frame
 		internal static LoadTextureImmediatelyMode LoadTexturesImmediately = LoadTextureImmediatelyMode.NotYet;
 
@@ -504,7 +503,7 @@ namespace OpenBve
 			int r = (int)ObjectManager.Objects[Face.ObjectIndex].Mesh.Faces[Face.FaceIndex].Material;
 			RenderFace(ref ObjectManager.Objects[Face.ObjectIndex].Mesh.Materials[r], ObjectManager.Objects[Face.ObjectIndex].Mesh.Vertices, Face.Wrap, ref ObjectManager.Objects[Face.ObjectIndex].Mesh.Faces[Face.FaceIndex], CameraX, CameraY, CameraZ);
 		}
-		private static void RenderFace(ref World.MeshMaterial Material, World.Vertex[] Vertices, Textures.OpenGlTextureWrapMode wrap, ref World.MeshFace Face, double CameraX, double CameraY, double CameraZ)
+		private static void RenderFace(ref World.MeshMaterial Material, VertexTemplate[] Vertices, Textures.OpenGlTextureWrapMode wrap, ref World.MeshFace Face, double CameraX, double CameraY, double CameraZ)
 		{
 			// texture
 			if (Material.DaytimeTexture != null)
@@ -624,6 +623,11 @@ namespace OpenBve
 					{
 						GL.Normal3(Face.Vertices[j].Normal.X, Face.Vertices[j].Normal.Y, Face.Vertices[j].Normal.Z);
 						GL.TexCoord2(Vertices[Face.Vertices[j].Index].TextureCoordinates.X, Vertices[Face.Vertices[j].Index].TextureCoordinates.Y);
+						if (Vertices[Face.Vertices[j].Index] is ColoredVertex)
+						{
+							ColoredVertex v = (ColoredVertex) Vertices[Face.Vertices[j].Index];
+							GL.Color3(v.Color.R, v.Color.G, v.Color.B);
+						}
 						GL.Vertex3((float)(Vertices[Face.Vertices[j].Index].Coordinates.X - CameraX), (float)(Vertices[Face.Vertices[j].Index].Coordinates.Y - CameraY), (float)(Vertices[Face.Vertices[j].Index].Coordinates.Z - CameraZ));
 					}
 				}
@@ -632,6 +636,11 @@ namespace OpenBve
 					for (int j = 0; j < Face.Vertices.Length; j++)
 					{
 						GL.TexCoord2(Vertices[Face.Vertices[j].Index].TextureCoordinates.X, Vertices[Face.Vertices[j].Index].TextureCoordinates.Y);
+						if (Vertices[Face.Vertices[j].Index] is ColoredVertex)
+						{
+							ColoredVertex v = (ColoredVertex) Vertices[Face.Vertices[j].Index];
+							GL.Color3(v.Color.R, v.Color.G, v.Color.B);
+						}
 						GL.Vertex3((float)(Vertices[Face.Vertices[j].Index].Coordinates.X - CameraX), (float)(Vertices[Face.Vertices[j].Index].Coordinates.Y - CameraY), (float)(Vertices[Face.Vertices[j].Index].Coordinates.Z - CameraZ));
 					}
 				}
@@ -643,6 +652,11 @@ namespace OpenBve
 					for (int j = 0; j < Face.Vertices.Length; j++)
 					{
 						GL.Normal3(Face.Vertices[j].Normal.X, Face.Vertices[j].Normal.Y, Face.Vertices[j].Normal.Z);
+						if (Vertices[Face.Vertices[j].Index] is ColoredVertex)
+						{
+							ColoredVertex v = (ColoredVertex) Vertices[Face.Vertices[j].Index];
+							GL.Color3(v.Color.R, v.Color.G, v.Color.B);
+						}
 						GL.Vertex3((float)(Vertices[Face.Vertices[j].Index].Coordinates.X - CameraX), (float)(Vertices[Face.Vertices[j].Index].Coordinates.Y - CameraY), (float)(Vertices[Face.Vertices[j].Index].Coordinates.Z - CameraZ));
 					}
 				}
@@ -650,6 +664,11 @@ namespace OpenBve
 				{
 					for (int j = 0; j < Face.Vertices.Length; j++)
 					{
+						if (Vertices[Face.Vertices[j].Index] is ColoredVertex)
+						{
+							ColoredVertex v = (ColoredVertex) Vertices[Face.Vertices[j].Index];
+							GL.Color3(v.Color.R, v.Color.G, v.Color.B);
+						}
 						GL.Vertex3((float)(Vertices[Face.Vertices[j].Index].Coordinates.X - CameraX), (float)(Vertices[Face.Vertices[j].Index].Coordinates.Y - CameraY), (float)(Vertices[Face.Vertices[j].Index].Coordinates.Z - CameraZ));
 					}
 				}
@@ -714,6 +733,11 @@ namespace OpenBve
 				for (int j = 0; j < Face.Vertices.Length; j++)
 				{
 					GL.TexCoord2(Vertices[Face.Vertices[j].Index].TextureCoordinates.X, Vertices[Face.Vertices[j].Index].TextureCoordinates.Y);
+					if (Vertices[Face.Vertices[j].Index] is ColoredVertex)
+					{
+						ColoredVertex v = (ColoredVertex) Vertices[Face.Vertices[j].Index];
+						GL.Color3(v.Color.R, v.Color.G, v.Color.B);
+					}
 					GL.Vertex3((float)(Vertices[Face.Vertices[j].Index].Coordinates.X - CameraX), (float)(Vertices[Face.Vertices[j].Index].Coordinates.Y - CameraY), (float)(Vertices[Face.Vertices[j].Index].Coordinates.Z - CameraZ));
 				}
 				GL.End();

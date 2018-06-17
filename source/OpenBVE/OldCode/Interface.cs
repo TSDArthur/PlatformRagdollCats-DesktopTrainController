@@ -50,6 +50,8 @@ namespace OpenBve {
 			new CommandInfo(Command.PowerFullAxis, CommandType.AnalogFull, "POWER_FULLAXIS"),
 			new CommandInfo(Command.BrakeDecrease, CommandType.Digital, "BRAKE_DECREASE"),
 			new CommandInfo(Command.BrakeIncrease, CommandType.Digital, "BRAKE_INCREASE"),
+			new CommandInfo(Command.LocoBrakeDecrease, CommandType.Digital, "LOCOBRAKE_DECREASE"),
+			new CommandInfo(Command.LocoBrakeIncrease, CommandType.Digital, "LOCOBRAKE_INCREASE"),
 			new CommandInfo(Command.BrakeHalfAxis, CommandType.AnalogHalf, "BRAKE_HALFAXIS"),
 			new CommandInfo(Command.BrakeFullAxis, CommandType.AnalogFull, "BRAKE_FULLAXIS"),
 			new CommandInfo(Command.BrakeEmergency, CommandType.Digital, "BRAKE_EMERGENCY"),
@@ -161,6 +163,7 @@ namespace OpenBve {
 			new CommandInfo(Command.DebugWireframe, CommandType.Digital, "DEBUG_WIREFRAME"),
 			new CommandInfo(Command.DebugNormals, CommandType.Digital, "DEBUG_NORMALS"),
 			new CommandInfo(Command.DebugBrakeSystems, CommandType.Digital, "DEBUG_BRAKE"),
+			new CommandInfo(Command.DebugATS, CommandType.Digital, "DEBUG_ATS"),
 			new CommandInfo(Command.RouteInformation, CommandType.Digital, "ROUTE_INFORMATION"),
 			new CommandInfo(Command.ShowEvents, CommandType.Digital, "SHOW_EVENTS"),
 		};

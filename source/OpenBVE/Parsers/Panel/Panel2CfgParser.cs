@@ -2,6 +2,8 @@
 using OpenBveApi;
 using OpenBveApi.Colors;
 using OpenBveApi.Math;
+using OpenBveApi.Objects;
+using OpenBveApi.Textures;
 
 namespace OpenBve {
 	internal static class Panel2CfgParser {
@@ -782,27 +784,76 @@ namespace OpenBve {
 										int wday, hday;
 										Program.CurrentHost.QueryTextureDimensions(DaytimeImage, out wday, out hday);
 										if (wday > 0 & hday > 0) {
-											int nday = hday / Interval;
-											Textures.Texture[] tday = new Textures.Texture[nday];
+											int numFrames = hday / Interval;
+											if (Interface.CurrentOptions.EnableBveTsHacks)
+											{
+												/*
+												 * With hacks enabled, the final frame does not necessarily need to be
+												 * completely within the confines of the texture
+												 * e.g. LT_C69_77
+												 * https://github.com/leezer3/OpenBVE/issues/247
+												 */
+												switch (Subject)
+												{
+													case "power":
+														if (Train.Handles.Power.MaximumNotch > numFrames)
+														{
+															numFrames = Train.Handles.Power.MaximumNotch;
+														}
+														break;
+													case "brake":
+														int b = Train.Handles.Brake.MaximumNotch + 2;
+														if (Train.Handles.HasHoldBrake)
+														{
+															b++;
+														}
+														if (b > numFrames )
+														{
+															numFrames = b;
+														}
+														break;
+												}
+											}
+											Textures.Texture[] tday = new Textures.Texture[numFrames];
 											Textures.Texture[] tnight;
-											for (int k = 0; k < nday; k++) {
-												Textures.RegisterTexture(DaytimeImage, new OpenBveApi.Textures.TextureParameters(new OpenBveApi.Textures.TextureClipRegion(0, k * Interval, wday, Interval), new Color24(TransparentColor.R, TransparentColor.G, TransparentColor.B)), out tday[k]);
+											for (int k = 0; k < numFrames; k++)
+											{
+												if ((k + 1) * Interval <= hday)
+												{
+													Textures.RegisterTexture(DaytimeImage, new OpenBveApi.Textures.TextureParameters(new OpenBveApi.Textures.TextureClipRegion(0, k * Interval, wday, Interval), new Color24(TransparentColor.R, TransparentColor.G, TransparentColor.B)), out tday[k]);
+												}
+												else if (k * Interval >= hday)
+												{
+													numFrames = k;
+													Array.Resize(ref tday, k);
+												}
+												else
+												{
+													Textures.RegisterTexture(DaytimeImage, new OpenBveApi.Textures.TextureParameters(new OpenBveApi.Textures.TextureClipRegion(0, k * Interval, wday, hday - (k * Interval)), new Color24(TransparentColor.R, TransparentColor.G, TransparentColor.B)), out tday[k]);
+												}
 											}
 											if (NighttimeImage != null) {
 												int wnight, hnight;
 												Program.CurrentHost.QueryTextureDimensions(NighttimeImage, out wnight, out hnight);
-												int nnight = hnight / Interval;
-												if (nnight > nday) nnight = nday;
-												tnight = new Textures.Texture[nday];
-												for (int k = 0; k < nnight; k++) {
-													Textures.RegisterTexture(NighttimeImage, new OpenBveApi.Textures.TextureParameters(new OpenBveApi.Textures.TextureClipRegion(0, k * Interval, wnight, Interval), new Color24(TransparentColor.R, TransparentColor.G, TransparentColor.B)), out tnight[k]);
+												tnight = new Textures.Texture[numFrames];
+												for (int k = 0; k < numFrames; k++) {
+													if ((k + 1) * Interval <= hnight)
+													{
+														Textures.RegisterTexture(NighttimeImage, new OpenBveApi.Textures.TextureParameters(new OpenBveApi.Textures.TextureClipRegion(0, k * Interval, wnight, Interval), new Color24(TransparentColor.R, TransparentColor.G, TransparentColor.B)), out tnight[k]);
+													}
+													else if (k * Interval > hnight)
+													{
+														tnight[k] = null;
+													}
+													else
+													{
+														Textures.RegisterTexture(NighttimeImage, new OpenBveApi.Textures.TextureParameters(new OpenBveApi.Textures.TextureClipRegion(0, k * Interval, wnight, hnight - (k * Interval)), new Color24(TransparentColor.R, TransparentColor.G, TransparentColor.B)), out tnight[k]);
+													}
 												}
-												for (int k = nnight; k < nday; k++) {
-													tnight[k] = null;
-												}
+												
 											} else {
-												tnight = new Textures.Texture[nday];
-												for (int k = 0; k < nday; k++) {
+												tnight = new Textures.Texture[numFrames];
+												for (int k = 0; k < numFrames; k++) {
 													tnight[k] = null;
 												}
 											}
@@ -922,7 +973,11 @@ namespace OpenBve {
 										double cx = 0.25 * (x0 + x1 + x2 + x3);
 										double cy = 0.25 * (y0 + y1 + y2 + y3);
 										double cz = 0.25 * (z0 + z1 + z2 + z3);
-										World.Vertex[] vertices = new World.Vertex[11];
+										VertexTemplate[] vertices = new VertexTemplate[11];
+										for (int v = 0; v < 11; v++)
+										{
+											vertices[v] = new Vertex();
+										}
 										int[][] faces = new int[][] {
 											new int[] { 0, 1, 2 },
 											new int[] { 0, 3, 4 },
@@ -1061,6 +1116,9 @@ namespace OpenBve {
 				case "bc":
 					Maximum /= 0.001;
 					return "if[BrakeCylinder < " + Maximum + ", if[BrakeCylinder >  " + Minimum + ", (BrakeCylinder * .001) " + " * " + range + ", 0]," + ftc + "]";
+				case "locobrakecylinder":
+					Maximum /= 0.001;
+					return "if[BrakeCylinder["+ Train.DriverCar + "] < " + Maximum + ", if[BrakeCylinder["+ Train.DriverCar + "] >  " + Minimum + ", (BrakeCylinder["+ Train.DriverCar + "] * .001) " + " * " + range + ", 0]," + ftc + "]";
 				case "mr":
 					Maximum /= 0.001;
 					return "if[MainReservoir < " + Maximum + ", if[MainReservoir >  " + Minimum + ", (MainReservoir * .001) " + " * " + range + ", 0]," + ftc + "]";
@@ -1070,6 +1128,9 @@ namespace OpenBve {
 				case "bp":
 					Maximum /= 0.001;
 					return "if[BrakePipe < " + Maximum + ", if[BrakePipe >  " + Minimum + ", (BrakePipe * .001) " + " * " + range + ", 0]," + ftc + "]";
+				case "locobrakepipe":
+					Maximum /= 0.001;
+					return "if[BrakePipe["+ Train.DriverCar + "] < " + Maximum + ", if[BrakePipe["+ Train.DriverCar + "] >  " + Minimum + ", (BrakePipe["+ Train.DriverCar + "] * .001) " + " * " + range + ", 0]," + ftc + "]";
 				case "er":
 					Maximum /= 0.001;
 					return "if[EqualizingReservoir < " + Maximum + ", if[EqualizingReservoir >  " + Minimum + ", (EqualizingReservoir * .001) " + " * " + range + ", 0]," + ftc + "]";
@@ -1083,6 +1144,8 @@ namespace OpenBve {
 					return "if[rightdoorbuttom < " + Maximum + ", if[rightdoorbutton >  " + Minimum + ", rightdoorbutton " + " * " + range + ", 0]," + ftc + "]";
 				case "power":
 					return "if[PowerNotch < " + Maximum + ", if[PowerNotch >  " + Minimum + ", PowerNotch " + " * " + range + ", 0]," + ftc + "]";
+				case "locobrake":
+					return "if[LocoBrakeNotch < " + Maximum + ", if[LocoBrakeNotch >  " + Minimum + ", LocoBrakeNotch " + " * " + range + ", 0]," + ftc + "]";
 				case "brake":
 					return "if[BrakeNotch < " + Maximum + ", if[BrakeNotch >  " + Minimum + ", BrakeNotch " + " * " + range + ", 0]," + ftc + "]";
 				case "rev":
@@ -1197,6 +1260,9 @@ namespace OpenBve {
 				case "ms":
 					Code = "speedometer abs";
 					break;
+				case "locobrakecylinder":
+					Code = Train.DriverCar + " brakecylinderindex 0.001 *";
+					break;
 				case "bc":
 					Code = "brakecylinder 0.001 *";
 					break;
@@ -1205,6 +1271,9 @@ namespace OpenBve {
 					break;
 				case "sap":
 					Code = "straightairpipe 0.001 *";
+					break;
+				case "locobrakepipe":
+					Code = Train.DriverCar + "brakepipeindex 0.001 *";
 					break;
 				case "bp":
 					Code = "brakepipe 0.001 *";
@@ -1220,6 +1289,9 @@ namespace OpenBve {
 					break;
 				case "power":
 					Code = "brakeNotchLinear 0 powerNotch ?";
+					break;
+				case "locobrake":
+					Code = "locoBrakeNotch";
 					break;
 				case "brake":
 					Code = "brakeNotchLinear";
@@ -1331,12 +1403,12 @@ namespace OpenBve {
 			v[1] = new Vector3(x0 - xm, y0 - ym, 0);
 			v[2] = new Vector3(x1 - xm, y0 - ym, 0);
 			v[3] = new Vector3(x1 - xm, y1 - ym, 0);
-			World.Vertex t0 = new World.Vertex(v[0], new Vector2(0.0f, 1.0f));
-			World.Vertex t1 = new World.Vertex(v[1], new Vector2(0.0f, 0.0f));
-			World.Vertex t2 = new World.Vertex(v[2], new Vector2(1.0f, 0.0f));
-			World.Vertex t3 = new World.Vertex(v[3], new Vector2(1.0f, 1.0f));
+			Vertex t0 = new Vertex(v[0], new Vector2(0.0f, 1.0f));
+			Vertex t1 = new Vertex(v[1], new Vector2(0.0f, 0.0f));
+			Vertex t2 = new Vertex(v[2], new Vector2(1.0f, 0.0f));
+			Vertex t3 = new Vertex(v[3], new Vector2(1.0f, 1.0f));
 			ObjectManager.StaticObject Object = new ObjectManager.StaticObject();
-			Object.Mesh.Vertices = new World.Vertex[] { t0, t1, t2, t3 };
+			Object.Mesh.Vertices = new Vertex[] { t0, t1, t2, t3 };
 			Object.Mesh.Faces = new World.MeshFace[] { new World.MeshFace(new int[] { 0, 1, 2, 3 }) };
 			Object.Mesh.Materials = new World.MeshMaterial[1];
 			Object.Mesh.Materials[0].Flags = (byte)(DaytimeTexture != null ? World.MeshMaterial.TransparentColorMask : 0);

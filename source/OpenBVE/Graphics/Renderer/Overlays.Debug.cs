@@ -15,8 +15,8 @@ namespace OpenBve
 			RenderOverlaySolid(0.0f, 0.0f, (double)Screen.Width, (double)Screen.Height);
 			// actual handles
 			{
-				string t = "actual: " + (TrainManager.PlayerTrain.Handles.Reverser.Actual == -1 ? "B" : TrainManager.PlayerTrain.Handles.Reverser.Actual == 1 ? "F" : "N");
-				if (TrainManager.PlayerTrain.Specs.SingleHandle)
+				string t = "actual: " + (TrainManager.PlayerTrain.Handles.Reverser.Actual == TrainManager.ReverserPosition.Reverse ? "B" : TrainManager.PlayerTrain.Handles.Reverser.Actual == TrainManager.ReverserPosition.Forwards ? "F" : "N");
+				if (TrainManager.PlayerTrain.Handles.SingleHandle)
 				{
 					t += " - " + (TrainManager.PlayerTrain.Handles.EmergencyBrake.Actual ? "EMG" : TrainManager.PlayerTrain.Handles.Brake.Actual != 0 ? "B" + TrainManager.PlayerTrain.Handles.Brake.Actual.ToString(Culture) : TrainManager.PlayerTrain.Handles.HoldBrake.Actual ? "HLD" : TrainManager.PlayerTrain.Handles.Power.Actual != 0 ? "P" + TrainManager.PlayerTrain.Handles.Power.Actual.ToString(Culture) : "N");
 				}
@@ -30,12 +30,17 @@ namespace OpenBve
 					t += " - " + (TrainManager.PlayerTrain.Handles.Power.Actual != 0 ? "P" + TrainManager.PlayerTrain.Handles.Power.Actual.ToString(Culture) : "N");
 					t += " - " + (TrainManager.PlayerTrain.Handles.EmergencyBrake.Actual ? "EMG" : TrainManager.PlayerTrain.Handles.Brake.Actual != 0 ? "B" + TrainManager.PlayerTrain.Handles.Brake.Actual.ToString(Culture) : TrainManager.PlayerTrain.Handles.HoldBrake.Actual ? "HLD" : "N");
 				}
+				if (TrainManager.PlayerTrain.Handles.HasLocoBrake)
+				{
+					t += " - " + (TrainManager.PlayerTrain.Handles.LocoBrake.Actual != 0 ? "L" + TrainManager.PlayerTrain.Handles.LocoBrake.Actual.ToString(Culture) : "N");
+				}
+				
 				DrawString(Fonts.SmallFont, t, new System.Drawing.Point(2, Screen.Height - 46), TextAlignment.TopLeft, Color128.White, true);
 			}
 			// safety handles
 			{
-				string t = "safety: " + (TrainManager.PlayerTrain.Handles.Reverser.Actual == -1 ? "B" : TrainManager.PlayerTrain.Handles.Reverser.Actual == 1 ? "F" : "N");
-				if (TrainManager.PlayerTrain.Specs.SingleHandle)
+				string t = "safety: " + (TrainManager.PlayerTrain.Handles.Reverser.Actual == TrainManager.ReverserPosition.Reverse ? "B" : TrainManager.PlayerTrain.Handles.Reverser.Actual == TrainManager.ReverserPosition.Forwards ? "F" : "N");
+				if (TrainManager.PlayerTrain.Handles.SingleHandle)
 				{
 					t += " - " + (TrainManager.PlayerTrain.Handles.EmergencyBrake.Safety ? "EMG" : TrainManager.PlayerTrain.Handles.Brake.Safety != 0 ? "B" + TrainManager.PlayerTrain.Handles.Brake.Safety.ToString(Culture) : TrainManager.PlayerTrain.Handles.HoldBrake.Actual ? "HLD" : TrainManager.PlayerTrain.Handles.Power.Safety != 0 ? "P" + TrainManager.PlayerTrain.Handles.Power.Safety.ToString(Culture) : "N");
 				}
@@ -49,12 +54,17 @@ namespace OpenBve
 					t += " - " + (TrainManager.PlayerTrain.Handles.Power.Safety != 0 ? "P" + TrainManager.PlayerTrain.Handles.Power.Safety.ToString(Culture) : "N");
 					t += " - " + (TrainManager.PlayerTrain.Handles.EmergencyBrake.Safety ? "EMG" : TrainManager.PlayerTrain.Handles.Brake.Safety != 0 ? "B" + TrainManager.PlayerTrain.Handles.Brake.Safety.ToString(Culture) : TrainManager.PlayerTrain.Handles.HoldBrake.Actual ? "HLD" : "N");
 				}
+				if (TrainManager.PlayerTrain.Handles.HasLocoBrake)
+				{
+					t += " - " + (TrainManager.PlayerTrain.Handles.LocoBrake.Safety != 0 ? "L" + TrainManager.PlayerTrain.Handles.LocoBrake.Safety.ToString(Culture) : "N");
+				}
+				
 				DrawString(Fonts.SmallFont, t, new System.Drawing.Point(2, Screen.Height - 32), TextAlignment.TopLeft, Color128.White, true);
 			}
 			// driver handles
 			{
-				string t = "driver: " + (TrainManager.PlayerTrain.Handles.Reverser.Driver == -1 ? "B" : TrainManager.PlayerTrain.Handles.Reverser.Driver == 1 ? "F" : "N");
-				if (TrainManager.PlayerTrain.Specs.SingleHandle)
+				string t = "driver: " + (TrainManager.PlayerTrain.Handles.Reverser.Driver == TrainManager.ReverserPosition.Reverse ? "B" : TrainManager.PlayerTrain.Handles.Reverser.Driver == TrainManager.ReverserPosition.Forwards ? "F" : "N");
+				if (TrainManager.PlayerTrain.Handles.SingleHandle)
 				{
 					t += " - " + (TrainManager.PlayerTrain.Handles.EmergencyBrake.Driver ? "EMG" : TrainManager.PlayerTrain.Handles.Brake.Driver != 0 ? "B" + TrainManager.PlayerTrain.Handles.Brake.Driver.ToString(Culture) : TrainManager.PlayerTrain.Handles.HoldBrake.Driver ? "HLD" : TrainManager.PlayerTrain.Handles.Power.Driver != 0 ? "P" + TrainManager.PlayerTrain.Handles.Power.Driver.ToString(Culture) : "N");
 				}
@@ -68,6 +78,11 @@ namespace OpenBve
 					t += " - " + (TrainManager.PlayerTrain.Handles.Power.Driver != 0 ? "P" + TrainManager.PlayerTrain.Handles.Power.Driver.ToString(Culture) : "N");
 					t += " - " + (TrainManager.PlayerTrain.Handles.EmergencyBrake.Driver ? "EMG" : TrainManager.PlayerTrain.Handles.Brake.Driver != 0 ? "B" + TrainManager.PlayerTrain.Handles.Brake.Driver.ToString(Culture) : TrainManager.PlayerTrain.Handles.HoldBrake.Driver ? "HLD" : "N");
 				}
+				if (TrainManager.PlayerTrain.Handles.HasLocoBrake)
+				{
+					t += " - " + (TrainManager.PlayerTrain.Handles.LocoBrake.Driver != 0 ? "L" + TrainManager.PlayerTrain.Handles.LocoBrake.Driver.ToString(Culture) : "N");
+				}
+				
 				DrawString(Fonts.SmallFont, t, new System.Drawing.Point(2, Screen.Height - 18), TextAlignment.TopLeft, Color128.White, true);
 			}
 			// debug information
@@ -91,9 +106,14 @@ namespace OpenBve
 			{
 				mass += TrainManager.PlayerTrain.Cars[i].Specs.MassCurrent;
 			}
+			int hours = (int)Game.SecondsSinceMidnight / 3600, 
+				remainder = (int)Game.SecondsSinceMidnight % 3600, 
+				minutes = remainder / 60, 
+				seconds = remainder % 60;
 			string[] Lines = new string[] {
 				"=system",
 				"fps: " + Game.InfoFrameRate.ToString("0.0", Culture) + (MainLoop.LimitFramerate ? " (low cpu)" : ""),
+				"time:" + hours.ToString("00") +  ":" + minutes.ToString("00") + ":" + seconds.ToString("00"),
 				"score: " + Game.CurrentScore.CurrentValue.ToString(Culture),
 				"",
 				"=train",
@@ -167,6 +187,62 @@ namespace OpenBve
 				{
 					x += 280.0;
 					y = 4.0;
+				}
+				else
+				{
+					y += 14.0;
+				}
+			}
+		}
+
+		private static void RenderATSDebugOverlay()
+		{
+			System.Globalization.CultureInfo Culture = System.Globalization.CultureInfo.InvariantCulture;
+			// debug
+			GL.Color4(0.5, 0.5, 0.5, 0.5);
+			RenderOverlaySolid(0.0f, 0.0f, (double)Screen.Width, (double)Screen.Height);
+			string[] Lines;
+			if (TrainManager.PlayerTrain.Plugin.Panel.Length > 0)
+			{
+				Lines = new string[TrainManager.PlayerTrain.Plugin.Panel.Length + 2];
+				Lines[0] = "=ATS Plugin Variables";
+				Lines[1] = "";
+				for (int i = 2; i < TrainManager.PlayerTrain.Plugin.Panel.Length + 2; i++)
+				{
+					Lines[i] = (i -2).ToString("000") + " : " + TrainManager.PlayerTrain.Plugin.Panel[i - 2];
+				}
+			}
+			else
+			{
+				Lines = new string[3];
+				Lines[0] = "=ATS Plugin Variables";
+				Lines[1] = "";
+				Lines[2] = "No ATS plugin variables set."; 
+			}
+			double x = 4.0;
+			double y = 4.0;
+			for (int i = 0; i < Lines.Length; i++)
+			{
+				if (Lines[i].Length != 0)
+				{
+					if (Lines[i][0] == '=')
+					{
+						string text = Lines[i].Substring(1);
+						System.Drawing.Size size = MeasureString(Fonts.SmallFont, text);
+						GL.Color4(0.35f, 0.65f, 0.90f, 0.8f);
+						RenderOverlaySolid(x, y, x + size.Width + 6.0f, y + size.Height + 2.0f);
+						DrawString(Fonts.SmallFont, text, new System.Drawing.Point((int)x + 3, (int)y), TextAlignment.TopLeft, Color128.White);
+					}
+					else
+					{
+						DrawString(Fonts.SmallFont, Lines[i], new System.Drawing.Point((int)x, (int)y), TextAlignment.TopLeft, Color128.White, true);
+					}
+					y += 14.0;
+					if (y > Screen.Height - 20.0)
+					{
+						y = 32.0;
+						x += 80.0;
+					}
 				}
 				else
 				{
