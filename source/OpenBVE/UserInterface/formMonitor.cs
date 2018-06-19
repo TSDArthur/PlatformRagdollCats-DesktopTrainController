@@ -154,9 +154,20 @@ namespace OpenBve
 			string value = this.ReadSerialData();
 			taskRecord += value;
 			if (taskRecord.Substring(taskRecord.Length-1,1)!="!") return;
+			int st = 0, ed = 0;
+			for (int i = 0; i < taskRecord.Length; i++)
+			{
+				if (taskRecord.Substring(i, 1) == "#") st = i;
+			}
+			for (int i = 0; i < taskRecord.Length; i++)
+			{
+				if (taskRecord.Substring(i, 1) == "!") ed = i;
+			}
+			if (ed <= st) return;
+			taskRecord = taskRecord.Substring(st, ed - st + 1);
 			Action<string> setValueAction = text =>
 			{
-				this.txtBoxRecieve.Text = text;
+				this.txtBoxRecieve.Text = taskRecord;
 				doEvents(taskRecord);
 				listBoxTsk.Items.Insert(0, DateTime.Now.ToString() + " >> Recieve:" + taskRecord);
 				taskRecord = String.Empty;

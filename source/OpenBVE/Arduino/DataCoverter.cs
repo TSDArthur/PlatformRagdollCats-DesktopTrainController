@@ -86,37 +86,41 @@ namespace OpenBve
 		/// </summary>
 		static public void RecieceFrame(string data)
 		{
-			int st = 0, ed = 0;
-			int strLength = 0;
-			int operationNum = 0;
-			string[] operation = new string[TRAIN_DATA_NUMBER];
-			strLength = data.Length;
-			for (int i = 0; i < strLength; i++)
+			try
 			{
-				if (data.Substring(i, 1) == START_SYM)
+				int st = 0, ed = 0;
+				int strLength = 0;
+				int operationNum = 0;
+				string[] operation = new string[TRAIN_DATA_NUMBER];
+				strLength = data.Length;
+				for (int i = 0; i < strLength; i++)
 				{
-					st = i;
-					break;
+					if (data.Substring(i, 1) == START_SYM)
+					{
+						st = i;
+						break;
+					}
+				}
+				//
+				for (int i = 0; i < strLength; i++)
+				{
+					if (data.Substring(i, 1) == END_SYM)
+					{
+						ed = i;
+						break;
+					}
+				}
+				if (ed < st) return;
+				data = data.Substring(st + 1, ed - st - 1);
+				operation = data.Split(FILTER);
+				operationNum = operation.Length;
+				for (int i = 0; i < operationNum; i++)
+				{
+					trainData[i] = Int32.Parse(operation[i]);
+					SendControlToTrain(i, Int32.Parse(operation[i]));
 				}
 			}
-			//
-			for (int i = 0; i < strLength; i++)
-			{
-				if (data.Substring(i, 1) == END_SYM)
-				{
-					ed = i;
-					break;
-				}
-			}
-			if (ed < st) return;
-			data = data.Substring(st + 1, ed - st - 1);
-			operation = data.Split(FILTER);
-			operationNum = operation.Length;
-			for (int i = 0; i < operationNum; i++)
-			{
-				trainData[i] = Int32.Parse(operation[i]);
-				SendControlToTrain(i, Int32.Parse(operation[i]));
-			}
+			catch(Exception ex) { }
 		}
 		//
 		/// <summary>

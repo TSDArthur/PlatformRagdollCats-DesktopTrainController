@@ -1,37 +1,33 @@
 /*Desktop Train Controller
-	===========================================
-	--Board: Arduino DUE
-	--Author: TSDArthur
-	--Pages: http://github.com/tsdarthur
-	--Version: 1.0
-	--Simulator: OpenBVE
-	===========================================
-	--Note:
-	External Interrupts:
-	All pins.
-	===========================================
-	--Devices:
-	Type:0.SWITCH_C -> CHANGE
-	Type:1.SWITCH_F -> FALLING
-	Type:3.ENCODER -> CHANGE (in developing)
-	===========================================
-	--Train:
-	0.SPEED -> INT
-	1.REVERSER -> INT
-	2.POWER -> U8
-	3.BRAKE -> U8
-	4.SIGNAL -> INT
-	5.SIGNAL_DISTANCE -> INT
-	6.SPEED_LIMIT -> INT
-	7.HORN -> BOOL
-	8.SPEED_CONST -> INT
-	9.MASTER_KEY -> BOOL
-	===========================================
-	Never mind scandal and liber!
+===========================================
+--Board: Arduino DUE
+--Version: 1.0
+--Simulator: OpenBVE
+===========================================
+--Note:
+External Interrupts:
+All pins.
+===========================================
+--Devices:
+Type:0.SWITCH_C -> CHANGE
+Type:1.SWITCH_F -> FALLING
+Type:3.ENCODER -> CHANGE (in developing)
+===========================================
+--Train:
+0.SPEED -> INT
+1.REVERSER -> INT
+2.POWER -> U8
+3.BRAKE -> U8
+4.SIGNAL -> INT
+5.SIGNAL_DISTANCE -> INT
+6.SPEED_LIMIT -> INT
+7.HORN -> BOOL
+8.SPEED_CONST -> INT
+9.MASTER_KEY -> BOOL
+===========================================
+Never mind scandal and liber!
 */
-
-#include "DueTimer.h"
-//
+//c
 #define SWITCH_C 0
 #define SWITCH_F 1
 #define ENCODER 2
@@ -99,6 +95,7 @@
 //HMI
 #define HMI_SCRIPT_NUM 11
 #define HMI_END_SYM 0xFF
+#define MAX_SERIAL_STEP 7
 //PC
 #define FILTER '|'
 #define START_SYM '#'
@@ -106,7 +103,7 @@
 #define NO_DATA ""
 #define RECIEVE_DELAY 2
 #define SEND_DELAY 100
-#define TIMER_TICK 100
+#define TIMER_TICK 1000000
 //
 #define EMPTY_QUERY 0
 #define QUEUE_CAP 20
@@ -156,6 +153,7 @@ const String HMIScript[HMI_SCRIPT_NUM] = { "spd.val=", "reserver.val=", "pwr.val
 const int HMIMap[TRAIN_DATA_NUMBER] = {SPEED, REVERSER, POWER, BRAKE, SIGNAL, SIGNAL_DISTANCE, SPEED_LIMIT, HORN, SPEED_CONST, MASTER_KEY, EMERGENCY};
 const int PCComMap[TRAIN_DATA_NUMBER] = {SPEED, REVERSER, POWER, BRAKE, SIGNAL, SIGNAL_DISTANCE, SPEED_LIMIT, HORN, SPEED_CONST, MASTER_KEY, EMERGENCY};
 //
+int nowHMISend;
 
 class TrainManager
 {
@@ -175,8 +173,7 @@ public:
 	//!!for BOOL use SetReversal
 	void SetData(int dataID, int value)
 	{
-		if (deviceType[dataID])
-			trainData[dataID] = value;
+		trainData[dataID] = value;
 	}
 
 	void SetReversal(int dataID)
@@ -221,7 +218,7 @@ public:
 	//get state
 	int GetDeviceState(int deviceID, const int devicePins[])
 	{
-		return digitalRead(devicePins[deviceID]) ? ACTIVE : NO_ACTIVE;
+		return digitalRead(devicePins[deviceID]) == LOW ? ACTIVE : NO_ACTIVE;
 	}
 	//check state
 	int IsReady(const int devicePins[])
@@ -331,21 +328,24 @@ public:
 		if (!sendData.length())return false;
 		//send data to PC
 		Serial.print(sendData);
-		delay(SEND_DELAY);
 		return true;
 	}
 	//send data to HMI
 	bool SendDataToHMI(TrainManager &p)
 	{
 		String sender = NO_DATA;
-		for (int i = 0; i < TRAIN_DATA_NUMBER; i++)
+		int sendEd = 0;
+		if (nowHMISend > TRAIN_DATA_NUMBER)nowHMISend = 0;
+		sendEd = nowHMISend + MAX_SERIAL_STEP > TRAIN_DATA_NUMBER ? TRAIN_DATA_NUMBER : nowHMISend + MAX_SERIAL_STEP;
+		for (int i = nowHMISend; i < sendEd; i++)
 		{
 			sender = HMIScript[HMIMap[i]] + p.GetData(PCComMap[i]);
-			if (!sender.length())return false;
+			//if (!sender.length())return false;
 			Serial1.print(sender);
 			for (int j = 0; j < 3; j++)Serial1.write(HMI_END_SYM);
 		}
 		//
+		nowHMISend += MAX_SERIAL_STEP;
 		return true;
 	}
 };
@@ -370,7 +370,11 @@ public:
 	//
 	void GetQueueTop(TrainManager &p)
 	{
-		if (!taskCnt)p = currentData;
+		if (!taskCnt)
+		{
+			p = currentData;
+			return;
+		}
 		p = Timeline[0];
 		//repos
 		for (int i = 1; i < taskCnt; i++)
@@ -413,6 +417,7 @@ void TimerInterrupt()
 	Communication.RecieveDataFromPC(currentData);
 	Communication.SendDataToHMI(currentData);
 	Devices.PinsRrfresh(currentData);
+	Queue.UpdateLastState(currentData);
 	Timer.start();
 }
 
@@ -587,13 +592,27 @@ void interrupt7()
 
 void setup()
 {
+	Serial.begin(115200);
+	Serial1.begin(115200);
 	//set Timer
+	nowHMISend = 0;
+	//
 	Timer.attachInterrupt(TimerInterrupt);
 	Timer.setPeriod(TIMER_TICK);
-	Timer.start();
+	//Timer.start();
 }
 
 void loop()
 {
-	/*Interrupts ready!*/
+	Queue.GetQueueTop(currentData);
+	currentData.SetSended();
+	Communication.SendDataToPC(currentData);
+	delay(500);
+	Communication.RecieveDataFromPC(currentData);
+	delay(500);
+	Communication.SendDataToHMI(currentData);
+	delay(500);
+	Devices.PinsRrfresh(currentData);
+	delay(500);
+	Queue.UpdateLastState(currentData);
 }
