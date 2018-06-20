@@ -169,7 +169,7 @@ namespace OpenBve
 			{
 				this.txtBoxRecieve.Text = taskRecord;
 				doEvents(taskRecord);
-				listBoxTsk.Items.Insert(0, DateTime.Now.ToString() + " >> Recieve:" + taskRecord);
+				listBoxTsk.Items.Insert(0, DateTime.Now.ToString() + " >> Recieve: " + taskRecord);
 				taskRecord = String.Empty;
 			};
 
@@ -189,9 +189,9 @@ namespace OpenBve
 			DataCoverter.RecieceFrame(frame);
 			port.Write(mcuFrame);
 			this.txtBoxSend.Text = mcuFrame;
-			this.listBoxTsk.Items.Insert(0, DateTime.Now.ToString() + " >> Send:" + mcuFrame);
+			this.listBoxTsk.Items.Insert(0, DateTime.Now.ToString() + " >> Send: " + mcuFrame);
 			this.listBoxTsk.SelectedIndex = this.listBoxTsk.Items.Count - 1;
-			if (listBoxTsk.Items.Count > 25) listBoxTsk.Items.Clear();
+			if (listBoxTsk.Items.Count > 15) listBoxTsk.Items.Clear();
 			return;
 		}
 

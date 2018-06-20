@@ -33,6 +33,13 @@ Never mind scandal and liber!
 #define ENCODER 2
 #define DIG_OUT 3
 #define ANALOG_OUT 4
+#define DELAY_TIME 10
+#define IGNORE -1
+#define COUNT 2
+#define KEY_UP 0
+#define KEY_WAITTING 1
+#define KEY_DOWN 2
+#define SA_COUNT 5000
 //
 #define SPEED_MIN 0
 #define SPEED_MAX 400
@@ -90,7 +97,8 @@ Never mind scandal and liber!
 #define SPEED_CONST 8
 #define MASTER_KEY 9
 #define EMERGENCY 10
-#define UPDATE_LAST_NUM 7
+#define UPDATE_LAST_NUM 4
+#define UPDATE_AP 2
 #define NO_BINDING -1
 //HMI
 #define HMI_SCRIPT_NUM 11
@@ -107,7 +115,11 @@ Never mind scandal and liber!
 //
 #define EMPTY_QUERY 0
 #define QUEUE_CAP 20
-#define _QUE TrainManager(dataDefault)
+//
+#define NOP do { __asm__ __volatile__ ("nop"); } while (0)
+
+#include "DueTimer.h"
+
 typedef void (*funcPoint)();
 //
 /*
@@ -126,28 +138,30 @@ typedef void (*funcPoint)();
 	===========================================
 */
 
-void interrupt0();
-void interrupt1();
-void interrupt2();
-void interrupt3();
-void interrupt4();
-void interrupt5();
-void interrupt6();
-void interrupt7();
-void TimerInterrupt();
+void process0();
+void process1();
+void process2();
+void process3();
+void process4();
+void process5();
+void process6();
+void process7();
 
 //change device type here
-const int deviceType[DEVICE_NUMBER] = {SWITCH_F, SWITCH_F, SWITCH_C, SWITCH_C, SWITCH_C, SWITCH_C, SWITCH_C, SWITCH_C};
+const int deviceType[DEVICE_NUMBER] = {SWITCH_F, SWITCH_F, SWITCH_C, SWITCH_C, SWITCH_C, SWITCH_F, SWITCH_C, SWITCH_C};
 //change functions here
 const int devicePinsType[] = {INPUT_PULLUP, INPUT_PULLUP, INPUT_PULLUP, OUTPUT};
-const funcPoint Interrputs[DEVICE_NUMBER] = {interrupt0, interrupt1, interrupt2, interrupt3, interrupt4, interrupt5, interrupt6, interrupt7};
+const funcPoint Process[DEVICE_NUMBER] = {process0, process1, process2, process3, process4, process5, process6, process7};
 //all use PULL_UP gpio mode
 const int devicePins[DEVICE_NUMBER] = {30, 31, 32, 33, 34, 35, 36, 37};
+int deviceLastState[DEVICE_NUMBER] = {KEY_UP, KEY_UP, KEY_UP, KEY_UP, KEY_UP, KEY_UP, KEY_UP, KEY_UP};
+int deviceSADur[DEVICE_NUMBER] = {0, 0, 0, 0, 0, 0, 0, 0};
 //train data id
 const int dataDefault[TRAIN_DATA_NUMBER] = {SPEED_MIN, REVERSER_NEUTRAL, POWER_MIN, BRAKE_MIN, SIGNAL_RED, SIGNAL_DISTANCE_DE, SPEED_LIMIT_DEF, HORN_OFF, SPEED_CONST_MIN, MASTER_KEY_OFF, EMERGENCY_OFF};
 const int dataType[TRAIN_DATA_NUMBER] = {_INT, _INT, _INT, _INT, _INT, _INT, _INT, _BOOL, _INT, _BOOL, _BOOL};
+const int recieveToUpdate[UPDATE_LAST_NUM] = {SPEED, SIGNAL, SIGNAL_DISTANCE, SPEED_LIMIT};
+const int recieveWhenAP[UPDATE_AP] = {POWER, BRAKE};
 const int dataBinding[TRAIN_DATA_NUMBER] = {NO_BINDING, NO_BINDING, NO_BINDING, NO_BINDING, NO_BINDING, NO_BINDING, NO_BINDING, NO_BINDING, NO_BINDING, NO_BINDING, NO_BINDING};
-const int recieveToUpdate[UPDATE_LAST_NUM] = {SPEED, POWER, BRAKE, REVERSER, SIGNAL, SIGNAL_DISTANCE, SPEED_LIMIT};
 //communication
 const String HMIScript[HMI_SCRIPT_NUM] = { "spd.val=", "reserver.val=", "pwr.val=", "brake.val=", "sig.val=", "sigdis.val=", "spdlim.val=", "horn.val=", "speedconst.val=", "mstkey.val=", "emg.val="};
 const int HMIMap[TRAIN_DATA_NUMBER] = {SPEED, REVERSER, POWER, BRAKE, SIGNAL, SIGNAL_DISTANCE, SPEED_LIMIT, HORN, SPEED_CONST, MASTER_KEY, EMERGENCY};
@@ -160,40 +174,16 @@ class TrainManager
 public:
 	int trainData[TRAIN_DATA_NUMBER];
 	//did it has been sended
-	bool isSended;
 	TrainManager(const int dataDefault[])
 	{
 		//set default data to Train Manager
 		for (int i = 0; i < TRAIN_DATA_NUMBER; i++)
 			trainData[i] = dataDefault[i];
-		//reset isSended
-		isSended = false;
 	}
-	//!!for INT use SetData
-	//!!for BOOL use SetReversal
+	//
 	void SetData(int dataID, int value)
 	{
 		trainData[dataID] = value;
-	}
-
-	void SetReversal(int dataID)
-	{
-		trainData[dataID] = !trainData[dataID];
-	}
-	//
-	void SetNotSended()
-	{
-		isSended = false;
-	}
-	//
-	void SetSended()
-	{
-		isSended = true;
-	}
-	//
-	bool IsSended()
-	{
-		return isSended;
 	}
 	//get train data
 	int GetData(int dataID)
@@ -205,27 +195,11 @@ public:
 class DevicesManager
 {
 public:
-	DevicesManager(const int devicePins[], const int deviceType[], const int devicePinsType[], const funcPoint Interrupts[])
+	DevicesManager(const int devicePins[], const int deviceType[], const int devicePinsType[])
 	{
 		//define gpio mode
 		for (int i = 0; i < DEVICE_NUMBER; i++)
 			pinMode(devicePins[i], devicePinsType[deviceType[i]]);
-		//attach Interrupts
-		for (int i = 0; i < DEVICE_NUMBER; i++)
-			if (devicePinsType[deviceType[i]] != OUTPUT)
-				attachInterrupt(devicePins[i], Interrupts[i], deviceType[i] == SWITCH_F ? FALLING : CHANGE);
-	}
-	//get state
-	int GetDeviceState(int deviceID, const int devicePins[])
-	{
-		return digitalRead(devicePins[deviceID]) == LOW ? ACTIVE : NO_ACTIVE;
-	}
-	//check state
-	int IsReady(const int devicePins[])
-	{
-		for (int i = 0; i < DEVICE_NUMBER; i++)
-			if (GetDeviceState(i, devicePins) == ACTIVE)return NO_READY;
-		return READY;
 	}
 	//apply to pins
 	void PinsRrfresh(TrainManager &p)
@@ -240,15 +214,77 @@ public:
 					digitalWrite(devicePins[dataBinding[i]], value <= OFF ? OFF : ON);
 			}
 	}
+	//
+	int GetState(int deviceID)
+	{
+		if (deviceType[deviceID] == SWITCH_F)
+		{
+			if (digitalRead(devicePins[deviceID]) == LOW)
+			{
+				if (deviceLastState[deviceID] == KEY_UP)
+				{
+					deviceSADur[deviceID] = 0;
+					deviceLastState[deviceID] = KEY_WAITTING;
+				}
+				else if (deviceLastState[deviceID] == KEY_WAITTING)
+				{
+					deviceSADur[deviceID]++;
+					if (deviceSADur[deviceID] >= SA_COUNT)
+					{
+						deviceSADur[deviceID] = 0;
+						deviceLastState[deviceID] = KEY_DOWN;
+						return ACTIVE;
+					}
+				}
+			}
+			else
+			{
+				deviceLastState[deviceID] = KEY_UP;
+				return NO_ACTIVE;
+			}
+		}
+		else if (deviceType[deviceID] == SWITCH_C)
+		{
+			if (digitalRead(devicePins[deviceID]) == LOW)
+			{
+				if (deviceLastState[deviceID] == KEY_UP)
+				{
+					deviceSADur[deviceID] = 0;
+					deviceLastState[deviceID] = KEY_WAITTING;
+				}
+				else if (deviceLastState[deviceID] == KEY_WAITTING)
+				{
+					deviceSADur[deviceID]++;
+					if (deviceSADur[deviceID] >= SA_COUNT)
+					{
+						deviceSADur[deviceID] = 0;
+						deviceLastState[deviceID] = KEY_DOWN;
+						return ACTIVE;
+					}
+				}
+				else if (deviceLastState[deviceID] == KEY_DOWN)return ACTIVE;
+			}
+			else
+			{
+				deviceLastState[deviceID] = KEY_UP;
+				return NO_ACTIVE;
+			}
+		}
+		return NO_ACTIVE;
+	}
+	//
+	void delay_(int ms)
+	{
+		for (int i = 0; i < ms; i++)
+		{
+			for (ulong j = 0; j < 1985; j++) NOP;
+		}
+	}
 };
 
-TrainManager Timeline[QUEUE_CAP] = {_QUE, _QUE, _QUE, _QUE,
-                                    _QUE, _QUE, _QUE, _QUE,
-                                    _QUE, _QUE, _QUE, _QUE,
-                                    _QUE, _QUE, _QUE, _QUE,
-                                    _QUE, _QUE, _QUE, _QUE
-                                   };
+DevicesManager Devices(devicePins, deviceType, devicePinsType);
 TrainManager currentData(dataDefault);
+TrainManager processData(dataDefault);
 
 class CommunicationManager
 {
@@ -276,8 +312,8 @@ public:
 		{
 			char currentRead = char(Serial.read());
 			recieveData += currentRead;
-			if (currentRead == END_SYM)break;
-			delay(RECIEVE_DELAY);
+			Devices.delay_(10);
+			//if (currentRead == END_SYM)break;
 		}
 		length = recieveData.length();
 		//no data exit
@@ -352,74 +388,36 @@ public:
 
 class TaskManager
 {
-private:
-	int taskCnt;
 public:
 	TaskManager()
 	{
-		taskCnt = 0;
+		currentData = processData;
 	}
 	//
 	void AddProc(TrainManager &p)
 	{
-		if (taskCnt >= QUEUE_CAP)
-			Timeline[taskCnt - 1] = p;
-		//
-		Timeline[taskCnt++] = p;
-	}
-	//
-	void GetQueueTop(TrainManager &p)
-	{
-		if (!taskCnt)
-		{
-			p = currentData;
-			return;
-		}
-		p = Timeline[0];
-		//repos
-		for (int i = 1; i < taskCnt; i++)
-			Timeline[i - 1] = Timeline[i];
-		taskCnt--;
+		currentData = p;
 	}
 	//
 	void GetLastState(TrainManager &p)
 	{
-		if (!taskCnt)p = currentData;
-		else p = Timeline[taskCnt - 1];
+		p = currentData;
 	}
 	//
-	void SetLastState(TrainManager &p)
+	void UpdateData(TrainManager &p)
 	{
-		if (!taskCnt)currentData = p;
-		else Timeline[taskCnt - 1] = p;
-	}
-	//
-	void UpdateLastState(TrainManager &p)
-	{
-		if (!taskCnt)
-			p.SetNotSended();
-		else
-			for (int i = 0; i < UPDATE_LAST_NUM; i++)
-				Timeline[taskCnt - 1].SetData(recieveToUpdate[i], p.GetData(recieveToUpdate[i]));
+		for (int i = 0; i < UPDATE_LAST_NUM; i++)
+			p.SetData(recieveToUpdate[i], currentData.GetData(recieveToUpdate[i]));
+		if (currentData.GetData(SPEED_CONST) != SPEED_CONST_MIN)
+		{
+			for (int i = 0; i < UPDATE_AP; i++)
+				p.SetData(recieveWhenAP[i], currentData.GetData(recieveWhenAP[i]));
+		}
 	}
 };
 
-DevicesManager Devices(devicePins, deviceType, devicePinsType, Interrputs);
 CommunicationManager Communication;
 TaskManager Queue;
-
-void TimerInterrupt()
-{
-	Timer.stop();
-	Queue.GetQueueTop(currentData);
-	currentData.SetSended();
-	Communication.SendDataToPC(currentData);
-	Communication.RecieveDataFromPC(currentData);
-	Communication.SendDataToHMI(currentData);
-	Devices.PinsRrfresh(currentData);
-	Queue.UpdateLastState(currentData);
-	Timer.start();
-}
 
 /*
 	PowerUp:interrupt0
@@ -432,187 +430,172 @@ void TimerInterrupt()
 	MasterKey:interrupt7
 */
 
-void interrupt0()
+void process0()
 {
-	TrainManager tmp(dataDefault);
-	Queue.GetLastState(tmp);
-	//single handle
-	if (tmp.GetData(EMERGENCY) || !tmp.GetData(MASTER_KEY) || tmp.GetData(REVERSER) == REVERSER_NEUTRAL)return;
-	//
-	int currentBrake = tmp.GetData(BRAKE);
-	int currentPower = tmp.GetData(POWER);
-	if (currentBrake > BRAKE_MIN)
+	//SWITCH_F
+	if (processData.GetData(MASTER_KEY) == MASTER_KEY_OFF ||
+	        processData.GetData(EMERGENCY) == EMERGENCY_ON ||
+	        processData.GetData(REVERSER) == REVERSER_NEUTRAL)return;
+	int deviceState = Devices.GetState(0);
+	if (deviceState == ACTIVE)
 	{
-		tmp.SetData(BRAKE, currentBrake > BRAKE_MIN ? currentBrake - 1 : BRAKE_MIN);
-		tmp.SetData(POWER, POWER_MIN);
+		int currentBrake = processData.GetData(BRAKE);
+		int currentPower = processData.GetData(POWER);
+		if (currentBrake > BRAKE_MIN)
+		{
+			processData.SetData(BRAKE, currentBrake > BRAKE_MIN ? currentBrake - 1 : BRAKE_MIN);
+			processData.SetData(POWER, POWER_MIN);
+		}
+		else
+		{
+			processData.SetData(POWER, currentPower < POWER_MAX ? currentPower + 1 : POWER_MAX);
+			processData.SetData(BRAKE, BRAKE_MIN);
+		}
 	}
-	else
-	{
-		tmp.SetData(POWER, currentPower < POWER_MAX ? currentPower + 1 : POWER_MAX);
-		tmp.SetData(BRAKE, BRAKE_MIN);
-	}
-	if (tmp.IsSended())
-	{
-		tmp.SetNotSended();
-		Queue.AddProc(tmp);
-	}
-	else
-		Queue.SetLastState(tmp);
 	return;
 }
 
-void interrupt1()
+void process1()
 {
-	TrainManager tmp(dataDefault);
-	Queue.GetLastState(tmp);
-	//single handle
-	if (tmp.GetData(EMERGENCY) || !tmp.GetData(MASTER_KEY) || tmp.GetData(REVERSER) == REVERSER_NEUTRAL)return;
-	//
-	int currentBrake = tmp.GetData(BRAKE);
-	int currentPower = tmp.GetData(POWER);
-	if (currentPower > POWER_MIN)
+	if (processData.GetData(MASTER_KEY) == MASTER_KEY_OFF ||
+	        processData.GetData(EMERGENCY) == EMERGENCY_ON ||
+	        processData.GetData(REVERSER) == REVERSER_NEUTRAL)return;
+	int deviceState = Devices.GetState(1);
+	if (deviceState == ACTIVE)
 	{
-		tmp.SetData(POWER, currentPower > POWER_MIN ? currentPower - 1 : POWER_MIN);
-		tmp.SetData(BRAKE, BRAKE_MIN);
+		int currentBrake = processData.GetData(BRAKE);
+		int currentPower = processData.GetData(POWER);
+		if (currentPower > POWER_MIN)
+		{
+			processData.SetData(POWER, currentPower > POWER_MIN ? currentPower - 1 : POWER_MIN);
+			processData.SetData(BRAKE, BRAKE_MIN);
+		}
+		else
+		{
+			processData.SetData(BRAKE, currentBrake < BRAKE_MAX ? currentBrake + 1 : BRAKE_MAX);
+			processData.SetData(POWER, POWER_MIN);
+		}
 	}
-	else
-	{
-		tmp.SetData(BRAKE, currentBrake < BRAKE_MAX ? currentBrake + 1 : BRAKE_MAX);
-		tmp.SetData(POWER, POWER_MIN);
-	}
-	if (tmp.IsSended())
-	{
-		tmp.SetNotSended();
-		Queue.AddProc(tmp);
-	}
-	else
-		Queue.SetLastState(tmp);
 	return;
 }
 
-void interrupt2()
+void process2()
 {
-	TrainManager tmp(dataDefault);
-	Queue.GetLastState(tmp);
-	if (tmp.GetData(EMERGENCY) || !tmp.GetData(MASTER_KEY) || tmp.GetData(POWER) != POWER_MIN)return;
-	if (Devices.GetDeviceState(2, devicePins) == ACTIVE)tmp.SetData(REVERSER, REVERSER_FORWARD);
-	else tmp.SetData(REVERSER, REVERSER_NEUTRAL);
-	if (tmp.IsSended())
+	if (processData.GetData(MASTER_KEY) == MASTER_KEY_OFF ||
+	        processData.GetData(EMERGENCY) == EMERGENCY_ON)return;
+	int deviceState = Devices.GetState(2);
+	if (deviceState == ACTIVE)
 	{
-		tmp.SetNotSended();
-		Queue.AddProc(tmp);
+		processData.SetData(REVERSER, REVERSER_FORWARD);
 	}
 	else
-		Queue.SetLastState(tmp);
+	{
+		processData.SetData(REVERSER, REVERSER_NEUTRAL);
+	}
 	return;
 }
 
-void interrupt3()
+void process3()
 {
-	TrainManager tmp(dataDefault);
-	Queue.GetLastState(tmp);
-	if (tmp.GetData(EMERGENCY) || !tmp.GetData(MASTER_KEY) || tmp.GetData(POWER) != POWER_MIN)return;
-	if (Devices.GetDeviceState(3, devicePins) == ACTIVE)tmp.SetData(REVERSER, REVERSER_FORWARD);
-	else tmp.SetData(REVERSER, REVERSER_NEUTRAL);
-	if (tmp.IsSended())
+	if (processData.GetData(MASTER_KEY) == MASTER_KEY_OFF ||
+	        processData.GetData(EMERGENCY) == EMERGENCY_ON)return;
+	int deviceState = Devices.GetState(3);
+	if (deviceState == ACTIVE)
 	{
-		tmp.SetNotSended();
-		Queue.AddProc(tmp);
+		processData.SetData(REVERSER, REVERSER_BACKWARD);
 	}
-	else
-		Queue.SetLastState(tmp);
 	return;
 }
 
-void interrupt4()
+void process4()
 {
-	TrainManager tmp(dataDefault);
-	Queue.GetLastState(tmp);
-	if (!tmp.GetData(MASTER_KEY))return;
-	if (Devices.GetDeviceState(4, devicePins) == ACTIVE)tmp.SetData(HORN, HORN_ON);
-	else tmp.SetData(HORN, HORN_OFF);
-	if (tmp.IsSended())
+	if (processData.GetData(MASTER_KEY) == MASTER_KEY_OFF)return;
+	int deviceState = Devices.GetState(4);
+	if (deviceState == ACTIVE)
 	{
-		tmp.SetNotSended();
-		Queue.AddProc(tmp);
+		processData.SetData(HORN, HORN_ON);
 	}
 	else
-		Queue.SetLastState(tmp);
+	{
+		processData.SetData(HORN, HORN_OFF);
+	}
 	return;
 }
 
-void interrupt5()
+void process5()
 {
-	TrainManager tmp(dataDefault);
-	Queue.GetLastState(tmp);
-	if (tmp.GetData(EMERGENCY) || !tmp.GetData(MASTER_KEY) || !tmp.GetData(SPEED))return;
-	tmp.SetReversal(SPEED_CONST);
-	if (tmp.IsSended())
+	if (processData.GetData(MASTER_KEY) == MASTER_KEY_OFF ||
+	        processData.GetData(EMERGENCY) == EMERGENCY_ON ||
+	        processData.GetData(REVERSER) == REVERSER_NEUTRAL)return;
+	int deviceState = Devices.GetState(5);
+	if (deviceState == ACTIVE)
 	{
-		tmp.SetNotSended();
-		Queue.AddProc(tmp);
+		if (processData.GetData(SPEED_CONST) == SPEED_CONST_MIN)
+			processData.SetData(SPEED_CONST, processData.GetData(SPEED));
+		else
+			processData.SetData(SPEED_CONST, SPEED_CONST_MIN);
 	}
-	else
-		Queue.SetLastState(tmp);
 	return;
 }
 
-void interrupt6()
+void process6()
 {
-	TrainManager tmp(dataDefault);
-	Queue.GetLastState(tmp);
-	if (!tmp.GetData(MASTER_KEY))return;
-	if (Devices.GetDeviceState(6, devicePins) == ACTIVE)tmp.SetData(EMERGENCY, EMERGENCY_ON);
-	else tmp.SetData(EMERGENCY, EMERGENCY_OFF);
-	if (tmp.IsSended())
+	if (processData.GetData(MASTER_KEY) == MASTER_KEY_OFF)return;
+	int deviceState = Devices.GetState(6);
+	if (deviceState == ACTIVE)
 	{
-		tmp.SetNotSended();
-		Queue.AddProc(tmp);
+		processData.SetData(EMERGENCY, EMERGENCY_ON);
 	}
 	else
-		Queue.SetLastState(tmp);
+	{
+		processData.SetData(EMERGENCY, EMERGENCY_OFF);
+	}
 	return;
 }
 
-void interrupt7()
+void process7()
 {
-	TrainManager tmp(dataDefault);
-	Queue.GetLastState(tmp);
-	if (Devices.GetDeviceState(7, devicePins) == ACTIVE)tmp.SetData(MASTER_KEY, MASTER_KEY_ON);
-	else tmp.SetData(MASTER_KEY, MASTER_KEY_OFF);
-	if (tmp.IsSended())
+	int deviceState = Devices.GetState(7);
+	if (deviceState == ACTIVE)
 	{
-		tmp.SetNotSended();
-		Queue.AddProc(tmp);
+		processData.SetData(MASTER_KEY, MASTER_KEY_ON);
 	}
 	else
-		Queue.SetLastState(tmp);
+	{
+		processData.SetData(MASTER_KEY, MASTER_KEY_OFF);
+	}
 	return;
+}
+
+void TimerInterrupt()
+{
+	Timer1.stop();
+	Communication.SendDataToPC(currentData);
+	Devices.delay_(100);
+	Communication.RecieveDataFromPC(currentData);
+	Devices.delay_(100);;
+	Communication.SendDataToHMI(currentData);
+	Devices.delay_(50);
+	Devices.PinsRrfresh(currentData);
+	Devices.delay_(50);
+	Timer1.start();
 }
 
 void setup()
 {
 	Serial.begin(115200);
 	Serial1.begin(115200);
-	//set Timer
 	nowHMISend = 0;
-	//
-	Timer.attachInterrupt(TimerInterrupt);
-	Timer.setPeriod(TIMER_TICK);
-	//Timer.start();
+	Timer1.attachInterrupt(TimerInterrupt);
+	Timer1.setPeriod(TIMER_TICK);
+	Timer1.start();
 }
 
 void loop()
 {
-	Queue.GetQueueTop(currentData);
-	currentData.SetSended();
-	Communication.SendDataToPC(currentData);
-	delay(500);
-	Communication.RecieveDataFromPC(currentData);
-	delay(500);
-	Communication.SendDataToHMI(currentData);
-	delay(500);
-	Devices.PinsRrfresh(currentData);
-	delay(500);
-	Queue.UpdateLastState(currentData);
+	//state automatic
+	Queue.GetLastState(processData);
+	for (int i = 0; i < DEVICE_NUMBER; i++)Process[i]();
+	Queue.UpdateData(processData);
+	Queue.AddProc(processData);
 }

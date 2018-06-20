@@ -148,6 +148,9 @@ namespace OpenBve
 				case EMERGENCY:
 					TrainMethods.SetEmergency(value);
 					break;
+				case SPEED_CONST:
+					TrainMethods.SetAutoPilot(value);
+					break;
 			}
 		}
 		//
