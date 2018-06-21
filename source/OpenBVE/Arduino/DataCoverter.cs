@@ -155,6 +155,7 @@ namespace OpenBve
 					{
 						if (value == 0) trainData[RC_MODE] = NORMAL;
 						else trainData[RC_MODE] = OVERWRITE;
+						if (value == TrainMethods.GetConstSpeed()) break;
 						TrainMethods.SetAutoPilot(value);
 						break;
 					}

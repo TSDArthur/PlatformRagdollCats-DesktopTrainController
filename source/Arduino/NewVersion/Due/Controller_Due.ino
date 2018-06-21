@@ -25,6 +25,8 @@ Type:3.ENCODER -> CHANGE (in developing)
 9.MASTER_KEY -> BOOL
 ===========================================
 */
+#include "DueTimer.h"
+//
 #define SWITCH_C 0
 #define SWITCH_F 1
 #define ENCODER 2
@@ -111,12 +113,11 @@ Type:3.ENCODER -> CHANGE (in developing)
 #define NO_DATA ""
 #define RECIEVE_DELAY 2
 #define SEND_DELAY 50
-#define TIMER_TICK 1000000
+#define TIMER_TICK 200000
 //
+#define VLOTREF 29
 #define NOP do { __asm__ __volatile__ ("nop"); } while (0)
-
-#include "DueTimer.h"
-
+//
 typedef void (*funcPoint)();
 //
 /*
@@ -205,6 +206,8 @@ public:
 		//define gpio mode
 		for (int i = 0; i < DEVICE_NUMBER; i++)
 			pinMode(devicePins[i], devicePinsType[deviceType[i]]);
+		pinMode(VLOTREF, OUTPUT);
+		digitalWrite(VLOTREF, HIGH);
 	}
 	//apply to pins
 	void PinsRrfresh(TrainManager &p)
@@ -382,8 +385,8 @@ public:
 		{
 			sender = HMIScript[HMIMap[i]] + p.GetData(HMIMap[i]);
 			if (!sender.length())return false;
-			Serial1.print(sender);
-			for (int j = 0; j < 3; j++)Serial1.write(HMI_END_SYM);
+			Serial2.print(sender);
+			for (int j = 0; j < 3; j++)Serial2.write(HMI_END_SYM);
 		}
 		//
 		nowHMISend += MAX_SERIAL_STEP;
@@ -596,7 +599,7 @@ void TimerInterrupt()
 void setup()
 {
 	Serial.begin(115200);
-	Serial1.begin(115200);
+	Serial2.begin(115200);
 	nowHMISend = 0;
 	Timer1.attachInterrupt(TimerInterrupt);
 	Timer1.setPeriod(TIMER_TICK);
