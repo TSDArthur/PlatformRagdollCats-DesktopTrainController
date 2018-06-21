@@ -1,5 +1,5 @@
 # Arduino Part
-website:https://tsdarthur.github.io/PlatformRagdollCats-DesktopTrainController/
+Website: https://tsdarthur.github.io/PlatformRagdollCats-DesktopTrainController/
 
 ## Controller Source Code - Readme
 
