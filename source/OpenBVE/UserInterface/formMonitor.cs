@@ -165,6 +165,7 @@ namespace OpenBve
 			}
 			if (ed <= st) return;
 			taskRecord = taskRecord.Substring(st, ed - st + 1);
+
 			Action<string> setValueAction = text =>
 			{
 				this.txtBoxRecieve.Text = taskRecord;
