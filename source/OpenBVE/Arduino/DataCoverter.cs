@@ -23,7 +23,7 @@ namespace OpenBve
 		#define EMERGENCY 10
 		*/
 		//C# not support #define , use const int
-		const int TRAIN_DATA_NUMBER = 11;
+		const int TRAIN_DATA_NUMBER = 12;
 		//
 		const int SPEED = 0;
 		const int REVERSER = 1;
@@ -36,6 +36,7 @@ namespace OpenBve
 		const int SPEED_CONST = 8;
 		const int MASTER_KEY = 9;
 		const int EMERGENCY = 10;
+		const int RC_MODE = 11;
 		//
 		const int SPEED_MIN = 0;
 		const int SPEED_MAX = 400;
@@ -67,6 +68,8 @@ namespace OpenBve
 		const int MASTER_KEY_ON = 1;
 		const int EMERGENCY_ON = 1;
 		const int EMERGENCY_OFF = 0;
+		const int OVERWRITE = 0;
+		const int NORMAL = 1;
 		//
 		const char FILTER = '|';
 		const string START_SYM = "#";
@@ -78,7 +81,7 @@ namespace OpenBve
 		static private int[] dataDefault = new int[TRAIN_DATA_NUMBER] {
 			SPEED_MIN, REVERSER_NEUTRAL, POWER_MIN, BRAKE_MIN,
 			SIGNAL_RED, SIGNAL_DISTANCE_DE, SPEED_LIMIT_DEF, HORN_OFF,
-			SPEED_CONST_MIN, MASTER_KEY_OFF, EMERGENCY_OFF
+			SPEED_CONST_MIN, MASTER_KEY_OFF, EMERGENCY_OFF, NORMAL
 		};
 		//
 		/// <summary>
@@ -110,7 +113,7 @@ namespace OpenBve
 						break;
 					}
 				}
-				if (ed < st) return;
+				if (ed < st || ed - st < TRAIN_DATA_NUMBER) return;
 				data = data.Substring(st + 1, ed - st - 1);
 				operation = data.Split(FILTER);
 				operationNum = operation.Length;
@@ -149,8 +152,12 @@ namespace OpenBve
 					TrainMethods.SetEmergency(value);
 					break;
 				case SPEED_CONST:
-					TrainMethods.SetAutoPilot(value);
-					break;
+					{
+						if (value == 0) trainData[RC_MODE] = NORMAL;
+						else trainData[RC_MODE] = OVERWRITE;
+						TrainMethods.SetAutoPilot(value);
+						break;
+					}
 			}
 		}
 		//
@@ -171,11 +178,13 @@ namespace OpenBve
 				case REVERSER:
 					return TrainMethods.GetReverser().ToString();
 				case SIGNAL:
-						return TrainMethods.GetSignal().ToString();
+					return TrainMethods.GetSignal().ToString();
 				case SIGNAL_DISTANCE:
 					return TrainMethods.GetSignalDis().ToString();
 				case SPEED_LIMIT:
 					return TrainMethods.GetSpeedLimit().ToString();
+				case RC_MODE:
+					return TrainMethods.GetConstSpeed() == 0 ? NORMAL.ToString() : OVERWRITE.ToString();
 			}
 			return trainData[dataID].ToString();
 		}

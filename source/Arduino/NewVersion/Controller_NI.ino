@@ -5,8 +5,7 @@
 --Simulator: OpenBVE
 ===========================================
 --Note:
-External Interrupts:
-All pins.
+State Automatic Ready
 ===========================================
 --Devices:
 Type:0.SWITCH_C -> CHANGE
@@ -25,9 +24,7 @@ Type:3.ENCODER -> CHANGE (in developing)
 8.SPEED_CONST -> INT
 9.MASTER_KEY -> BOOL
 ===========================================
-Never mind scandal and liber!
 */
-//c
 #define SWITCH_C 0
 #define SWITCH_F 1
 #define ENCODER 2
@@ -71,6 +68,8 @@ Never mind scandal and liber!
 #define MASTER_KEY_ON 1
 #define EMERGENCY_ON 1
 #define EMERGENCY_OFF 0
+#define OVERWRITE 0
+#define NORMAL 1
 //Devices
 #define DEVICE_NUMBER 8
 #define DEVICE_TYPE_NUMBER 3
@@ -83,7 +82,7 @@ Never mind scandal and liber!
 #define ANALOG_OUT_MIN 0
 #define ANALOG_OUT_MAX 255
 //Train
-#define TRAIN_DATA_NUMBER 11
+#define TRAIN_DATA_NUMBER 12
 #define _INT 0
 #define _BOOL 1
 #define SPEED 0
@@ -97,8 +96,9 @@ Never mind scandal and liber!
 #define SPEED_CONST 8
 #define MASTER_KEY 9
 #define EMERGENCY 10
-#define UPDATE_LAST_NUM 4
-#define UPDATE_AP 2
+#define RC_MODE 11
+#define UPDATE_LAST_NUM 5
+#define UPDATE_OW 8
 #define NO_BINDING -1
 //HMI
 #define HMI_SCRIPT_NUM 11
@@ -110,11 +110,8 @@ Never mind scandal and liber!
 #define END_SYM '!'
 #define NO_DATA ""
 #define RECIEVE_DELAY 2
-#define SEND_DELAY 100
+#define SEND_DELAY 50
 #define TIMER_TICK 1000000
-//
-#define EMPTY_QUERY 0
-#define QUEUE_CAP 20
 //
 #define NOP do { __asm__ __volatile__ ("nop"); } while (0)
 
@@ -157,15 +154,24 @@ const int devicePins[DEVICE_NUMBER] = {30, 31, 32, 33, 34, 35, 36, 37};
 int deviceLastState[DEVICE_NUMBER] = {KEY_UP, KEY_UP, KEY_UP, KEY_UP, KEY_UP, KEY_UP, KEY_UP, KEY_UP};
 int deviceSADur[DEVICE_NUMBER] = {0, 0, 0, 0, 0, 0, 0, 0};
 //train data id
-const int dataDefault[TRAIN_DATA_NUMBER] = {SPEED_MIN, REVERSER_NEUTRAL, POWER_MIN, BRAKE_MIN, SIGNAL_RED, SIGNAL_DISTANCE_DE, SPEED_LIMIT_DEF, HORN_OFF, SPEED_CONST_MIN, MASTER_KEY_OFF, EMERGENCY_OFF};
-const int dataType[TRAIN_DATA_NUMBER] = {_INT, _INT, _INT, _INT, _INT, _INT, _INT, _BOOL, _INT, _BOOL, _BOOL};
-const int recieveToUpdate[UPDATE_LAST_NUM] = {SPEED, SIGNAL, SIGNAL_DISTANCE, SPEED_LIMIT};
-const int recieveWhenAP[UPDATE_AP] = {POWER, BRAKE};
-const int dataBinding[TRAIN_DATA_NUMBER] = {NO_BINDING, NO_BINDING, NO_BINDING, NO_BINDING, NO_BINDING, NO_BINDING, NO_BINDING, NO_BINDING, NO_BINDING, NO_BINDING, NO_BINDING};
+const int dataDefault[TRAIN_DATA_NUMBER] = {SPEED_MIN, REVERSER_NEUTRAL, POWER_MIN, BRAKE_MIN, SIGNAL_RED,
+                                            SIGNAL_DISTANCE_DE, SPEED_LIMIT_DEF, HORN_OFF, SPEED_CONST_MIN, MASTER_KEY_OFF,
+                                            EMERGENCY_OFF, NORMAL
+                                           };
+const int dataType[TRAIN_DATA_NUMBER] = {_INT, _INT, _INT, _INT, _INT, _INT, _INT, _BOOL, _INT, _BOOL, _BOOL, _BOOL};
+const int recieveToUpdate[UPDATE_LAST_NUM] = {SPEED, SIGNAL, SIGNAL_DISTANCE, SPEED_LIMIT, RC_MODE};
+const int overwriteToUpdate[UPDATE_OW] = {POWER, BRAKE, REVERSER, SPEED, SIGNAL, SIGNAL_DISTANCE, SPEED_LIMIT, RC_MODE};
+const int dataBinding[TRAIN_DATA_NUMBER] = {NO_BINDING, NO_BINDING, NO_BINDING, NO_BINDING, NO_BINDING,
+                                            NO_BINDING, NO_BINDING, NO_BINDING, NO_BINDING, NO_BINDING, NO_BINDING
+                                           };
 //communication
-const String HMIScript[HMI_SCRIPT_NUM] = { "spd.val=", "reserver.val=", "pwr.val=", "brake.val=", "sig.val=", "sigdis.val=", "spdlim.val=", "horn.val=", "speedconst.val=", "mstkey.val=", "emg.val="};
-const int HMIMap[TRAIN_DATA_NUMBER] = {SPEED, REVERSER, POWER, BRAKE, SIGNAL, SIGNAL_DISTANCE, SPEED_LIMIT, HORN, SPEED_CONST, MASTER_KEY, EMERGENCY};
-const int PCComMap[TRAIN_DATA_NUMBER] = {SPEED, REVERSER, POWER, BRAKE, SIGNAL, SIGNAL_DISTANCE, SPEED_LIMIT, HORN, SPEED_CONST, MASTER_KEY, EMERGENCY};
+const String HMIScript[HMI_SCRIPT_NUM] = { "spd.val=", "reserver.val=", "pwr.val=", "brake.val=", "sig.val=",
+                                           "sigdis.val=", "spdlim.val=", "horn.val=", "speedconst.val=", "mstkey.val=",
+                                           "emg.val="
+                                         };
+const int HMIMap[HMI_SCRIPT_NUM] = {SPEED, REVERSER, POWER, BRAKE, SIGNAL,
+                                    SIGNAL_DISTANCE, SPEED_LIMIT, HORN, SPEED_CONST, MASTER_KEY, EMERGENCY
+                                   };
 //
 int nowHMISend;
 
@@ -312,7 +318,7 @@ public:
 		{
 			char currentRead = char(Serial.read());
 			recieveData += currentRead;
-			Devices.delay_(10);
+			Devices.delay_(RECIEVE_DELAY);
 			//if (currentRead == END_SYM)break;
 		}
 		length = recieveData.length();
@@ -340,7 +346,7 @@ public:
 			if (recieveData.charAt(i) == FILTER)
 			{
 				//send data to TrainManager
-				p.SetData(PCComMap[pos++], tmp.toInt());
+				p.SetData(pos++, tmp.toInt());
 				//clear tmp
 				tmp = NO_DATA;
 			}
@@ -356,7 +362,7 @@ public:
 		//add contents
 		for (int i = 0; i < TRAIN_DATA_NUMBER; i++)
 		{
-			sendData += p.GetData(PCComMap[i]);
+			sendData += p.GetData(i);
 			sendData += FILTER;
 		}
 		//add end symbol
@@ -372,10 +378,10 @@ public:
 		String sender = NO_DATA;
 		int sendEd = 0;
 		if (nowHMISend > TRAIN_DATA_NUMBER)nowHMISend = 0;
-		sendEd = nowHMISend + MAX_SERIAL_STEP > TRAIN_DATA_NUMBER ? TRAIN_DATA_NUMBER : nowHMISend + MAX_SERIAL_STEP;
+		sendEd = nowHMISend + MAX_SERIAL_STEP > HMI_SCRIPT_NUM ? HMI_SCRIPT_NUM : nowHMISend + MAX_SERIAL_STEP;
 		for (int i = nowHMISend; i < sendEd; i++)
 		{
-			sender = HMIScript[HMIMap[i]] + p.GetData(PCComMap[i]);
+			sender = HMIScript[HMIMap[i]] + p.GetData(HMIMap[i]);
 			//if (!sender.length())return false;
 			Serial1.print(sender);
 			for (int j = 0; j < 3; j++)Serial1.write(HMI_END_SYM);
@@ -406,13 +412,16 @@ public:
 	//
 	void UpdateData(TrainManager &p)
 	{
-		for (int i = 0; i < UPDATE_LAST_NUM; i++)
-			p.SetData(recieveToUpdate[i], currentData.GetData(recieveToUpdate[i]));
-		if (currentData.GetData(SPEED_CONST) != SPEED_CONST_MIN)
-		{
-			for (int i = 0; i < UPDATE_AP; i++)
-				p.SetData(recieveWhenAP[i], currentData.GetData(recieveWhenAP[i]));
-		}
+		if (currentData.GetData(RC_MODE) == NORMAL)
+			for (int i = 0; i < UPDATE_LAST_NUM; i++)
+				p.SetData(recieveToUpdate[i], currentData.GetData(recieveToUpdate[i]));
+		else if (currentData.GetData(RC_MODE) == OVERWRITE)
+			for (int i = 0; i < UPDATE_OW; i++)
+				p.SetData(overwriteToUpdate[i], currentData.GetData(overwriteToUpdate[i]));
+		//check AP state
+		if (p.GetData(SPEED_CONST) != SPEED_CONST_MIN &&
+		        currentData.GetData(SPEED_CONST) != SPEED_CONST_MIN)
+			p.SetData(SPEED_CONST, currentData.GetData(SPEED_CONST));
 	}
 };
 
@@ -435,7 +444,8 @@ void process0()
 	//SWITCH_F
 	if (processData.GetData(MASTER_KEY) == MASTER_KEY_OFF ||
 	        processData.GetData(EMERGENCY) == EMERGENCY_ON ||
-	        processData.GetData(REVERSER) == REVERSER_NEUTRAL)return;
+	        processData.GetData(REVERSER) == REVERSER_NEUTRAL ||
+	        processData.GetData(SPEED_CONST) != SPEED_CONST_MIN)return;
 	int deviceState = Devices.GetState(0);
 	if (deviceState == ACTIVE)
 	{
@@ -459,7 +469,8 @@ void process1()
 {
 	if (processData.GetData(MASTER_KEY) == MASTER_KEY_OFF ||
 	        processData.GetData(EMERGENCY) == EMERGENCY_ON ||
-	        processData.GetData(REVERSER) == REVERSER_NEUTRAL)return;
+	        processData.GetData(REVERSER) == REVERSER_NEUTRAL ||
+	        processData.GetData(SPEED_CONST) != SPEED_CONST_MIN)return;
 	int deviceState = Devices.GetState(1);
 	if (deviceState == ACTIVE)
 	{
@@ -482,7 +493,8 @@ void process1()
 void process2()
 {
 	if (processData.GetData(MASTER_KEY) == MASTER_KEY_OFF ||
-	        processData.GetData(EMERGENCY) == EMERGENCY_ON)return;
+	        processData.GetData(EMERGENCY) == EMERGENCY_ON ||
+	        processData.GetData(SPEED_CONST) != SPEED_CONST_MIN)return;
 	int deviceState = Devices.GetState(2);
 	if (deviceState == ACTIVE)
 	{
@@ -498,7 +510,8 @@ void process2()
 void process3()
 {
 	if (processData.GetData(MASTER_KEY) == MASTER_KEY_OFF ||
-	        processData.GetData(EMERGENCY) == EMERGENCY_ON)return;
+	        processData.GetData(EMERGENCY) == EMERGENCY_ON ||
+	        processData.GetData(SPEED_CONST) != SPEED_CONST_MIN)return;
 	int deviceState = Devices.GetState(3);
 	if (deviceState == ACTIVE)
 	{
@@ -571,13 +584,13 @@ void TimerInterrupt()
 {
 	Timer1.stop();
 	Communication.SendDataToPC(currentData);
-	Devices.delay_(100);
+	Devices.delay_(SEND_DELAY);
 	Communication.RecieveDataFromPC(currentData);
-	Devices.delay_(100);;
+	Devices.delay_(SEND_DELAY);;
 	Communication.SendDataToHMI(currentData);
-	Devices.delay_(50);
+	Devices.delay_(SEND_DELAY);
 	Devices.PinsRrfresh(currentData);
-	Devices.delay_(50);
+	Devices.delay_(SEND_DELAY);
 	Timer1.start();
 }
 

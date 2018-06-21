@@ -383,6 +383,7 @@ namespace OpenBve
 				{
 					if (initTimer)
 						APTimer.Change(Timeout.Infinite, Timeout.Infinite);
+					destSpeed = 0;
 				}
 				else
 				{
