@@ -11,7 +11,6 @@ Author: TSDArthur
 
 Simulator: OpenBVE
 
-#OpenBVE Part
 ## openBVE Source Code - Readme
 
 This source code started out life as a port of openBVE to the OpenTK framework, but now has begun major development work to improve the sim and the possibilities it presents.
