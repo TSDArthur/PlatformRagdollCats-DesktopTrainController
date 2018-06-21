@@ -9,8 +9,7 @@
 
 #include "DueTimer.h"
 
-const DueTimer::Timer DueTimer::Timers[NUM_TIMERS] =
-{
+const DueTimer::Timer DueTimer::Timers[NUM_TIMERS] = {
 	{TC0,0,TC0_IRQn},
 	{TC0,1,TC1_IRQn},
 	{TC0,2,TC2_IRQn},
@@ -26,25 +25,24 @@ const DueTimer::Timer DueTimer::Timers[NUM_TIMERS] =
 
 // Fix for compatibility with Servo library
 #ifdef USING_SERVO_LIB
-// Set callbacks as used, allowing DueTimer::getAvailable() to work
-void (*DueTimer::callbacks[NUM_TIMERS])() =
-{
-	(void (*)()) 1, // Timer 0 - Occupied
-	(void (*)()) 0, // Timer 1
-	(void (*)()) 1, // Timer 2 - Occupied
-	(void (*)()) 1, // Timer 3 - Occupied
-	(void (*)()) 1, // Timer 4 - Occupied
-	(void (*)()) 1, // Timer 5 - Occupied
+	// Set callbacks as used, allowing DueTimer::getAvailable() to work
+	void (*DueTimer::callbacks[NUM_TIMERS])() = {
+		(void (*)()) 1, // Timer 0 - Occupied
+		(void (*)()) 0, // Timer 1
+		(void (*)()) 1, // Timer 2 - Occupied
+		(void (*)()) 1, // Timer 3 - Occupied
+		(void (*)()) 1, // Timer 4 - Occupied
+		(void (*)()) 1, // Timer 5 - Occupied
 #if NUM_TIMERS > 6
-	(void (*)()) 0, // Timer 6
-	(void (*)()) 0, // Timer 7
-	(void (*)()) 0  // Timer 8
+		(void (*)()) 0, // Timer 6
+		(void (*)()) 0, // Timer 7
+		(void (*)()) 0  // Timer 8
 #endif
-};
+	};
 #else
-void (*DueTimer::callbacks[NUM_TIMERS])() = {};
+	void (*DueTimer::callbacks[NUM_TIMERS])() = {};
 #endif
-
+		
 #if NUM_TIMERS > 6
 double DueTimer::_frequency[NUM_TIMERS] = {-1,-1,-1,-1,-1,-1,-1,-1,-1};
 #else
@@ -59,11 +57,11 @@ DueTimer Timer(0);
 DueTimer Timer1(1);
 // Fix for compatibility with Servo library
 #ifndef USING_SERVO_LIB
-DueTimer Timer0(0);
-DueTimer Timer2(2);
-DueTimer Timer3(3);
-DueTimer Timer4(4);
-DueTimer Timer5(5);
+	DueTimer Timer0(0);
+	DueTimer Timer2(2);
+	DueTimer Timer3(3);
+	DueTimer Timer4(4);
+	DueTimer Timer5(5);
 #endif
 #if NUM_TIMERS > 6
 DueTimer Timer6(6);
@@ -71,21 +69,18 @@ DueTimer Timer7(7);
 DueTimer Timer8(8);
 #endif
 
-DueTimer::DueTimer(unsigned short _timer) : timer(_timer)
-{
+DueTimer::DueTimer(unsigned short _timer) : timer(_timer){
 	/*
-		The constructor of the class DueTimer
+		The constructor of the class DueTimer 
 	*/
 }
 
-DueTimer DueTimer::getAvailable(void)
-{
+DueTimer DueTimer::getAvailable(void){
 	/*
 		Return the first timer with no callback set
 	*/
 
-	for(int i = 0; i < NUM_TIMERS; i++)
-	{
+	for(int i = 0; i < NUM_TIMERS; i++){
 		if(!callbacks[i])
 			return DueTimer(i);
 	}
@@ -93,8 +88,7 @@ DueTimer DueTimer::getAvailable(void)
 	return DueTimer(0);
 }
 
-DueTimer& DueTimer::attachInterrupt(void (*isr)())
-{
+DueTimer& DueTimer::attachInterrupt(void (*isr)()){
 	/*
 		Links the function passed as argument to the timer of the object
 	*/
@@ -104,8 +98,7 @@ DueTimer& DueTimer::attachInterrupt(void (*isr)())
 	return *this;
 }
 
-DueTimer& DueTimer::detachInterrupt(void)
-{
+DueTimer& DueTimer::detachInterrupt(void){
 	/*
 		Links the function passed as argument to the timer of the object
 	*/
@@ -117,8 +110,7 @@ DueTimer& DueTimer::detachInterrupt(void)
 	return *this;
 }
 
-DueTimer& DueTimer::start(double microseconds)
-{
+DueTimer& DueTimer::start(double microseconds){
 	/*
 		Start the timer
 		If a period is set, then sets the period and start the timer
@@ -126,33 +118,31 @@ DueTimer& DueTimer::start(double microseconds)
 
 	if(microseconds > 0)
 		setPeriod(microseconds);
-
+	
 	if(_frequency[timer] <= 0)
 		setFrequency(1);
 
 	NVIC_ClearPendingIRQ(Timers[timer].irq);
 	NVIC_EnableIRQ(Timers[timer].irq);
-
+	
 	TC_Start(Timers[timer].tc, Timers[timer].channel);
 
 	return *this;
 }
 
-DueTimer& DueTimer::stop(void)
-{
+DueTimer& DueTimer::stop(void){
 	/*
 		Stop the timer
 	*/
 
 	NVIC_DisableIRQ(Timers[timer].irq);
-
+	
 	TC_Stop(Timers[timer].tc, Timers[timer].channel);
 
 	return *this;
 }
 
-uint8_t DueTimer::bestClock(double frequency, uint32_t& retRC)
-{
+uint8_t DueTimer::bestClock(double frequency, uint32_t& retRC){
 	/*
 		Pick the best Clock, thanks to Ogle Basil Hall!
 		Timer		Definition
@@ -161,12 +151,10 @@ uint8_t DueTimer::bestClock(double frequency, uint32_t& retRC)
 		TIMER_CLOCK3	MCK / 32
 		TIMER_CLOCK4	MCK /128
 	*/
-	const struct
-	{
+	const struct {
 		uint8_t flag;
 		uint8_t divisor;
-	} clockConfig[] =
-	{
+	} clockConfig[] = {
 		{ TC_CMR_TCCLKS_TIMER_CLOCK1,   2 },
 		{ TC_CMR_TCCLKS_TIMER_CLOCK2,   8 },
 		{ TC_CMR_TCCLKS_TIMER_CLOCK3,  32 },
@@ -187,25 +175,20 @@ uint8_t DueTimer::bestClock(double frequency, uint32_t& retRC)
 			bestClock = clkId;
 			bestError = error;
 		}
-	}
-	while (clkId-- > 0);
+	} while (clkId-- > 0);
 	ticks = (float) SystemCoreClock / frequency / (float) clockConfig[bestClock].divisor;
 	retRC = (uint32_t) round(ticks);
 	return clockConfig[bestClock].flag;
 }
 
 
-DueTimer& DueTimer::setFrequency(double frequency)
-{
+DueTimer& DueTimer::setFrequency(double frequency){
 	/*
 		Set the timer frequency (in Hz)
 	*/
 
 	// Prevent negative frequencies
-	if(frequency <= 0)
-	{
-		frequency = 1;
-	}
+	if(frequency <= 0) { frequency = 1; }
 
 	// Remember the frequency ¡ª see below how the exact frequency is reported instead
 	//_frequency[timer] = frequency;
@@ -216,7 +199,7 @@ DueTimer& DueTimer::setFrequency(double frequency)
 	uint32_t rc = 0;
 	uint8_t clock;
 
-	// Tell the Power Management Controller to disable
+	// Tell the Power Management Controller to disable 
 	// the write protection of the (Timer/Counter) registers:
 	pmc_set_writeprotect(false);
 
@@ -226,20 +209,19 @@ DueTimer& DueTimer::setFrequency(double frequency)
 	// Find the best clock for the wanted frequency
 	clock = bestClock(frequency, rc);
 
-	switch (clock)
-	{
-		case TC_CMR_TCCLKS_TIMER_CLOCK1:
-			_frequency[timer] = (double)SystemCoreClock / 2.0 / (double)rc;
-			break;
-		case TC_CMR_TCCLKS_TIMER_CLOCK2:
-			_frequency[timer] = (double)SystemCoreClock / 8.0 / (double)rc;
-			break;
-		case TC_CMR_TCCLKS_TIMER_CLOCK3:
-			_frequency[timer] = (double)SystemCoreClock / 32.0 / (double)rc;
-			break;
-		default: // TC_CMR_TCCLKS_TIMER_CLOCK4
-			_frequency[timer] = (double)SystemCoreClock / 128.0 / (double)rc;
-			break;
+	switch (clock) {
+	  case TC_CMR_TCCLKS_TIMER_CLOCK1:
+	    _frequency[timer] = (double)SystemCoreClock / 2.0 / (double)rc;
+	    break;
+	  case TC_CMR_TCCLKS_TIMER_CLOCK2:
+	    _frequency[timer] = (double)SystemCoreClock / 8.0 / (double)rc;
+	    break;
+	  case TC_CMR_TCCLKS_TIMER_CLOCK3:
+	    _frequency[timer] = (double)SystemCoreClock / 32.0 / (double)rc;
+	    break;
+	  default: // TC_CMR_TCCLKS_TIMER_CLOCK4
+	    _frequency[timer] = (double)SystemCoreClock / 128.0 / (double)rc;
+	    break;
 	}
 
 	// Set up the Timer in waveform mode which creates a PWM
@@ -256,20 +238,18 @@ DueTimer& DueTimer::setFrequency(double frequency)
 	return *this;
 }
 
-DueTimer& DueTimer::setPeriod(double microseconds)
-{
+DueTimer& DueTimer::setPeriod(double microseconds){
 	/*
 		Set the period of the timer (in microseconds)
 	*/
 
 	// Convert period in microseconds to frequency in Hz
-	double frequency = 1000000.0 / microseconds;
+	double frequency = 1000000.0 / microseconds;	
 	setFrequency(frequency);
 	return *this;
 }
 
-double DueTimer::getFrequency(void) const
-{
+double DueTimer::getFrequency(void) const {
 	/*
 		Get current time frequency
 	*/
@@ -277,8 +257,7 @@ double DueTimer::getFrequency(void) const
 	return _frequency[timer];
 }
 
-double DueTimer::getPeriod(void) const
-{
+double DueTimer::getPeriod(void) const {
 	/*
 		Get current time period
 	*/
@@ -288,58 +267,49 @@ double DueTimer::getPeriod(void) const
 
 
 /*
-	Implementation of the timer callbacks defined in
+	Implementation of the timer callbacks defined in 
 	arduino-1.5.2/hardware/arduino/sam/system/CMSIS/Device/ATMEL/sam3xa/include/sam3x8e.h
 */
 // Fix for compatibility with Servo library
 #ifndef USING_SERVO_LIB
-void TC0_Handler(void)
-{
+void TC0_Handler(void){
 	TC_GetStatus(TC0, 0);
 	DueTimer::callbacks[0]();
 }
 #endif
-void TC1_Handler(void)
-{
+void TC1_Handler(void){
 	TC_GetStatus(TC0, 1);
 	DueTimer::callbacks[1]();
 }
 // Fix for compatibility with Servo library
 #ifndef USING_SERVO_LIB
-void TC2_Handler(void)
-{
+void TC2_Handler(void){
 	TC_GetStatus(TC0, 2);
 	DueTimer::callbacks[2]();
 }
-void TC3_Handler(void)
-{
+void TC3_Handler(void){
 	TC_GetStatus(TC1, 0);
 	DueTimer::callbacks[3]();
 }
-void TC4_Handler(void)
-{
+void TC4_Handler(void){
 	TC_GetStatus(TC1, 1);
 	DueTimer::callbacks[4]();
 }
-void TC5_Handler(void)
-{
+void TC5_Handler(void){
 	TC_GetStatus(TC1, 2);
 	DueTimer::callbacks[5]();
 }
 #endif
 #if NUM_TIMERS > 6
-void TC6_Handler(void)
-{
+void TC6_Handler(void){
 	TC_GetStatus(TC2, 0);
 	DueTimer::callbacks[6]();
 }
-void TC7_Handler(void)
-{
+void TC7_Handler(void){
 	TC_GetStatus(TC2, 1);
 	DueTimer::callbacks[7]();
 }
-void TC8_Handler(void)
-{
+void TC8_Handler(void){
 	TC_GetStatus(TC2, 2);
 	DueTimer::callbacks[8]();
 }

@@ -1,6 +1,6 @@
 /*Desktop Train Controller
 ===========================================
---Board: Arduino DUE
+--Board: Arduino MEGA 2560
 --Version: 1.0
 --Simulator: OpenBVE
 ===========================================
@@ -36,7 +36,7 @@ Type:3.ENCODER -> CHANGE (in developing)
 #define KEY_UP 0
 #define KEY_WAITTING 1
 #define KEY_DOWN 2
-#define SA_COUNT 5000
+#define SA_COUNT 1500
 //
 #define SPEED_MIN 0
 #define SPEED_MAX 400
@@ -89,7 +89,7 @@ Type:3.ENCODER -> CHANGE (in developing)
 #define REVERSER 1
 #define POWER 2
 #define BRAKE 3
-#define SIGNAL 4
+#define SIGNAL_INFO 4
 #define SIGNAL_DISTANCE 5
 #define SPEED_LIMIT 6
 #define HORN 7
@@ -111,27 +111,26 @@ Type:3.ENCODER -> CHANGE (in developing)
 #define NO_DATA ""
 #define RECIEVE_DELAY 2
 #define SEND_DELAY 50
-#define TIMER_TICK 1000000
+#define TIMER_TICK 500
 //
 #define NOP do { __asm__ __volatile__ ("nop"); } while (0)
 
-#include "DueTimer.h"
+#include "FlexiTimer2.h"
 
 typedef void (*funcPoint)();
 //
 /*
 	===========================================
-	--Interrupts Map:
-	--edit and see Interrupts.h
+	--Device Maps
 		default:
-		PowerUp:interrupt0
-		PowerDown:interrupt1
-		ReserverForward:interrupt2
-		ReserverBackward:interrupt3
-		Horn:interrupt4
-		SpeedConst:interrupt5
-		Emergency:interrupt6
-		MasterKey:interrupt7
+		PowerUp:process0
+		PowerDown:process1
+		ReserverForward:process2
+		ReserverBackward:process3
+		Horn:process4
+		SpeedConst:process5
+		Emergency:process6
+		MasterKey:process7
 	===========================================
 */
 
@@ -159,8 +158,8 @@ const int dataDefault[TRAIN_DATA_NUMBER] = {SPEED_MIN, REVERSER_NEUTRAL, POWER_M
                                             EMERGENCY_OFF, NORMAL
                                            };
 const int dataType[TRAIN_DATA_NUMBER] = {_INT, _INT, _INT, _INT, _INT, _INT, _INT, _BOOL, _INT, _BOOL, _BOOL, _BOOL};
-const int recieveToUpdate[UPDATE_LAST_NUM] = {SPEED, SIGNAL, SIGNAL_DISTANCE, SPEED_LIMIT, RC_MODE};
-const int overwriteToUpdate[UPDATE_OW] = {POWER, BRAKE, REVERSER, SPEED, SIGNAL, SIGNAL_DISTANCE, SPEED_LIMIT, RC_MODE};
+const int recieveToUpdate[UPDATE_LAST_NUM] = {SPEED, SIGNAL_INFO, SIGNAL_DISTANCE, SPEED_LIMIT, RC_MODE};
+const int overwriteToUpdate[UPDATE_OW] = {POWER, BRAKE, REVERSER, SPEED, SIGNAL_INFO, SIGNAL_DISTANCE, SPEED_LIMIT, RC_MODE};
 const int dataBinding[TRAIN_DATA_NUMBER] = {NO_BINDING, NO_BINDING, NO_BINDING, NO_BINDING, NO_BINDING,
                                             NO_BINDING, NO_BINDING, NO_BINDING, NO_BINDING, NO_BINDING, NO_BINDING
                                            };
@@ -169,7 +168,7 @@ const String HMIScript[HMI_SCRIPT_NUM] = { "spd.val=", "reserver.val=", "pwr.val
                                            "sigdis.val=", "spdlim.val=", "horn.val=", "speedconst.val=", "mstkey.val=",
                                            "emg.val="
                                          };
-const int HMIMap[HMI_SCRIPT_NUM] = {SPEED, REVERSER, POWER, BRAKE, SIGNAL,
+const int HMIMap[HMI_SCRIPT_NUM] = {SPEED, REVERSER, POWER, BRAKE, SIGNAL_INFO,
                                     SIGNAL_DISTANCE, SPEED_LIMIT, HORN, SPEED_CONST, MASTER_KEY, EMERGENCY
                                    };
 //
@@ -283,7 +282,7 @@ public:
 	{
 		for (int i = 0; i < ms; i++)
 		{
-			for (ulong j = 0; j < 1985; j++) NOP;
+			for (int j = 0; j < 1985; j++) NOP;
 		}
 	}
 };
@@ -382,7 +381,7 @@ public:
 		for (int i = nowHMISend; i < sendEd; i++)
 		{
 			sender = HMIScript[HMIMap[i]] + p.GetData(HMIMap[i]);
-			//if (!sender.length())return false;
+			if (!sender.length())return false;
 			Serial1.print(sender);
 			for (int j = 0; j < 3; j++)Serial1.write(HMI_END_SYM);
 		}
@@ -429,14 +428,14 @@ CommunicationManager Communication;
 TaskManager Queue;
 
 /*
-	PowerUp:interrupt0
-	PowerDown:interrupt1
-	ReserverForward:interrupt2
-	ReserverBackward:interrupt3
-	Horn:interrupt4
-	SpeedConst:interrupt5
-	Emergency:interrupt6
-	MasterKey:interrupt7
+	PowerUp:process0
+	PowerDown:process1
+	ReserverForward:process2
+	ReserverBackward:process3
+	Horn:process4
+	SpeedConst:process5
+	Emergency:process6
+	MasterKey:process7
 */
 
 void process0()
@@ -582,7 +581,7 @@ void process7()
 
 void TimerInterrupt()
 {
-	Timer1.stop();
+	FlexiTimer2::stop();
 	Communication.SendDataToPC(currentData);
 	Devices.delay_(SEND_DELAY);
 	Communication.RecieveDataFromPC(currentData);
@@ -591,7 +590,7 @@ void TimerInterrupt()
 	Devices.delay_(SEND_DELAY);
 	Devices.PinsRrfresh(currentData);
 	Devices.delay_(SEND_DELAY);
-	Timer1.start();
+	FlexiTimer2::start();
 }
 
 void setup()
@@ -599,9 +598,8 @@ void setup()
 	Serial.begin(115200);
 	Serial1.begin(115200);
 	nowHMISend = 0;
-	Timer1.attachInterrupt(TimerInterrupt);
-	Timer1.setPeriod(TIMER_TICK);
-	Timer1.start();
+	FlexiTimer2::set(TIMER_TICK, TimerInterrupt);
+	FlexiTimer2::start();
 }
 
 void loop()
