@@ -1,7 +1,13 @@
-[![Build Status](https://travis-ci.org/leezer3/OpenBVE.svg?branch=master)](https://travis-ci.org/leezer3/OpenBVE)
+#Arduino Part
+## Controller Source Code - Readme
 
-[![Build status](https://ci.appveyor.com/api/projects/status/p4d983eclo738hjo?svg=true)](https://ci.appveyor.com/project/leezer3/openbve)
+Board: Arduino DUE / Arduino MEGA 2560
+Built on Arduino 1.8.6
+Version: 1.0
+Author: TSDArthur
+Simulator: OpenBVE
 
+#OpenBVE Part
 ## openBVE Source Code - Readme
 
 This source code started out life as a port of openBVE to the OpenTK framework, but now has begun major development work to improve the sim and the possibilities it presents.
