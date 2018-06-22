@@ -110,8 +110,8 @@ Type:3.ENCODER -> CHANGE (in developing)
 #define END_SYM '!'
 #define NO_DATA ""
 #define RECIEVE_DELAY 2
-#define SEND_DELAY 50
-#define TIMER_TICK 500
+#define SEND_DELAY 25
+#define TIMER_TICK 300
 //
 #define NOP do { __asm__ __volatile__ ("nop"); } while (0)
 
