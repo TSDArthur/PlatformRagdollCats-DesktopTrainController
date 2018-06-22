@@ -260,6 +260,7 @@
             // 
             // listBoxTsk
             // 
+            this.listBoxTsk.BackColor = System.Drawing.Color.White;
             this.listBoxTsk.FormattingEnabled = true;
             this.listBoxTsk.ItemHeight = 17;
             this.listBoxTsk.Location = new System.Drawing.Point(6, 23);

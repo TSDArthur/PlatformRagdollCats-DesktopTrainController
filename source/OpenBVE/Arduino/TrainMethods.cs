@@ -458,6 +458,11 @@ namespace OpenBve
 			return (int)(destSpeed * 3.6);
 		}
 
+		static public int GetSetConstSpeed()
+		{
+			return (int)(constSpeed*3.6);
+		}
+
 		/// <summary>
 		/// set master key
 		/// </summary>

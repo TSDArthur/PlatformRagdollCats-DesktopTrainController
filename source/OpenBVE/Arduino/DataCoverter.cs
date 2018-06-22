@@ -155,7 +155,7 @@ namespace OpenBve
 					{
 						if (value == 0) trainData[RC_MODE] = NORMAL;
 						else trainData[RC_MODE] = OVERWRITE;
-						if (value == TrainMethods.GetConstSpeed()) break;
+						if (value == TrainMethods.GetSetConstSpeed()) break;
 						TrainMethods.SetAutoPilot(value);
 						break;
 					}
@@ -185,7 +185,7 @@ namespace OpenBve
 				case SPEED_LIMIT:
 					return TrainMethods.GetSpeedLimit().ToString();
 				case RC_MODE:
-					return TrainMethods.GetConstSpeed() == 0 ? NORMAL.ToString() : OVERWRITE.ToString();
+					return TrainMethods.GetSetConstSpeed() == 0 ? NORMAL.ToString() : OVERWRITE.ToString();
 			}
 			return trainData[dataID].ToString();
 		}

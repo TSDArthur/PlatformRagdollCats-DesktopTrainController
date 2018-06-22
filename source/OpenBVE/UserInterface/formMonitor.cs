@@ -44,16 +44,6 @@ namespace OpenBve
             this.btnRead.Enabled = true;
         }
 
-        private void btnArduinoStartSend_Click(object sender, EventArgs e)
-        {
-            this.ChangeArduinoSendStatus(true);
-        }
-
-        private void btnArduinoStopSend_Click(object sender, EventArgs e)
-        {
-            this.ChangeArduinoSendStatus(false);
-        }
-
         private void frmMain_FormClosing(object sender, FormClosingEventArgs e)
         {
             this.DisposeSerialPort();
@@ -90,7 +80,6 @@ namespace OpenBve
             {
                 try
                 {
-                    this.ChangeArduinoSendStatus(false);
                     if (port.IsOpen)
                     {
                         port.Close();
@@ -101,25 +90,6 @@ namespace OpenBve
                 {
 					MessageBox.Show("Error：" + ex.Message, "Error", MessageBoxButtons.OK, MessageBoxIcon.Information);
 				}
-            }
-        }
-
-        /// <summary>
-        /// Switch the controller
-        /// </summary>
-        /// <param name="allowSend">is it on?</param>
-        private void ChangeArduinoSendStatus(bool allowSend)
-        {
-            if (port != null && port.IsOpen)
-            {
-                if (allowSend)
-                {
-                    port.WriteLine("1");
-                }
-                else
-                {
-                    port.WriteLine("0");
-                }
             }
         }
 
@@ -192,7 +162,7 @@ namespace OpenBve
 			this.txtBoxSend.Text = mcuFrame;
 			this.listBoxTsk.Items.Insert(0, DateTime.Now.ToString() + " >> Send: " + mcuFrame);
 			this.listBoxTsk.SelectedIndex = this.listBoxTsk.Items.Count - 1;
-			if (listBoxTsk.Items.Count > 15) listBoxTsk.Items.Clear();
+			if (listBoxTsk.Items.Count > 18) listBoxTsk.Items.Clear();
 			return;
 		}
 
