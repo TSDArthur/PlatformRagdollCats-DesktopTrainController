@@ -194,7 +194,7 @@ namespace OpenBve
 				txtBoxSpdLimit.Text = "SPD_LIM : " + TrainMethods.GetSpeedLimit().ToString();
 				txtBoxBrakeHandle.Text = "BKE : " + TrainMethods.GetBrake().ToString();
 				txtBoxPowerHandle.Text = "PWR : " + trainInfo.Handles.Power.Driver.ToString();
-				txtBoxConstSpeed.Text = "CON_SPD : " + TrainMethods.GetConstSpeed().ToString();
+				txtBoxConstSpeed.Text = "CON_SPD : " + TrainMethods.GetSetConstSpeed().ToString();
 				//
 				btnBack.Enabled = true;
 				btnDown.Enabled = true;

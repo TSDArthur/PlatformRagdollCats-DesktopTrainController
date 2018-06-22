@@ -112,6 +112,14 @@
     <Reference Include="CSScriptLibrary">
       <HintPath>..\..\Dependencies\CSScriptLibrary.dll</HintPath>
     </Reference>
+    <Reference Include="Emgu.CV.UI, Version=3.4.1.2976, Culture=neutral, PublicKeyToken=7281126722ab4438, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\dependencies\OpenCV\Emgu.CV.UI.dll</HintPath>
+    </Reference>
+    <Reference Include="Emgu.CV.World, Version=3.4.1.2976, Culture=neutral, PublicKeyToken=7281126722ab4438, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\dependencies\OpenCV\Emgu.CV.World.dll</HintPath>
+    </Reference>
     <Reference Include="NUniversalCharDet, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Dependencies\NUniversalCharDet.dll</HintPath>
@@ -132,6 +140,10 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
+    <Reference Include="ZedGraph, Version=5.1.5.28844, Culture=neutral, PublicKeyToken=02a83cbd123fcd60, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\dependencies\OpenCV\ZedGraph.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Arduino\DataCoverter.cs" />
@@ -322,6 +334,12 @@
     <Compile Include="System\Translations\InterfaceStrings.cs" />
     <Compile Include="System\Translations\KeyInfo.cs" />
     <Compile Include="System\Translations\LanguageFile.cs" />
+    <Compile Include="UserInterface\formFaceDet.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UserInterface\formFaceDet.Designer.cs">
+      <DependentUpon>formFaceDet.cs</DependentUpon>
+    </Compile>
     <Compile Include="UserInterface\formMonitor.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -358,6 +376,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="UserInterface\formAbout.resx">
       <DependentUpon>formAbout.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UserInterface\formFaceDet.resx">
+      <DependentUpon>formFaceDet.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UserInterface\formMonitor.resx">
       <DependentUpon>formMonitor.cs</DependentUpon>

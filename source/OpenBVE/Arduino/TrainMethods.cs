@@ -460,7 +460,7 @@ namespace OpenBve
 
 		static public int GetSetConstSpeed()
 		{
-			return (int)(constSpeed*3.6);
+			return (int)(constSpeed );
 		}
 
 		/// <summary>
