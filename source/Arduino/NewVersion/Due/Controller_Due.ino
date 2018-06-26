@@ -38,7 +38,8 @@ Type:3.ENCODER -> CHANGE (in developing)
 #define KEY_UP 0
 #define KEY_WAITTING 1
 #define KEY_DOWN 2
-#define SA_COUNT 5000
+#define SA_COUNT_SF 6000
+#define SA_COUNT_SC 3000
 //
 #define SPEED_MIN 0
 #define SPEED_MAX 400
@@ -112,7 +113,7 @@ Type:3.ENCODER -> CHANGE (in developing)
 #define END_SYM '!'
 #define NO_DATA ""
 #define RECIEVE_DELAY 2
-#define SEND_DELAY 50
+#define SEND_DELAY 20
 #define TIMER_TICK 200000
 //
 #define VLOTREF 29
@@ -237,7 +238,7 @@ public:
 				else if (deviceLastState[deviceID] == KEY_WAITTING)
 				{
 					deviceSADur[deviceID]++;
-					if (deviceSADur[deviceID] >= SA_COUNT)
+					if (deviceSADur[deviceID] >= SA_COUNT_SF)
 					{
 						deviceSADur[deviceID] = 0;
 						deviceLastState[deviceID] = KEY_DOWN;
@@ -263,7 +264,7 @@ public:
 				else if (deviceLastState[deviceID] == KEY_WAITTING)
 				{
 					deviceSADur[deviceID]++;
-					if (deviceSADur[deviceID] >= SA_COUNT)
+					if (deviceSADur[deviceID] >= SA_COUNT_SC)
 					{
 						deviceSADur[deviceID] = 0;
 						deviceLastState[deviceID] = KEY_DOWN;

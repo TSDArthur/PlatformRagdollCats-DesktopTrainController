@@ -30,6 +30,8 @@ namespace OpenBve
 		private static bool inHorn = false;
 		//for signal
 		private static bool inRedLight = false;
+		//
+		public static bool inSettingAP = false;
 		/// <summary>
 		/// setup ap timer
 		/// </summary>
@@ -378,6 +380,7 @@ namespace OpenBve
 		{
 			try
 			{
+				inSettingAP = true;
 				constSpeed = setSpeed;
 				if (setSpeed <= 0)
 				{
@@ -393,9 +396,13 @@ namespace OpenBve
 						APTimer.Change(TimerTick, TimerTick);
 					destSpeed = constSpeed / 3.6;
 				}
+				inSettingAP = false;
 				return;
 			}
-			catch(Exception ex) { }
+			catch(Exception ex)
+			{
+				inSettingAP = false;
+			}
 		}
 
 		/// <summary>
