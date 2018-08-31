@@ -443,7 +443,7 @@ TaskManager Queue;
 */
 
 void process0()
-{
+{	‘
 	//SWITCH_F
 	if (processData.GetData(MASTER_KEY) == MASTER_KEY_OFF ||
 	        processData.GetData(EMERGENCY) == EMERGENCY_ON ||
