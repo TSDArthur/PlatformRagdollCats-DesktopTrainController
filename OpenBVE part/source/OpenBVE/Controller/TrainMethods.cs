@@ -773,7 +773,6 @@ namespace OpenBve
 			string _currentTime = String.Empty;
 			try
 			{
-
 				int Hour, Min, Sec;
 				double x;
 				x = currentTime;
