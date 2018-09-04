@@ -17,6 +17,7 @@ namespace OpenBve
 		private string rf;
 		private FileSystemWatcher routeWatcher;
 		private FileSystemWatcher trainWatcher;
+		static public double StartTime = 0;
 
 		private void textboxRouteFolder_TextChanged(object sender, EventArgs e)
 		{
@@ -710,6 +711,15 @@ namespace OpenBve
 				if (System.IO.File.Exists(Result.RouteFile) & System.IO.Directory.Exists(Result.TrainFolder)) {
 					Result.Start = true;
 					this.Close();
+					//
+					MethodInvoker MethInvk = new MethodInvoker(() =>
+					{
+						formMonitor FrmCCP = new formMonitor();
+						FrmCCP.Show();
+					});
+					StartTime = Result.StartTime;
+					BeginInvoke(MethInvk);
+					//
 					//HACK: Call Application.DoEvents() to force the message pump to process all pending messages when the form closes
 					//This fixes the main form failing to close on Linux
 					Application.DoEvents();

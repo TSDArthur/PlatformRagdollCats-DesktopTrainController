@@ -32,6 +32,11 @@ namespace OpenBve
 		private static bool inRedLight = false;
 		//
 		public static bool inSettingAP = false;
+		//timetable
+		static Timetable.Table Table;
+		static bool isTimetableReady = false;
+		static double currentTime = 0;
+
 		/// <summary>
 		/// setup ap timer
 		/// </summary>
@@ -41,9 +46,9 @@ namespace OpenBve
 			{
 				initTimer = true;
 				inTimer = 0;
-				APTimer = new System.Threading.Timer(new System.Threading.TimerCallback(AutoPilotProcess),null, TimerTick, TimerTick);
+				APTimer = new System.Threading.Timer(new System.Threading.TimerCallback(AutoPilotProcess), null, TimerTick, TimerTick);
 			}
-			catch (Exception ex){}
+			catch (Exception ex) { }
 		}
 
 		/// <summary>
@@ -101,6 +106,10 @@ namespace OpenBve
 						}
 						inRedLight = false;
 					}
+
+					//current time
+					currentTime = Game.SecondsSinceMidnight;
+
 				}
 				catch (Exception ex) { }
 				Interlocked.Exchange(ref inTimer_Main, 0);
@@ -133,8 +142,8 @@ namespace OpenBve
 			{
 				int currretPower = nowControl.Handles.Power.Driver;
 				int currentBrake = nowControl.Handles.Brake.Driver;
-				if (currretPower > 0) nowControl.ApplyNotch( -1, true, 0, true);
-				else nowControl.ApplyNotch( 0, true, 1, true);
+				if (currretPower > 0) nowControl.ApplyNotch(-1, true, 0, true);
+				else nowControl.ApplyNotch(0, true, 1, true);
 				return;
 			}
 			catch (Exception ex) { }
@@ -147,7 +156,7 @@ namespace OpenBve
 		{
 			try
 			{
-				nowControl.ApplyNotch( value < 0 ? 0 : value, false, 0, true);
+				nowControl.ApplyNotch(value < 0 ? 0 : value, false, 0, true);
 				return;
 			}
 			catch (Exception ex) { }
@@ -160,7 +169,7 @@ namespace OpenBve
 		{
 			try
 			{
-				nowControl.ApplyNotch( 0, true, value < 0 ? 0 : value, false);
+				nowControl.ApplyNotch(0, true, value < 0 ? 0 : value, false);
 				return;
 			}
 			catch (Exception ex) { }
@@ -192,7 +201,7 @@ namespace OpenBve
 				TrainManager.ApplyReverser(nowControl, -1, true);
 				return;
 			}
-			catch(Exception ex) { }
+			catch (Exception ex) { }
 		}
 
 		/// <summary>
@@ -248,7 +257,7 @@ namespace OpenBve
 				TrainManager.ReverserPosition Neutral = TrainManager.ReverserPosition.Neutral;
 				return ReverserPos == Reverse ? -1 : (ReverserPos == Neutral ? 0 : 1);
 			}
-			catch(Exception ex) { }
+			catch (Exception ex) { }
 			return 0;
 		}
 
@@ -289,11 +298,12 @@ namespace OpenBve
 		{
 			try
 			{
-				int ret = (int)Math.Min(Math.Abs(nowControl.CurrentSectionLimit * 3.6), Math.Abs(nowControl.CurrentRouteLimit * 3.6));
+				int ret = (int)Math.Min(Math.Abs(nowControl.CurrentSectionLimit * 3.6),
+					Math.Abs(nowControl.CurrentRouteLimit * 3.6));
 				if (ret > 350 || ret < 0) return 30;
 				return ret;
 			}
-			catch(Exception ex) { }
+			catch (Exception ex) { }
 			return 30;
 		}
 
@@ -304,9 +314,11 @@ namespace OpenBve
 		{
 			try
 			{
-				return Game.Sections[Game.Sections[nowControl.CurrentSectionIndex].NextSection].CurrentAspect;
+				int currentSection = nowControl.CurrentSectionIndex;
+				int nextSection = Game.Sections[currentSection].NextSection;
+				return Game.Sections[nextSection].CurrentAspect;
 			}
-			catch(Exception ex) { }
+			catch (Exception ex) { }
 			return 0;
 		}
 
@@ -317,9 +329,13 @@ namespace OpenBve
 		{
 			try
 			{
-				return (int)((Game.Sections[Game.Sections[nowControl.CurrentSectionIndex].NextSection].TrackPosition * 3.6 - nowControl.Cars[nowControl.DriverCar].FrontAxle.Follower.TrackPosition * 3.6));
+				int currentSection = nowControl.CurrentSectionIndex;
+				int nextSection = Game.Sections[currentSection].NextSection;
+				double nextSectionPos = Game.Sections[nextSection].TrackPosition * 3.6;
+				double currentSectionPos = nowControl.Cars[nowControl.DriverCar].FrontAxle.Follower.TrackPosition * 3.6;
+				return (int)(nextSectionPos - currentSectionPos);
 			}
-			catch(Exception ex) { }
+			catch (Exception ex) { }
 			return 0;
 		}
 
@@ -333,7 +349,7 @@ namespace OpenBve
 				nowControl.Cars[nowControl.DriverCar].Horns[0].Play();
 				return;
 			}
-			catch(Exception ex) { }
+			catch (Exception ex) { }
 		}
 
 		/// <summary>
@@ -346,7 +362,7 @@ namespace OpenBve
 				nowControl.Cars[nowControl.DriverCar].Horns[0].Stop();
 				return;
 			}
-			catch(Exception ex) { }
+			catch (Exception ex) { }
 		}
 
 		/// <summary>
@@ -370,7 +386,7 @@ namespace OpenBve
 					}
 				}
 			}
-			catch(Exception ex) { }
+			catch (Exception ex) { }
 		}
 
 		/// <summary>
@@ -399,7 +415,7 @@ namespace OpenBve
 				inSettingAP = false;
 				return;
 			}
-			catch(Exception ex)
+			catch (Exception ex)
 			{
 				inSettingAP = false;
 			}
@@ -467,7 +483,7 @@ namespace OpenBve
 
 		static public int GetSetConstSpeed()
 		{
-			return (int)(constSpeed );
+			return (int)(constSpeed);
 		}
 
 		/// <summary>
@@ -486,7 +502,7 @@ namespace OpenBve
 					ReverserNeutral();
 				}
 			}
-			catch(Exception ex) { }
+			catch (Exception ex) { }
 		}
 
 		/// <summary>
@@ -507,8 +523,275 @@ namespace OpenBve
 					TrainManager.UnapplyEmergencyBrake(nowControl);
 				}
 			}
-			catch(Exception ex) { }
+			catch (Exception ex) { }
 		}
 
+		/// <summary>
+		/// init timetable
+		/// </summary>
+		static public void UpdateTimeTable()
+		{
+			try
+			{
+				Table = Timetable.ControllerGetTimetable();
+				isTimetableReady = true;
+			}
+			catch (Exception ex)
+			{
+				isTimetableReady = false;
+			}
+		}
+
+		/// <summary>
+		/// get station index
+		/// </summary>
+		static public int GetNextStationIndex()
+		{
+			int errState = 0;
+			int stationIndex = -1;
+			try
+			{
+				if (!isTimetableReady) UpdateTimeTable();
+				if (Table.Stations.Length == 0) return errState;
+				for (int i = 0; i < Table.Stations.Length; i++)
+				{
+					int currentSection = nowControl.CurrentSectionIndex;
+					int nextSection = Game.Sections[currentSection].NextSection;
+					double currentSectionPos = nowControl.Cars[nowControl.DriverCar].FrontAxle.Follower.TrackPosition * 3.6;
+					double nextStationPos = Table.Stations[i].TrackPosition * 3.6;
+					if (currentSectionPos <= nextStationPos)
+					{
+						stationIndex = i;
+						break;
+					}
+				}
+				return stationIndex;
+			}
+			catch (Exception ex)
+			{
+				return errState;
+			}
+		}
+
+		/// <summary>
+		/// get current station name
+		/// </summary>
+		static public string GetCurrentStationName()
+		{
+			string errState = "N/A";
+			string stationName = String.Empty;
+			try
+			{
+				if (!isTimetableReady) UpdateTimeTable();
+				int nextStationIndex = GetNextStationIndex();
+				if (Table.Stations.Length == 0 || nextStationIndex - 1 < 0) return errState;
+				stationName = Table.Stations[nextStationIndex - 1].Name;
+				return stationName;
+			}
+			catch (Exception ex)
+			{
+				return errState;
+			}
+		}
+
+		/// <summary>
+		/// get next station name
+		/// </summary>
+		static public string GetNextStationName()
+		{
+			string errState = "N/A";
+			string stationName = String.Empty;
+			try
+			{
+				if (!isTimetableReady) UpdateTimeTable();
+				int nextStationIndex = GetNextStationIndex();
+				if (nextStationIndex == -1) return errState;
+				if (Table.Stations.Length == 0 || nextStationIndex >= Table.Stations.Length) return errState;
+				stationName = Table.Stations[nextStationIndex].Name;
+				return stationName;
+			}
+			catch (Exception ex)
+			{
+				return errState;
+			}
+		}
+
+		/// <summary>
+		/// get next station distance
+		/// </summary>
+		static public double GetNextStationDis()
+		{
+			double errState = -1;
+			double stationDis;
+			try
+			{
+				if (!isTimetableReady) UpdateTimeTable();
+				if (Table.Stations.Length == 0) return errState;
+				//
+				int nextStationIndex = GetNextStationIndex();
+				if (nextStationIndex == -1) return errState;
+				int currentSection = nowControl.CurrentSectionIndex;
+				int nextSection = Game.Sections[currentSection].NextSection;
+				double currentSectionPos = nowControl.Cars[nowControl.DriverCar].FrontAxle.Follower.TrackPosition * 3.6;
+				double nextStationPos = Table.Stations[nextStationIndex].TrackPosition * 3.6;
+				stationDis = nextStationPos - currentSectionPos;
+				//
+				return stationDis / 1000;
+			}
+			catch (Exception ex)
+			{
+				return errState;
+			}
+		}
+
+		/// <summary>
+		/// get if next station should stop
+		/// </summary>
+		static public int GetNextStationStopMode()
+		{
+			int errState = -1;
+			int stationStopMode = 0;
+			try
+			{
+				if (!isTimetableReady) UpdateTimeTable();
+				if (Table.Stations.Length == 0) return errState;
+				//
+				int nextStationIndex = GetNextStationIndex();
+				if (nextStationIndex == -1) return errState;
+				if (Table.Stations[nextStationIndex].Pass) stationStopMode = 1;
+				else stationStopMode = 2;
+				//
+				return stationStopMode;
+			}
+			catch (Exception ex)
+			{
+				return errState;
+			}
+		}
+
+		/// <summary>
+		/// get next station arrival time
+		/// </summary>
+		static public string GetNextStationArrialTime()
+		{
+			string errState = "N/A";
+			string arrivalTime = String.Empty;
+			try
+			{
+				if (!isTimetableReady) UpdateTimeTable();
+				int nextStationIndex = GetNextStationIndex();
+				if (nextStationIndex == -1) return errState;
+				if (Table.Stations.Length == 0 || nextStationIndex >= Table.Stations.Length) return errState;
+				//
+				string Hour, Min, Sec;
+				if (Table.Stations[nextStationIndex].Pass)
+				{
+					Hour = Table.Stations[nextStationIndex].Departure._Hour;
+					Min = Table.Stations[nextStationIndex].Departure.Minute;
+					Sec = Table.Stations[nextStationIndex].Departure.Second;
+				}
+				else
+				{
+					Hour = Table.Stations[nextStationIndex].Arrival._Hour;
+					Min = Table.Stations[nextStationIndex].Arrival.Minute;
+					Sec = Table.Stations[nextStationIndex].Arrival.Second;
+				}
+				arrivalTime = Hour + ":" + Min + ":" + Sec;
+				return arrivalTime;
+			}
+			catch (Exception ex)
+			{
+				return errState;
+			}
+		}
+
+		/// <summary>
+		/// get next station departure time
+		/// </summary>
+		static public string GetCurrentStationDepartureTime()
+		{
+			string errState = "N/A";
+			string departureTime = String.Empty;
+			try
+			{
+				if (!isTimetableReady) UpdateTimeTable();
+				int nextStationIndex = GetNextStationIndex();
+				if (nextStationIndex == -1) return errState;
+				if (Table.Stations.Length == 0 || nextStationIndex - 1 < 0) return errState;
+				//
+				string Hour, Min, Sec;
+				Hour = Table.Stations[nextStationIndex - 1].Departure._Hour;
+				Min = Table.Stations[nextStationIndex - 1].Departure.Minute;
+				Sec = Table.Stations[nextStationIndex - 1].Departure.Second;
+				departureTime = Hour + ":" + Min + ":" + Sec;
+				return departureTime;
+			}
+			catch (Exception ex)
+			{
+				return errState;
+			}
+		}
+
+		/// <summary>
+		/// get current route name
+		/// </summary>
+		static public string GetCurrentRouteName()
+		{
+			string errState = "N/A";
+			try
+			{
+				return Game.LogRouteName;
+			}
+			catch (Exception ex)
+			{
+				return errState;
+			}
+		}
+
+		/// <summary>
+		/// get current train name
+		/// </summary>
+		static public string GetCurrentTrainName()
+		{
+			string errState = "N/A";
+			try
+			{
+				return Game.LogTrainName;
+			}
+			catch (Exception ex)
+			{
+				return errState;
+			}
+		}
+
+		/// <summary>
+		/// get current time
+		/// </summary>
+		static public string GetCurrentTime()
+		{
+			string errState = "N/A";
+			string _currentTime = String.Empty;
+			try
+			{
+
+				int Hour, Min, Sec;
+				double x;
+				x = currentTime;
+				x -= 86400.0 * Math.Floor(x / 86400.0);
+				Hour = (int)Math.Floor(x / 3600.0);
+				x -= 3600.0 * (double)Hour;
+				Min = (int)Math.Floor(x / 60.0);
+				x -= 60.0 * (double)Min;
+				Sec = (int)Math.Floor(x);
+				_currentTime = Hour.ToString("00", System.Globalization.CultureInfo.InvariantCulture) + ":" + 
+					Min.ToString("00", System.Globalization.CultureInfo.InvariantCulture) + ":" + 
+					Sec.ToString("00", System.Globalization.CultureInfo.InvariantCulture);
+				return _currentTime;
+			}
+			catch (Exception ex)
+			{
+				return errState;
+			}
+		}
 	}
 }

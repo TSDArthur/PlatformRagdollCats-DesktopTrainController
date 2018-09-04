@@ -182,7 +182,6 @@
             this.labelOptionsTitleBackground = new System.Windows.Forms.Label();
             this.labelFillerThree = new System.Windows.Forms.Label();
             this.panelPanels = new System.Windows.Forms.Panel();
-            this.buttonCCP = new System.Windows.Forms.Button();
             this.radioButtonPackages = new System.Windows.Forms.RadioButton();
             this.labelPanelsBottom = new System.Windows.Forms.Label();
             this.radiobuttonOptions = new System.Windows.Forms.RadioButton();
@@ -2528,7 +2527,6 @@
             // panelPanels
             // 
             this.panelPanels.BackColor = System.Drawing.Color.Gray;
-            this.panelPanels.Controls.Add(this.buttonCCP);
             this.panelPanels.Controls.Add(this.radioButtonPackages);
             this.panelPanels.Controls.Add(this.labelPanelsBottom);
             this.panelPanels.Controls.Add(this.radiobuttonOptions);
@@ -2540,19 +2538,6 @@
             this.panelPanels.Name = "panelPanels";
             this.panelPanels.Size = new System.Drawing.Size(160, 210);
             this.panelPanels.TabIndex = 0;
-            // 
-            // buttonCCP
-            // 
-            this.buttonCCP.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
-            this.buttonCCP.AutoEllipsis = true;
-            this.buttonCCP.BackColor = System.Drawing.SystemColors.ButtonFace;
-            this.buttonCCP.Location = new System.Drawing.Point(8, 174);
-            this.buttonCCP.Name = "buttonCCP";
-            this.buttonCCP.Size = new System.Drawing.Size(144, 24);
-            this.buttonCCP.TabIndex = 15;
-            this.buttonCCP.Text = "Contoller Monitor";
-            this.buttonCCP.UseVisualStyleBackColor = true;
-            this.buttonCCP.Click += new System.EventHandler(this.buttonCCP_Click);
             // 
             // radioButtonPackages
             // 
@@ -5843,6 +5828,5 @@
 		private System.Windows.Forms.Button buttonRailDriverCalibration;
 		private System.Windows.Forms.ComboBox comboBoxRailDriverUnits;
 		private System.Windows.Forms.Label labelRailDriverSpeedUnits;
-		private System.Windows.Forms.Button buttonCCP;
 	}
 }

@@ -147,8 +147,8 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Arduino\DataCoverter.cs" />
-    <Compile Include="Arduino\TrainMethods.cs" />
+    <Compile Include="Controller\DataCoverter.cs" />
+    <Compile Include="Controller\TrainMethods.cs" />
     <Compile Include="Game\AI\AI.cs" />
     <Compile Include="Game\AI\AI.PreTrain.cs">
       <DependentUpon>AI.cs</DependentUpon>
@@ -549,6 +549,7 @@
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>AssemblyInfo.cs</LastGenOutput>
     </Content>
+    <None Include="Resources\Banner_small.jpg" />
     <None Include="Resources\Banner.bmp" />
     <None Include="Resources\Switch.png" />
     <None Include="Resources\Connected.png" />

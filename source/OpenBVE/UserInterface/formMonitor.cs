@@ -31,18 +31,18 @@ namespace OpenBve
         private void btnStartRead_Click(object sender, EventArgs e)
         {
             this.InitialSerialPort();
-
             this.btnRead.Enabled = false;
             this.btnStopRead.Enabled = true;
-        }
+			toolStripLabel.Text = "Controller Connected,";
+		}
 
         private void btnStopRead_Click(object sender, EventArgs e)
         {
             this.DisposeSerialPort();
-
             this.btnStopRead.Enabled = false;
             this.btnRead.Enabled = true;
-        }
+			toolStripLabel.Text = "Ready.";
+		}
 
         private void frmMain_FormClosing(object sender, FormClosingEventArgs e)
         {
@@ -140,7 +140,7 @@ namespace OpenBve
 			{
 				this.txtBoxRecieve.Text = taskRecord;
 				doEvents(taskRecord);
-				listBoxTsk.Items.Insert(0, DateTime.Now.ToString() + " >> Recieve: " + taskRecord);
+				//listBoxTsk.Items.Insert(0, DateTime.Now.ToString() + " >> Recieve: " + taskRecord);
 				taskRecord = String.Empty;
 			};
 
@@ -160,9 +160,9 @@ namespace OpenBve
 			DataCoverter.RecieceFrame(frame);
 			port.Write(mcuFrame);
 			this.txtBoxSend.Text = mcuFrame;
-			this.listBoxTsk.Items.Insert(0, DateTime.Now.ToString() + " >> Send: " + mcuFrame);
-			this.listBoxTsk.SelectedIndex = this.listBoxTsk.Items.Count - 1;
-			if (listBoxTsk.Items.Count > 18) listBoxTsk.Items.Clear();
+			//this.listBoxTsk.Items.Insert(0, DateTime.Now.ToString() + " >> Send: " + mcuFrame);
+			//this.listBoxTsk.SelectedIndex = this.listBoxTsk.Items.Count - 1;
+			//if (listBoxTsk.Items.Count > 18) listBoxTsk.Items.Clear();
 			return;
 		}
 
@@ -195,6 +195,15 @@ namespace OpenBve
 				txtBoxBrakeHandle.Text = "BKE : " + TrainMethods.GetBrake().ToString();
 				txtBoxPowerHandle.Text = "PWR : " + trainInfo.Handles.Power.Driver.ToString();
 				txtBoxConstSpeed.Text = "CON_SPD : " + TrainMethods.GetSetConstSpeed().ToString();
+				txtBoxCurrentStation.Text = "CUR_STA : " + TrainMethods.GetCurrentStationName();
+				txtBoxNextStation.Text = "NEX_STA : " + TrainMethods.GetNextStationName();
+				txtBoxNextStationDis.Text = "NEX_STADIS : " + decimal.Round(decimal.Parse(TrainMethods.GetNextStationDis().ToString()) , 2) + " / " + 
+					(TrainMethods.GetNextStationStopMode() == 1 ? "VIA" : "STOP");
+				txtBoxArrivalTime.Text = "AT : " + TrainMethods.GetNextStationArrialTime();
+				txtBoxDepartureTime.Text = "DT : " + TrainMethods.GetCurrentStationDepartureTime();
+				txtBoxCurrentTime.Text = "TME : " + TrainMethods.GetCurrentTime();
+				txtBoxRouteName.Text = "ROUTE_NAME : " + TrainMethods.GetCurrentRouteName();
+				txBoxTrainName.Text = "T_ID : " + TrainMethods.GetCurrentTrainName();
 				//
 				btnBack.Enabled = true;
 				btnDown.Enabled = true;
@@ -208,6 +217,9 @@ namespace OpenBve
 				btnEmeOff.Enabled = true;
 				btnKeyLock.Enabled = true;
 				btnKeyUnlock.Enabled = true;
+				//
+				if (toolStripLabel.Text == "Game initializing...")
+					toolStripLabel.Text = "Ready.";
 			}
 			catch (Exception ex)
 			{
@@ -224,6 +236,8 @@ namespace OpenBve
 				btnEmeOff.Enabled = false;
 				btnKeyLock.Enabled = false;
 				btnKeyUnlock.Enabled = false;
+				//
+				toolStripLabel.Text = "Game initializing...";
 			}
 
 			if (SerialPort.GetPortNames().Length > cmbSerials.Items.Count)
@@ -273,6 +287,8 @@ namespace OpenBve
 
 		private void formCM_Load(object sender, EventArgs e)
 		{
+			this.Top = 1;
+			this.Left = 1;
 			this.cmbSerials.Items.AddRange(SerialPort.GetPortNames());
 			this.cmbSerials.SelectedIndex = this.cmbSerials.Items.Count - 1;
 			TrainMethods.AttachMainTimerInterrupt(500);
@@ -294,6 +310,8 @@ namespace OpenBve
 
 		private void btnRefresh_Click(object sender, EventArgs e)
 		{
+			toolStripLabel.Text = "Refreshing devices...";
+
 			if (SerialPort.GetPortNames().Length > cmbSerials.Items.Count)
 			{
 				cmbSerials.Items.Clear();
@@ -307,6 +325,8 @@ namespace OpenBve
 				btnStopRead.Enabled = false;
 				cmbSerials.Items.Clear();
 			}
+
+			toolStripLabel.Text = "Ready.";
 		}
 
 		private void btnHornSt_MouseDown(object sender, MouseEventArgs e)
@@ -347,6 +367,31 @@ namespace OpenBve
 		private void btnAPOFF_Click(object sender, EventArgs e)
 		{
 			TrainMethods.SetAutoPilot(0);
+		}
+
+		private void txtBoxSpeed_TextChanged(object sender, EventArgs e)
+		{
+
+		}
+
+		private void txtBoxSpdLimit_TextChanged(object sender, EventArgs e)
+		{
+
+		}
+
+		private void txtBoxSignal_TextChanged(object sender, EventArgs e)
+		{
+
+		}
+
+		private void txtBoxPowerHandle_TextChanged(object sender, EventArgs e)
+		{
+
+		}
+
+		private void txtBoxSignalDis_TextChanged(object sender, EventArgs e)
+		{
+
 		}
 	}
 }
