@@ -1,13 +1,10 @@
-# Arduino Part
-Website: https://tsdarthur.github.io/PlatformRagdollCats-DesktopTrainController/
-
 ## Controller Source Code - Readme
 
 Board: Arduino DUE / Arduino MEGA 2560
 
 Built on Arduino 1.8.6
 
-Version: 1.0
+Version: 1.1
 
 Author: TSDArthur
 
