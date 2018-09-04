@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+
+    <head>
+
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <title>Platform Ragdoll Cats - 基于开源硬件的列车司机室模拟平台</title>
+
+        <!-- CSS -->
+        <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=Lato:400,700">
+        <link rel="stylesheet" href="assets/bootstrap/css/bootstrap.min.css">
+        <link rel="stylesheet" href="assets/css/animate.css">
+        <link rel="stylesheet" href="assets/css/magnific-popup.css">
+		<link rel="stylesheet" href="assets/css/form-elements.css">
+        <link rel="stylesheet" href="assets/css/style.css">
+        <link rel="stylesheet" href="assets/css/media-queries.css">
+
+        <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+        <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+        <!--[if lt IE 9]>
+            <script src="https://oss.maxcdn.com/libs/html5shiv/3.7.0/html5shiv.js"></script>
+            <script src="https://oss.maxcdn.com/libs/respond.js/1.4.2/respond.min.js"></script>
+        <![endif]-->
+
+        <!-- Favicon and touch icons -->
+        <link rel="shortcut icon" href="assets/ico/favicon.png">
+        <link rel="apple-touch-icon-precomposed" sizes="144x144" href="assets/ico/apple-touch-icon-144-precomposed.png">
+        <link rel="apple-touch-icon-precomposed" sizes="114x114" href="assets/ico/apple-touch-icon-114-precomposed.png">
+        <link rel="apple-touch-icon-precomposed" sizes="72x72" href="assets/ico/apple-touch-icon-72-precomposed.png">
+        <link rel="apple-touch-icon-precomposed" href="assets/ico/apple-touch-icon-57-precomposed.png">
+
+    </head>
+
+    <body>
+    
+        <!-- Loader -->
+    	<div class="loader">
+    		<div class="loader-img"></div>
+    	</div>
+		
+		<!-- Top menu -->
+		<nav>
+			<a class="scroll-link" href="#top-content">回到顶部</a>
+			<a class="scroll-link" href="#what-we-do">平台特性</a>
+			<a class="scroll-link" href="#process">开发日志</a>
+			<a class="scroll-link" href="#portfolio">文档下载</a>
+			<a class="scroll-link" href="#contact">联系我们</a>
+			<div class="hide-menu">
+				<a href=""><i class="fa fa-bars"></i>↑</a>
+			</div>
+		</nav>
+		<div class="show-menu">
+			<a href=""><i class="fa fa-bars">↓</i></a>
+		</div>
+		
+        <!-- Top content -->
+        <div class="top-content">
+          <div class="top-content-text wow fadeInUp">
+            	<div class="divider-2"><span></span></div>
+            	<h1><a href="">RAGDOLL CATS PLATFORM</a></h1>
+            	<div class="divider-2"><span></span></div>
+           	<p>基于久经考验的 Arduino 开源硬件与 OpenBVE 开源列车模拟器，一个开源、稳定、强大、可扩展的列车驾驶模拟硬件设备开发平台。</p>
+            	<div class="top-content-bottom-link">
+            		<a class="big-link-1" href="https://github.com/TSDArthur/PlatformRagdollCats-DesktopTrainController">进入代码仓库</a>
+            	</div>
+            </div>
+        </div>
+        
+        <!-- What we do -->
+        <div class="what-we-do-container section-container">
+	        <div class="container">
+	            <div class="row">
+	                <div class="col-sm-12 what-we-do section-description wow fadeIn">
+	                    <h2>平台特性</h2>
+	                    <div class="divider-1 wow fadeInUp"><span></span></div>
+	                    <p>
+	                    	我们将成熟的 C++ 开发经验完全运用到基于 Arduino Processing 语言的硬件开发中， 并不断提升效率，优化性能。至此，久经考验的平台拥有了极为现代化的灵魂。
+                      </p>
+	                </div>
+	            </div>
+	            <div class="row">
+                	<div class="col-sm-4 what-we-do-box wow fadeInUp">
+	                	<div class="what-we-do-box-icon"><i class="fa fa-pencil"></i>1</div>
+	                    <h3>可扩展性</h3>
+	                    <p>从现在开始，自定义一台低成本、高可靠性的虚拟列车驾驶台只需要三步。所有的一切完全开源，选择您的OpenBVE车辆与线路 -> 修改功率手柄与制动限位值 -> 接入开关与线路，只需要三步，即可搭建虚拟列车驾驶台硬件。</p>
+                    </div>
+                    <div class="col-sm-4 what-we-do-box wow fadeInDown">
+	                	<div class="what-we-do-box-icon"><i class="fa fa-gears"></i>2</div>
+	                    <h3>高可靠性</h3>
+	                    <p>异步串行接口数据传输，Ping-Pong式数据传输，两种数据覆写模式，数据帧起始校验，软硬件联合消抖。共同构成了高可靠性的列车驾驶模拟体验。</p>
+                    </div>
+                    <div class="col-sm-4 what-we-do-box wow fadeInUp">
+	                	<div class="what-we-do-box-icon"><i class="fa fa-twitter"></i>3</div>
+	                    <h3>为Geek而生</h3>
+	                    <p>我们提供了一系列适合从 Arduino 新人到工程师的特性。整体运行架构由有限状态自动机、等候队列与定时器中断构成。支持三种设备唤起方式，可无限添加操作设备并按规范为其编写代码。我们甚至在上位机中提供了主定时器，以供完成高级操作。</p>
+                    </div>
+	            </div>
+	        </div>
+        </div><div class="copyrights">BY TSDArthur <a href="http://github.com/tsdarthur"  title="TSDArthur">TSDArthur's Github</a></div>
+        
+        <!-- Our process -->
+        <div class="block-1-container process-container section-container section-container-gray">
+	        <div class="container">
+	            <div class="row">
+	                <div class="col-sm-12 block-1 section-description wow fadeIn">
+	                	<h2>开发日志</h2>
+	                    <div class="divider-1 wow fadeInUp"><span></span></div>
+	                    <p>
+	                    	RAGDOLL CATS PLATFORM 共经历两次重大更新，目前阶段为第二版第一测试版。
+                      </p>
+	                </div>
+	            </div>
+	            <div class="row">
+	              <div class="col-sm-6 block-1-right wow fadeInUp">
+            		<h3>第一版</h3>
+	            		<p>[2017-9]开始筹备第一版本</p>
+	            		<p>[2017-10]由于各种原因，开发取消</p>
+                        <p>[2018-5]第一版第一测试版落地测试</p>
+	            		<h3>第二版</h3>
+	            		<p>[2018-5]高扩展性，高可靠性的第二版立项</p>
+                        <p>[2018-5]Desktop Train Controller 2.0 正式命名为 [Platform Ragdoll Cats]</p>
+                        <p>[2018-6][Platform Ragdoll Cats] 重写下位机函数调用，确认数据传输格式</p>
+                        <p>[2018-6][Platform Ragdoll Cats] 下位机程序第一次编译</p>
+                        <p>[2018-6][Platform Ragdoll Cats] 上位机重写函数调用</p>
+                        <p>[2018-6][Platform Ragdoll Cats] 测试通过，第二版第一测试版落地</p>
+            	  </div>
+              </div>
+	        </div>
+        </div>
+        
+        <!-- Clients -->
+        <div class="clients-container section-container">
+        	<div class="container">
+        		<div class="row"></div>
+        	</div>
+        </div>
+        
+        <!-- Counters -->
+        <div class="counters-container section-container section-container-full-bg">
+        	<div class="container">
+        		<div class="row">
+	            	<div class="col-sm-3 counter-box wow fadeInUp">
+                    	<h4>1</h4>
+                    	<p>从筹划到目前第一测试版落地，间隔1年时间</p>
+	            	</div>
+	            	<div class="col-sm-3 counter-box wow fadeInDown">
+                    	<h4>4</h4>
+                    	<p>提供对两类开关设备及数模输出共四种设备的支持</p>
+	            	</div>
+	            	<div class="col-sm-3 counter-box wow fadeInUp">
+                    	<h4>1600+</h4>
+                    	<p>代码行数</p>
+	            	</div>
+	            	<div class="col-sm-3 counter-box wow fadeInDown">
+                    	<h4>2</h4>
+                    	<p>经历两次重大修改</p>
+	            	</div>
+	            </div>
+        	</div>
+        </div>
+        
+        <!-- Portfolio -->
+        <div class="portfolio-container section-container">
+	        <div class="container">
+	            <div class="row">
+	                <div class="col-sm-12 portfolio section-description wow fadeIn">
+	                	<h2>下载文档</h2>
+	                    <div class="divider-1 wow fadeInUp"><span></span></div>
+	                    <p>
+	                    	下载关于安装、配置、调试的文档。以及关于扩展开发、源代码修改维护的指导文档。
+	                    </p>
+	                </div>
+	            </div>
+	            <div class="row">
+	            	<div class="col-sm-12 portfolio-filters wow fadeInUp">
+	            		<a href="#" class="filter-all active">全部</a> / 
+	            		<a href="#" class="filter-design">安装</a> / 
+	            		<a href="#" class="filter-development">配置与调试</a> / 
+	            		<a href="#" class="filter-branding">扩展开发</a>
+	            	</div>
+	            </div>
+	            <div class="row">
+	            	<div class="col-sm-12 portfolio-masonry">
+		                <div class="portfolio-box design">
+		                	<img src="assets/img/portfolio/1.jpg" alt="" data-at2x="assets/img/portfolio/1.jpg">
+		                	<div class="portfolio-box-text-container">
+		                		<div class="portfolio-box-text">
+		                			<p><a href="#">下载设备安装教程</a></p>
+		                		</div>
+		                	</div>
+		                </div>
+		                <div class="portfolio-box development">
+		                	<img src="assets/img/portfolio/2.jpg" alt="" data-at2x="assets/img/portfolio/2.jpg">
+		                	<div class="portfolio-box-text-container">
+		                		<div class="portfolio-box-text">
+		                			<p><a href="#">下载配置与调试说明</a></p>
+		                		</div>
+		                	</div>
+		                </div>
+		                <div class="portfolio-box branding">
+		                	<img src="assets/img/portfolio/3.jpg" alt="" data-at2x="assets/img/portfolio/3.jpg">
+		                	<div class="portfolio-box-text-container">
+		                		<div class="portfolio-box-text">
+		                			<p><a href="#">下载源代码说明</a></p>
+		                		</div>
+		                	</div>
+		                </div>
+		                <div class="portfolio-box development">
+		                	<img src="assets/img/portfolio/4.jpg" alt="" data-at2x="assets/img/portfolio/4.jpg">
+		                	<div class="portfolio-box-text-container">
+		                		<div class="portfolio-box-text">
+		                			<p><a href="#">下载宏定义编写规范</a></p>
+		                		</div>
+		                	</div>
+		                </div>
+		                <div class="portfolio-box design">
+		                	<img src="assets/img/portfolio/5.jpg" alt="" data-at2x="assets/img/portfolio/5.jpg">
+		                	<div class="portfolio-box-text-container">
+		                		<div class="portfolio-box-text">
+		                			<p><a href="#">下载接线图</a></p>
+		                		</div>
+		                	</div>
+		                </div>
+		                <div class="portfolio-box development">
+		                	<img src="assets/img/portfolio/6.jpg" alt="" data-at2x="assets/img/portfolio/6.jpg">
+		                	<div class="portfolio-box-text-container">
+		                		<div class="portfolio-box-text">
+		                			<p><a href="#">下载常见问题及解决方法</a></p>
+		                		</div>
+		                	</div>
+		                </div>
+		                <div class="portfolio-box design">
+		                	<img src="assets/img/portfolio/7.jpg" alt="" data-at2x="assets/img/portfolio/7.jpg">
+		                	<div class="portfolio-box-text-container">
+		                		<div class="portfolio-box-text">
+		                			<p><a href="#">下载IO口配置与程序声明文档</a></p>
+		                		</div>
+		                	</div>
+		                </div>
+		                <div class="portfolio-box branding">
+		                	<img src="assets/img/portfolio/8.jpg" alt="" data-at2x="assets/img/portfolio/8.jpg">
+		                	<div class="portfolio-box-text-container">
+		                		<div class="portfolio-box-text">
+		                			<p><a href="#">下载新建操作设备指导</a></p>
+		                		</div>
+		                	</div>
+		                </div>
+		                <div class="portfolio-box branding">
+		                	<img src="assets/img/portfolio/9.jpg" alt="" data-at2x="assets/img/portfolio/9.jpg">
+		                	<div class="portfolio-box-text-container">
+		                		<div class="portfolio-box-text">
+		                			<p><a href="#">下载新建显示设备指导</a></p>
+		                		</div>
+		                	</div>
+		                </div>
+		                <div class="portfolio-box branding">
+		                	<img src="assets/img/portfolio/10.jpg" alt="" data-at2x="assets/img/portfolio/10.jpg">
+		                	<div class="portfolio-box-text-container">
+		                		<div class="portfolio-box-text">
+		                			<p><a href="#">下载通讯数据格式文档</a></p>
+		                		</div>
+		                	</div>
+		                </div>
+		                <div class="portfolio-box branding">
+		                	<img src="assets/img/portfolio/11.jpg" alt="" data-at2x="assets/img/portfolio/11.jpg">
+		                	<div class="portfolio-box-text-container">
+		                		<div class="portfolio-box-text">
+		                			<p><a href="#">下载上位机开发接口文档</a></p>
+		                		</div>
+		                	</div>
+		                </div>
+		                <div class="portfolio-box branding">
+		                	<img src="assets/img/portfolio/12.jpg" alt="" data-at2x="assets/img/portfolio/12.jpg">
+		                	<div class="portfolio-box-text-container">
+		                		<div class="portfolio-box-text">
+		                			<p><a href="#">下载例[机车信号机显示]</a></p>
+		                		</div>
+		                	</div>
+		                </div>
+	                </div>
+	            </div>
+	        </div>
+        </div>
+
+        <!-- Testimonials -->
+        <div class="testimonials-container section-container section-container-gray">
+	        <div class="container">
+	            <div class="row"></div>
+	        </div>
+        </div>
+        
+        <!-- Our motto -->
+        <div class="our-motto-container section-container section-container-full-bg">
+	        <div class="container">
+	            <div class="row">
+	                <div class="col-sm-12 our-motto section-description wow fadeInLeftBig">
+	                    <p>
+	                    	“当我还是一个孩子的时候，我就梦想驾驶列车”
+	                    </p>
+	                    <div class="our-motto-author">完成儿时的梦想</div>
+	                </div>
+	            </div>
+	        </div>
+        </div>
+        
+        <!-- The team -->
+        <div class="team-container section-container">
+	        <div class="container">
+	            <div class="row"></div>
+	            <div class="row"></div>
+	        </div>
+        </div>
+        
+        <!-- Contact us -->
+        <div class="contact-container section-container section-container-gray">
+	        <div class="container">
+	            <div class="row">
+	                <div class="col-sm-12 contact section-description wow fadeIn">
+	                	<h2>Contact us</h2>
+	                    <div class="divider-1 wow fadeInUp"><span></span></div>
+	                    <p>
+	                    	联系我们以分享您的经验。</p>
+	                </div>
+	            </div>
+	            <div class="row">
+	            	<div class="col-sm-12 contact-form wow fadeInLeft">
+	                    <form role="form" action="assets/contact.php" method="post">
+	                    	<div class="form-group">
+	                    		<label class="sr-only" for="contact-email">Email</label>
+	                        	<input type="text" name="email" placeholder="Email..." class="contact-email" id="contact-email">
+	                        </div>
+	                        <div class="form-group">
+	                        	<label class="sr-only" for="contact-subject">Subject</label>
+	                        	<input type="text" name="subject" placeholder="Subject..." class="contact-subject" id="contact-subject">
+	                        </div>
+	                        <div class="form-group">
+	                        	<label class="sr-only" for="contact-message">Message</label>
+	                        	<textarea name="message" placeholder="Message..." class="contact-message" id="contact-message"></textarea>
+	                        </div>
+	                        <button type="submit" class="btn">Send message</button>
+	                    </form>
+	            	</div>
+	            </div>
+	        </div>
+        </div>
+        
+        <!-- Scroll to top -->
+        <div class="section-container section-container-gray">
+	        <div class="container">
+		        <div class="row">
+		        	<div class="col-sm-12">
+		        		<div class="scroll-to-top">
+		        			<a class="scroll-link" href="#top-content"><i class="fa fa-chevron-up"></i></a>
+		        		</div>
+		        	</div>
+		        </div>
+	        </div>
+        </div>
+                
+        <!-- Footer -->
+        <footer>
+	        <div class="container">
+	            <div class="row">
+                    <div class="col-sm-7 footer-copyright">
+               	  &copy;2018 TSDArthur</div>
+	            </div>
+	        </div>
+        </footer>
+        
+
+        <!-- Javascript -->
+        <script src="assets/js/jquery-1.11.1.min.js"></script>
+        <script src="assets/bootstrap/js/bootstrap.min.js"></script>
+        <script src="assets/js/jquery.backstretch.min.js"></script>
+        <script src="assets/js/wow.min.js"></script>
+        <script src="assets/js/retina-1.1.0.min.js"></script>
+        <script src="assets/js/jquery.magnific-popup.min.js"></script>
+        <script src="assets/js/masonry.pkgd.min.js"></script>
+        <script src="assets/js/scripts.js"></script>
+        
+        <!--[if lt IE 10]>
+            <script src="assets/js/placeholder.js"></script>
+        <![endif]-->
+
+    </body>
+
+</html>
