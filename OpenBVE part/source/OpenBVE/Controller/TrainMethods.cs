@@ -354,7 +354,7 @@ namespace OpenBve
 				int nextSection = Game.Sections[currentSection].NextSection;
 				double nextSectionPos = Game.Sections[nextSection].TrackPosition;
 				double currentSectionPos = nowControl.Cars[nowControl.DriverCar].FrontAxle.Follower.TrackPosition;
-				return (int)(nextSectionPos - currentSectionPos);
+				return (int)((nextSectionPos - currentSectionPos >= 0 ? nextSectionPos - currentSectionPos : 0));
 			}
 			catch (Exception ex) { }
 			return 0;
@@ -655,8 +655,13 @@ namespace OpenBve
 				int nextSection = Game.Sections[currentSection].NextSection;
 				double currentSectionPos = nowControl.Cars[nowControl.DriverCar].FrontAxle.Follower.TrackPosition;
 				double nextStationPos = Table.Stations[nextStationIndex].TrackPosition;
+				double stopPos = nowControl.StationDistanceToStopPoint;
 				stationDis = nextStationPos - currentSectionPos;
 				//
+				if (!Table.Stations[nextStationIndex].Pass)
+				{
+					stationDis = stationDis <= 180 ? stopPos : stationDis;
+				}
 				return stationDis / 1000;
 			}
 			catch (Exception ex)
@@ -717,6 +722,7 @@ namespace OpenBve
 					Min = Table.Stations[nextStationIndex].Arrival.Minute;
 					Sec = Table.Stations[nextStationIndex].Arrival.Second;
 				}
+				if (Hour == string.Empty || Hour == " ") return errState;
 				arrivalTime = Hour + ":" + Min + ":" + Sec;
 				return arrivalTime;
 			}
@@ -744,6 +750,7 @@ namespace OpenBve
 				Hour = Table.Stations[nextStationIndex - 1].Departure._Hour;
 				Min = Table.Stations[nextStationIndex - 1].Departure.Minute;
 				Sec = Table.Stations[nextStationIndex - 1].Departure.Second;
+				if (Hour == string.Empty || Hour == " ") return errState;
 				departureTime = Hour + ":" + Min + ":" + Sec;
 				return departureTime;
 			}
@@ -812,6 +819,54 @@ namespace OpenBve
 			{
 				return errState;
 			}
+		}
+
+		/// <summary>
+		/// open left door
+		/// </summary>
+		static public void LeftDoorOpen()
+		{
+			try
+			{
+				TrainManager.OpenTrainDoors(TrainManager.PlayerTrain, true, false);
+			}
+			catch (Exception ex) { }
+		}
+
+		/// <summary>
+		/// close left door
+		/// </summary>
+		static public void LeftDoorClose()
+		{
+			try
+			{
+				TrainManager.CloseTrainDoors(TrainManager.PlayerTrain, true, false);
+			}
+			catch (Exception ex) { }
+		}
+
+		/// <summary>
+		/// open right door
+		/// </summary>
+		static public void RightDoorOpen()
+		{
+			try
+			{
+				TrainManager.OpenTrainDoors(TrainManager.PlayerTrain, false, true);
+			}
+			catch (Exception ex) { }
+		}
+
+		/// <summary>
+		/// close left door
+		/// </summary>
+		static public void RightDoorClose()
+		{
+			try
+			{
+				TrainManager.CloseTrainDoors(TrainManager.PlayerTrain, false, true);
+			}
+			catch (Exception ex) { }
 		}
 	}
 }

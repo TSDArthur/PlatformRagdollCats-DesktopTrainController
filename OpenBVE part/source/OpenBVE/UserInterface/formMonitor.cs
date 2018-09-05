@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using OpenBve.UserInterface;
 using OpenBveApi.Packages;
 using OpenBve;
+using OpenBve;
 
 namespace OpenBve
 {
@@ -218,6 +219,10 @@ namespace OpenBve
 				btnKeyLock.Enabled = true;
 				btnKeyUnlock.Enabled = true;
 				btnRestartGame.Enabled = true;
+				btnLeftDoorClose.Enabled = true;
+				btnLeftDoorOpen.Enabled = true;
+				btnRightDoorClose.Enabled = true;
+				btnRightDoorOpen.Enabled = true;
 				//
 				if (toolStripLabel.Text == "Environment initializing...")
 					toolStripLabel.Text = "Ready.";
@@ -238,6 +243,10 @@ namespace OpenBve
 				btnKeyLock.Enabled = false;
 				btnKeyUnlock.Enabled = false;
 				btnRestartGame.Enabled = false;
+				btnLeftDoorClose.Enabled = false;
+				btnLeftDoorOpen.Enabled = false;
+				btnRightDoorClose.Enabled = false;
+				btnRightDoorOpen.Enabled = false;
 				//
 				toolStripLabel.Text = "Environment initializing...";
 			}
@@ -413,6 +422,26 @@ namespace OpenBve
 			{
 				MessageBox.Show("Unable to restart simulator.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
 			}
+		}
+
+		private void btnLeftDoorOpen_Click(object sender, EventArgs e)
+		{
+			TrainMethods.LeftDoorOpen();
+		}
+
+		private void btnLeftDoorClose_Click(object sender, EventArgs e)
+		{
+			TrainMethods.LeftDoorClose();
+		}
+
+		private void btnRightDoorOpen_Click(object sender, EventArgs e)
+		{
+			TrainMethods.RightDoorOpen();
+		}
+
+		private void btnRightDoorClose_Click(object sender, EventArgs e)
+		{
+			TrainMethods.RightDoorClose();
 		}
 	}
 }

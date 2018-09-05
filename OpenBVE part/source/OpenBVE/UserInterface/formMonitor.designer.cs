@@ -75,6 +75,10 @@
             this.txtBoxRouteName = new System.Windows.Forms.TextBox();
             this.txBoxTrainName = new System.Windows.Forms.TextBox();
             this.btnRestartGame = new System.Windows.Forms.Button();
+            this.btnLeftDoorOpen = new System.Windows.Forms.Button();
+            this.btnLeftDoorClose = new System.Windows.Forms.Button();
+            this.btnRightDoorOpen = new System.Windows.Forms.Button();
+            this.btnRightDoorClose = new System.Windows.Forms.Button();
             this.toolScripMain.SuspendLayout();
             this.toolStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).BeginInit();
@@ -186,9 +190,9 @@
             // btnKeyLock
             // 
             this.btnKeyLock.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(128)))));
-            this.btnKeyLock.Location = new System.Drawing.Point(221, 263);
+            this.btnKeyLock.Location = new System.Drawing.Point(220, 207);
             this.btnKeyLock.Name = "btnKeyLock";
-            this.btnKeyLock.Size = new System.Drawing.Size(100, 77);
+            this.btnKeyLock.Size = new System.Drawing.Size(100, 23);
             this.btnKeyLock.TabIndex = 38;
             this.btnKeyLock.Text = "KEY LOCK";
             this.btnKeyLock.UseVisualStyleBackColor = false;
@@ -221,7 +225,7 @@
             this.btnKeyUnlock.BackColor = System.Drawing.Color.Lime;
             this.btnKeyUnlock.Location = new System.Drawing.Point(221, 181);
             this.btnKeyUnlock.Name = "btnKeyUnlock";
-            this.btnKeyUnlock.Size = new System.Drawing.Size(100, 77);
+            this.btnKeyUnlock.Size = new System.Drawing.Size(100, 23);
             this.btnKeyUnlock.TabIndex = 35;
             this.btnKeyUnlock.Text = "KEY UNLOCK";
             this.btnKeyUnlock.UseVisualStyleBackColor = false;
@@ -507,12 +511,60 @@
             this.btnRestartGame.UseVisualStyleBackColor = false;
             this.btnRestartGame.Click += new System.EventHandler(this.btnRestartGame_Click);
             // 
+            // btnLeftDoorOpen
+            // 
+            this.btnLeftDoorOpen.BackColor = System.Drawing.Color.Lime;
+            this.btnLeftDoorOpen.Location = new System.Drawing.Point(221, 233);
+            this.btnLeftDoorOpen.Name = "btnLeftDoorOpen";
+            this.btnLeftDoorOpen.Size = new System.Drawing.Size(100, 23);
+            this.btnLeftDoorOpen.TabIndex = 51;
+            this.btnLeftDoorOpen.Text = "LDOOR UNLOCK";
+            this.btnLeftDoorOpen.UseVisualStyleBackColor = false;
+            this.btnLeftDoorOpen.Click += new System.EventHandler(this.btnLeftDoorOpen_Click);
+            // 
+            // btnLeftDoorClose
+            // 
+            this.btnLeftDoorClose.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(128)))));
+            this.btnLeftDoorClose.Location = new System.Drawing.Point(221, 260);
+            this.btnLeftDoorClose.Name = "btnLeftDoorClose";
+            this.btnLeftDoorClose.Size = new System.Drawing.Size(100, 23);
+            this.btnLeftDoorClose.TabIndex = 52;
+            this.btnLeftDoorClose.Text = "LDOOR LOCK";
+            this.btnLeftDoorClose.UseVisualStyleBackColor = false;
+            this.btnLeftDoorClose.Click += new System.EventHandler(this.btnLeftDoorClose_Click);
+            // 
+            // btnRightDoorOpen
+            // 
+            this.btnRightDoorOpen.BackColor = System.Drawing.Color.Lime;
+            this.btnRightDoorOpen.Location = new System.Drawing.Point(221, 287);
+            this.btnRightDoorOpen.Name = "btnRightDoorOpen";
+            this.btnRightDoorOpen.Size = new System.Drawing.Size(100, 23);
+            this.btnRightDoorOpen.TabIndex = 53;
+            this.btnRightDoorOpen.Text = "RDOOR UNLOCK";
+            this.btnRightDoorOpen.UseVisualStyleBackColor = false;
+            this.btnRightDoorOpen.Click += new System.EventHandler(this.btnRightDoorOpen_Click);
+            // 
+            // btnRightDoorClose
+            // 
+            this.btnRightDoorClose.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(128)))));
+            this.btnRightDoorClose.Location = new System.Drawing.Point(220, 315);
+            this.btnRightDoorClose.Name = "btnRightDoorClose";
+            this.btnRightDoorClose.Size = new System.Drawing.Size(100, 23);
+            this.btnRightDoorClose.TabIndex = 54;
+            this.btnRightDoorClose.Text = "RDOOR LOCK";
+            this.btnRightDoorClose.UseVisualStyleBackColor = false;
+            this.btnRightDoorClose.Click += new System.EventHandler(this.btnRightDoorClose_Click);
+            // 
             // formMonitor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
             this.ClientSize = new System.Drawing.Size(439, 485);
+            this.Controls.Add(this.btnRightDoorClose);
+            this.Controls.Add(this.btnRightDoorOpen);
+            this.Controls.Add(this.btnLeftDoorClose);
+            this.Controls.Add(this.btnLeftDoorOpen);
             this.Controls.Add(this.btnRestartGame);
             this.Controls.Add(this.txBoxTrainName);
             this.Controls.Add(this.txtBoxRouteName);
@@ -616,6 +668,10 @@
 		private System.Windows.Forms.TextBox txtBoxRouteName;
 		private System.Windows.Forms.TextBox txBoxTrainName;
 		private System.Windows.Forms.Button btnRestartGame;
+		private System.Windows.Forms.Button btnLeftDoorOpen;
+		private System.Windows.Forms.Button btnLeftDoorClose;
+		private System.Windows.Forms.Button btnRightDoorOpen;
+		private System.Windows.Forms.Button btnRightDoorClose;
 	}
 }
 
