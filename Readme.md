@@ -1,13 +1,8 @@
 ## Controller Source Code - Readme
 
 Board: Arduino DUE / Arduino MEGA 2560
-
 Built on Arduino 1.8.6
-
-Version: 1.1
-
-Author: TSDArthur
-
+Version: 2.1
 Simulator: OpenBVE
 
 ## openBVE Source Code - Readme
