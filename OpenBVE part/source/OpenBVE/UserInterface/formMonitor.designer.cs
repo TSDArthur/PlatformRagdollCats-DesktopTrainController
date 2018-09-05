@@ -74,6 +74,7 @@
             this.txtBoxCurrentTime = new System.Windows.Forms.TextBox();
             this.txtBoxRouteName = new System.Windows.Forms.TextBox();
             this.txBoxTrainName = new System.Windows.Forms.TextBox();
+            this.btnRestartGame = new System.Windows.Forms.Button();
             this.toolScripMain.SuspendLayout();
             this.toolStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).BeginInit();
@@ -482,18 +483,29 @@
             this.txtBoxRouteName.Location = new System.Drawing.Point(9, 96);
             this.txtBoxRouteName.Name = "txtBoxRouteName";
             this.txtBoxRouteName.ReadOnly = true;
-            this.txtBoxRouteName.Size = new System.Drawing.Size(206, 21);
+            this.txtBoxRouteName.Size = new System.Drawing.Size(170, 21);
             this.txtBoxRouteName.TabIndex = 48;
             this.txtBoxRouteName.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // txBoxTrainName
             // 
-            this.txBoxTrainName.Location = new System.Drawing.Point(221, 96);
+            this.txBoxTrainName.Location = new System.Drawing.Point(184, 96);
             this.txBoxTrainName.Name = "txBoxTrainName";
             this.txBoxTrainName.ReadOnly = true;
-            this.txBoxTrainName.Size = new System.Drawing.Size(206, 21);
+            this.txBoxTrainName.Size = new System.Drawing.Size(170, 21);
             this.txBoxTrainName.TabIndex = 49;
             this.txBoxTrainName.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
+            // btnRestartGame
+            // 
+            this.btnRestartGame.BackColor = System.Drawing.Color.Silver;
+            this.btnRestartGame.Location = new System.Drawing.Point(360, 94);
+            this.btnRestartGame.Name = "btnRestartGame";
+            this.btnRestartGame.Size = new System.Drawing.Size(67, 23);
+            this.btnRestartGame.TabIndex = 50;
+            this.btnRestartGame.Text = "Change";
+            this.btnRestartGame.UseVisualStyleBackColor = false;
+            this.btnRestartGame.Click += new System.EventHandler(this.btnRestartGame_Click);
             // 
             // formMonitor
             // 
@@ -501,6 +513,7 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
             this.ClientSize = new System.Drawing.Size(439, 485);
+            this.Controls.Add(this.btnRestartGame);
             this.Controls.Add(this.txBoxTrainName);
             this.Controls.Add(this.txtBoxRouteName);
             this.Controls.Add(this.txtBoxCurrentTime);
@@ -602,6 +615,7 @@
 		private System.Windows.Forms.TextBox txtBoxCurrentTime;
 		private System.Windows.Forms.TextBox txtBoxRouteName;
 		private System.Windows.Forms.TextBox txBoxTrainName;
+		private System.Windows.Forms.Button btnRestartGame;
 	}
 }
 

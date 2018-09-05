@@ -217,8 +217,9 @@ namespace OpenBve
 				btnEmeOff.Enabled = true;
 				btnKeyLock.Enabled = true;
 				btnKeyUnlock.Enabled = true;
+				btnRestartGame.Enabled = true;
 				//
-				if (toolStripLabel.Text == "Game initializing...")
+				if (toolStripLabel.Text == "Environment initializing...")
 					toolStripLabel.Text = "Ready.";
 			}
 			catch (Exception ex)
@@ -236,8 +237,9 @@ namespace OpenBve
 				btnEmeOff.Enabled = false;
 				btnKeyLock.Enabled = false;
 				btnKeyUnlock.Enabled = false;
+				btnRestartGame.Enabled = false;
 				//
-				toolStripLabel.Text = "Game initializing...";
+				toolStripLabel.Text = "Environment initializing...";
 			}
 
 			if (SerialPort.GetPortNames().Length > cmbSerials.Items.Count)
@@ -392,6 +394,25 @@ namespace OpenBve
 		private void txtBoxSignalDis_TextChanged(object sender, EventArgs e)
 		{
 
+		}
+
+		private void btnRestartGame_Click(object sender, EventArgs e)
+		{
+			try
+			{
+				if (MessageBox.Show("Would you want to restart the simulator?", "RAGDOOL Controller",
+					MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+				{
+					if (!TrainMethods.RestartGame())
+					{
+						MessageBox.Show("Unable to restart simulator.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				MessageBox.Show("Unable to restart simulator.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+			}
 		}
 	}
 }

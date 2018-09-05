@@ -6,6 +6,7 @@ using System.Threading;
 using System.Timers;
 using OpenBve;
 using OpenBveApi.Runtime;
+using System.Diagnostics;
 
 namespace OpenBve
 {
@@ -36,6 +37,26 @@ namespace OpenBve
 		static Timetable.Table Table;
 		static bool isTimetableReady = false;
 		static double currentTime = 0;
+
+		/// <summary>
+		/// restart game
+		/// </summary>
+		static public bool RestartGame()
+		{
+			try
+			{
+				System.Diagnostics.Process p;
+				p = new System.Diagnostics.Process();
+				p.StartInfo.FileName = "OpenBVE.exe";
+				p.Start();
+				System.Environment.Exit(0);
+				return true;
+			}
+			catch (Exception ex)
+			{
+				return false;
+			}
+		}
 
 		/// <summary>
 		/// setup ap timer
@@ -331,8 +352,8 @@ namespace OpenBve
 			{
 				int currentSection = nowControl.CurrentSectionIndex;
 				int nextSection = Game.Sections[currentSection].NextSection;
-				double nextSectionPos = Game.Sections[nextSection].TrackPosition * 3.6;
-				double currentSectionPos = nowControl.Cars[nowControl.DriverCar].FrontAxle.Follower.TrackPosition * 3.6;
+				double nextSectionPos = Game.Sections[nextSection].TrackPosition;
+				double currentSectionPos = nowControl.Cars[nowControl.DriverCar].FrontAxle.Follower.TrackPosition;
 				return (int)(nextSectionPos - currentSectionPos);
 			}
 			catch (Exception ex) { }
@@ -632,8 +653,8 @@ namespace OpenBve
 				if (nextStationIndex == -1) return errState;
 				int currentSection = nowControl.CurrentSectionIndex;
 				int nextSection = Game.Sections[currentSection].NextSection;
-				double currentSectionPos = nowControl.Cars[nowControl.DriverCar].FrontAxle.Follower.TrackPosition * 3.6;
-				double nextStationPos = Table.Stations[nextStationIndex].TrackPosition * 3.6;
+				double currentSectionPos = nowControl.Cars[nowControl.DriverCar].FrontAxle.Follower.TrackPosition;
+				double nextStationPos = Table.Stations[nextStationIndex].TrackPosition;
 				stationDis = nextStationPos - currentSectionPos;
 				//
 				return stationDis / 1000;
