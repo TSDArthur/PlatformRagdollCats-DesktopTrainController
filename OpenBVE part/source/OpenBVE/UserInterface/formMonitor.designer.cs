@@ -175,6 +175,7 @@
             this.txtBoxConstSpeed.ReadOnly = true;
             this.txtBoxConstSpeed.Size = new System.Drawing.Size(100, 21);
             this.txtBoxConstSpeed.TabIndex = 40;
+            this.txtBoxConstSpeed.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // btnAPOFF
             // 
@@ -398,7 +399,7 @@
             // tmrUpdate
             // 
             this.tmrUpdate.Enabled = true;
-            this.tmrUpdate.Interval = 500;
+            this.tmrUpdate.Interval = 200;
             this.tmrUpdate.Tick += new System.EventHandler(this.tmrUpdate_Tick);
             // 
             // toolStrip

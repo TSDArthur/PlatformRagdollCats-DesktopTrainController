@@ -198,8 +198,9 @@ namespace OpenBve
 				txtBoxConstSpeed.Text = "CON_SPD : " + TrainMethods.GetSetConstSpeed().ToString();
 				txtBoxCurrentStation.Text = "CUR_STA : " + TrainMethods.GetCurrentStationName();
 				txtBoxNextStation.Text = "NEX_STA : " + TrainMethods.GetNextStationName();
-				txtBoxNextStationDis.Text = "NEX_STADIS : " + decimal.Round(decimal.Parse(TrainMethods.GetNextStationDis().ToString()) , 2) + " / " + 
-					(TrainMethods.GetNextStationStopMode() == 1 ? "VIA" : "STOP");
+				txtBoxNextStationDis.Text = "NEX_STADIS : " + decimal.Round(decimal.Parse((TrainMethods.GetNextStationDis() / 1000).ToString()) , 2) + " / " + 
+					(TrainMethods.GetNextStationStopMode() == 1 ? "VIA" : "STOP") + " / " + 
+					(TrainMethods.GetStopDis() == double.NegativeInfinity ? "N/A" : decimal.Round(decimal.Parse(TrainMethods.GetStopDis().ToString()), 1).ToString());
 				txtBoxArrivalTime.Text = "AT : " + TrainMethods.GetNextStationArrialTime();
 				txtBoxDepartureTime.Text = "DT : " + TrainMethods.GetCurrentStationDepartureTime();
 				txtBoxCurrentTime.Text = "TME : " + TrainMethods.GetCurrentTime();

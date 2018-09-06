@@ -578,13 +578,25 @@ namespace OpenBve
 				{
 					int currentSection = nowControl.CurrentSectionIndex;
 					int nextSection = Game.Sections[currentSection].NextSection;
-					double currentSectionPos = nowControl.Cars[nowControl.DriverCar].FrontAxle.Follower.TrackPosition * 3.6;
-					double nextStationPos = Table.Stations[i].TrackPosition * 3.6;
+					double currentSectionPos = nowControl.Cars[nowControl.DriverCar].FrontAxle.Follower.TrackPosition + 5.8;
+					int stationStopIndex = Game.GetStopIndex(i, nowControl.Cars.Length);
+					double nextStationPos = Game.Stations[i].Stops[stationStopIndex].TrackPosition;
 					if (currentSectionPos <= nextStationPos)
 					{
 						stationIndex = i;
 						break;
 					}
+					if (stationIndex + 1 <= Table.Stations.Length)
+					{
+						int currentStationStopIndex = Game.GetStopIndex(stationIndex + 1, nowControl.Cars.Length);
+						if (nowControl.StationDistanceToStopPoint >= 0 &&
+							nowControl.StationDistanceToStopPoint <= Game.Stations[stationIndex + 1].Stops[currentStationStopIndex].BackwardTolerance &&
+							GetSpeed() == 0)
+						{
+							stationIndex++;
+						}
+					}
+					
 				}
 				return stationIndex;
 			}
@@ -653,16 +665,45 @@ namespace OpenBve
 				if (nextStationIndex == -1) return errState;
 				int currentSection = nowControl.CurrentSectionIndex;
 				int nextSection = Game.Sections[currentSection].NextSection;
-				double currentSectionPos = nowControl.Cars[nowControl.DriverCar].FrontAxle.Follower.TrackPosition;
-				double nextStationPos = Table.Stations[nextStationIndex].TrackPosition;
+				double currentSectionPos = nowControl.Cars[nowControl.DriverCar].FrontAxle.Follower.TrackPosition + 5.8;
+				int stationStopIndex = Game.GetStopIndex(nextStationIndex, nowControl.Cars.Length);
+				double nextStationPos = Game.Stations[nextStationIndex].Stops[stationStopIndex].TrackPosition;
 				double stopPos = nowControl.StationDistanceToStopPoint;
 				stationDis = nextStationPos - currentSectionPos;
 				//
-				if (!Table.Stations[nextStationIndex].Pass)
+				/*if (!Table.Stations[nextStationIndex].Pass)
 				{
-					stationDis = stationDis <= 180 ? stopPos : stationDis;
-				}
-				return stationDis / 1000;
+					stationDis = (stationDis <= 180 && stopPos >= 0) ? stopPos : stationDis;
+				}*/
+				return stationDis;
+			}
+			catch (Exception ex)
+			{
+				return errState;
+			}
+		}
+
+		/// <summary>
+		/// get pre station distance
+		/// </summary>
+		static public double GetPreStationDis()
+		{
+			double errState = -1;
+			double stationDis;
+			try
+			{
+				if (!isTimetableReady) UpdateTimeTable();
+				if (Table.Stations.Length == 0) return errState;
+				//
+				int nextStationIndex = GetNextStationIndex();
+				if (nextStationIndex == -1 || nextStationIndex - 1 < 0) return errState;
+				int currentSection = nowControl.CurrentSectionIndex;
+				int nextSection = Game.Sections[currentSection].NextSection;
+				double currentSectionPos = nowControl.Cars[nowControl.DriverCar].FrontAxle.Follower.TrackPosition + 5.8;
+				int stationStopIndex = Game.GetStopIndex(nextStationIndex - 1, nowControl.Cars.Length);
+				double preStationPos = Game.Stations[nextStationIndex - 1].Stops[stationStopIndex].TrackPosition;
+				stationDis = currentSectionPos - preStationPos;
+				return stationDis;
 			}
 			catch (Exception ex)
 			{
@@ -753,6 +794,28 @@ namespace OpenBve
 				if (Hour == string.Empty || Hour == " ") return errState;
 				departureTime = Hour + ":" + Min + ":" + Sec;
 				return departureTime;
+			}
+			catch (Exception ex)
+			{
+				return errState;
+			}
+		}
+
+		/// <summary>
+		/// get station stop distance
+		/// </summary>
+		static public double GetStopDis()
+		{
+			double stopDis;
+			double errState = double.NegativeInfinity;
+			try
+			{
+				if (!isTimetableReady) UpdateTimeTable();
+				if (Table.Stations.Length == 0) return errState;
+				//
+				stopDis = nowControl.StationDistanceToStopPoint;
+				if ((GetNextStationDis() <= 180 || GetPreStationDis() <= 180) && stopDis >= -180) return stopDis;
+				return errState;
 			}
 			catch (Exception ex)
 			{
