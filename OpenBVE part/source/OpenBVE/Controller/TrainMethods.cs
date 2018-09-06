@@ -578,7 +578,7 @@ namespace OpenBve
 				{
 					int currentSection = nowControl.CurrentSectionIndex;
 					int nextSection = Game.Sections[currentSection].NextSection;
-					double currentSectionPos = nowControl.Cars[nowControl.DriverCar].FrontAxle.Follower.TrackPosition + 5.8;
+					double currentSectionPos = nowControl.Cars[nowControl.DriverCar].FrontAxle.Follower.TrackPosition + 1.9;
 					int stationStopIndex = Game.GetStopIndex(i, nowControl.Cars.Length);
 					double nextStationPos = Game.Stations[i].Stops[stationStopIndex].TrackPosition;
 					if (currentSectionPos <= nextStationPos)
@@ -586,17 +586,18 @@ namespace OpenBve
 						stationIndex = i;
 						break;
 					}
-					if (stationIndex + 1 <= Table.Stations.Length)
+				}
+				if (stationIndex + 1 < Table.Stations.Length)
+				{
+					double currentSectionPos = nowControl.Cars[nowControl.DriverCar].FrontAxle.Follower.TrackPosition + 1.9;
+					int currentStationStopIndex = Game.GetStopIndex(stationIndex, nowControl.Cars.Length);
+					double currentStationPos = Game.Stations[stationIndex].Stops[currentStationStopIndex].TrackPosition;
+					if (currentStationPos - currentSectionPos > 0 &&
+						currentStationPos - currentSectionPos <= 50 &&
+						nowControl.StationState == TrainManager.TrainStopState.Boarding)
 					{
-						int currentStationStopIndex = Game.GetStopIndex(stationIndex + 1, nowControl.Cars.Length);
-						if (nowControl.StationDistanceToStopPoint >= 0 &&
-							nowControl.StationDistanceToStopPoint <= Game.Stations[stationIndex + 1].Stops[currentStationStopIndex].BackwardTolerance &&
-							GetSpeed() == 0)
-						{
-							stationIndex++;
-						}
+						stationIndex++;
 					}
-					
 				}
 				return stationIndex;
 			}
@@ -665,7 +666,7 @@ namespace OpenBve
 				if (nextStationIndex == -1) return errState;
 				int currentSection = nowControl.CurrentSectionIndex;
 				int nextSection = Game.Sections[currentSection].NextSection;
-				double currentSectionPos = nowControl.Cars[nowControl.DriverCar].FrontAxle.Follower.TrackPosition + 5.8;
+				double currentSectionPos = nowControl.Cars[nowControl.DriverCar].FrontAxle.Follower.TrackPosition + 1.9;
 				int stationStopIndex = Game.GetStopIndex(nextStationIndex, nowControl.Cars.Length);
 				double nextStationPos = Game.Stations[nextStationIndex].Stops[stationStopIndex].TrackPosition;
 				double stopPos = nowControl.StationDistanceToStopPoint;
@@ -699,7 +700,7 @@ namespace OpenBve
 				if (nextStationIndex == -1 || nextStationIndex - 1 < 0) return errState;
 				int currentSection = nowControl.CurrentSectionIndex;
 				int nextSection = Game.Sections[currentSection].NextSection;
-				double currentSectionPos = nowControl.Cars[nowControl.DriverCar].FrontAxle.Follower.TrackPosition + 5.8;
+				double currentSectionPos = nowControl.Cars[nowControl.DriverCar].FrontAxle.Follower.TrackPosition + 1.9;
 				int stationStopIndex = Game.GetStopIndex(nextStationIndex - 1, nowControl.Cars.Length);
 				double preStationPos = Game.Stations[nextStationIndex - 1].Stops[stationStopIndex].TrackPosition;
 				stationDis = currentSectionPos - preStationPos;
