@@ -157,7 +157,7 @@ namespace OpenBve
 						else trainData[RC_MODE] = OVERWRITE;
 						if (value == TrainMethods.GetSetConstSpeed()) break;
 						//test code
-						while (TrainMethods.inSettingAP) ;
+						while (TrainMethods.inSettingAP);
 						//
 						TrainMethods.SetAutoPilot(value);
 						break;
