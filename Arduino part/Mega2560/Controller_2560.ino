@@ -36,8 +36,8 @@ Type:3.ENCODER -> CHANGE (in developing)
 #define KEY_UP 0
 #define KEY_WAITTING 1
 #define KEY_DOWN 2
-#define SA_COUNT_SF 3000
-#define SA_COUNT_SC 1500
+#define SA_COUNT_SF 1000
+#define SA_COUNT_SC 800
 //
 #define SPEED_MIN 0
 #define SPEED_MAX 400
@@ -72,7 +72,7 @@ Type:3.ENCODER -> CHANGE (in developing)
 #define OVERWRITE 0
 #define NORMAL 1
 //Devices
-#define DEVICE_NUMBER 8
+#define DEVICE_NUMBER 10
 #define DEVICE_TYPE_NUMBER 3
 #define ACTIVE 0
 #define NO_ACTIVE 1
@@ -143,16 +143,19 @@ void process4();
 void process5();
 void process6();
 void process7();
+void process8();
+void process9();
 
 //change device type here
-const int deviceType[DEVICE_NUMBER] = {SWITCH_F, SWITCH_F, SWITCH_C, SWITCH_C, SWITCH_C, SWITCH_F, SWITCH_C, SWITCH_C};
+const int deviceType[DEVICE_NUMBER] = {SWITCH_C, SWITCH_C, SWITCH_C, SWITCH_C, SWITCH_C, SWITCH_C, SWITCH_C, SWITCH_C, SWITCH_C, SWITCH_C};
 //change functions here
 const int devicePinsType[] = {INPUT_PULLUP, INPUT_PULLUP, INPUT_PULLUP, OUTPUT};
-const funcPoint Process[DEVICE_NUMBER] = {process0, process1, process2, process3, process4, process5, process6, process7};
+const funcPoint Process[DEVICE_NUMBER] = {process0, process1, process2, process3, process4, process5, process6, process7, process8, process9};
 //all use PULL_UP gpio mode
-const int devicePins[DEVICE_NUMBER] = {30, 31, 32, 33, 34, 35, 36, 37};
-int deviceLastState[DEVICE_NUMBER] = {KEY_UP, KEY_UP, KEY_UP, KEY_UP, KEY_UP, KEY_UP, KEY_UP, KEY_UP};
-int deviceSADur[DEVICE_NUMBER] = {0, 0, 0, 0, 0, 0, 0, 0};
+//key for bac horn -3 -2 -1 1 2 3
+const int devicePins[DEVICE_NUMBER] = {31, 32, 33, 37, 25, 26, 27, 28, 29, 30};
+int deviceLastState[DEVICE_NUMBER] = {KEY_UP, KEY_UP, KEY_UP, KEY_UP, KEY_UP, KEY_UP, KEY_UP, KEY_UP, KEY_UP, KEY_UP};
+int deviceSADur[DEVICE_NUMBER] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 //train data id
 const int dataDefault[TRAIN_DATA_NUMBER] = {SPEED_MIN, REVERSER_NEUTRAL, POWER_MIN, BRAKE_MIN, SIGNAL_RED,
                                             SIGNAL_DISTANCE_DE, SPEED_LIMIT_DEF, HORN_OFF, SPEED_CONST_MIN, MASTER_KEY_OFF,
@@ -439,28 +442,22 @@ TaskManager Queue;
 	MasterKey:process7
 */
 
+//key for bac horn -3 -2 -1 1 2 3
+
 void process0()
 {
-	//SWITCH_F
-	if (processData.GetData(MASTER_KEY) == MASTER_KEY_OFF ||
-	        processData.GetData(EMERGENCY) == EMERGENCY_ON ||
-	        processData.GetData(REVERSER) == REVERSER_NEUTRAL ||
-	        processData.GetData(SPEED_CONST) != SPEED_CONST_MIN)return;
+	//
+	processData.SetData(POWER, 0);
+	processData.SetData(BRAKE, 0);
+	//
 	int deviceState = Devices.GetState(0);
 	if (deviceState == ACTIVE)
 	{
-		int currentBrake = processData.GetData(BRAKE);
-		int currentPower = processData.GetData(POWER);
-		if (currentBrake > BRAKE_MIN)
-		{
-			processData.SetData(BRAKE, currentBrake > BRAKE_MIN ? currentBrake - 1 : BRAKE_MIN);
-			processData.SetData(POWER, POWER_MIN);
-		}
-		else
-		{
-			processData.SetData(POWER, currentPower < POWER_MAX ? currentPower + 1 : POWER_MAX);
-			processData.SetData(BRAKE, BRAKE_MIN);
-		}
+		processData.SetData(MASTER_KEY, MASTER_KEY_ON);
+	}
+	else
+	{
+		processData.SetData(MASTER_KEY, MASTER_KEY_OFF);
 	}
 	return;
 }
@@ -469,23 +466,15 @@ void process1()
 {
 	if (processData.GetData(MASTER_KEY) == MASTER_KEY_OFF ||
 	        processData.GetData(EMERGENCY) == EMERGENCY_ON ||
-	        processData.GetData(REVERSER) == REVERSER_NEUTRAL ||
 	        processData.GetData(SPEED_CONST) != SPEED_CONST_MIN)return;
 	int deviceState = Devices.GetState(1);
 	if (deviceState == ACTIVE)
 	{
-		int currentBrake = processData.GetData(BRAKE);
-		int currentPower = processData.GetData(POWER);
-		if (currentPower > POWER_MIN)
-		{
-			processData.SetData(POWER, currentPower > POWER_MIN ? currentPower - 1 : POWER_MIN);
-			processData.SetData(BRAKE, BRAKE_MIN);
-		}
-		else
-		{
-			processData.SetData(BRAKE, currentBrake < BRAKE_MAX ? currentBrake + 1 : BRAKE_MAX);
-			processData.SetData(POWER, POWER_MIN);
-		}
+		processData.SetData(REVERSER, REVERSER_FORWARD);
+	}
+	else
+	{
+		processData.SetData(REVERSER, REVERSER_NEUTRAL);
 	}
 	return;
 }
@@ -498,32 +487,15 @@ void process2()
 	int deviceState = Devices.GetState(2);
 	if (deviceState == ACTIVE)
 	{
-		processData.SetData(REVERSER, REVERSER_FORWARD);
-	}
-	else
-	{
-		processData.SetData(REVERSER, REVERSER_NEUTRAL);
+		processData.SetData(REVERSER, REVERSER_BACKWARD);
 	}
 	return;
 }
 
 void process3()
 {
-	if (processData.GetData(MASTER_KEY) == MASTER_KEY_OFF ||
-	        processData.GetData(EMERGENCY) == EMERGENCY_ON ||
-	        processData.GetData(SPEED_CONST) != SPEED_CONST_MIN)return;
-	int deviceState = Devices.GetState(3);
-	if (deviceState == ACTIVE)
-	{
-		processData.SetData(REVERSER, REVERSER_BACKWARD);
-	}
-	return;
-}
-
-void process4()
-{
 	if (processData.GetData(MASTER_KEY) == MASTER_KEY_OFF)return;
-	int deviceState = Devices.GetState(4);
+	int deviceState = Devices.GetState(3);
 	if (deviceState == ACTIVE)
 	{
 		processData.SetData(HORN, HORN_ON);
@@ -535,47 +507,104 @@ void process4()
 	return;
 }
 
-void process5()
+//-3
+void process4()
 {
+	//SWITCH_F
 	if (processData.GetData(MASTER_KEY) == MASTER_KEY_OFF ||
 	        processData.GetData(EMERGENCY) == EMERGENCY_ON ||
-	        processData.GetData(REVERSER) == REVERSER_NEUTRAL)return;
+	        processData.GetData(REVERSER) == REVERSER_NEUTRAL ||
+	        processData.GetData(SPEED_CONST) != SPEED_CONST_MIN)return;
+	int deviceState = Devices.GetState(4);
+	if (deviceState == ACTIVE)
+	{
+		processData.SetData(POWER, 0);
+		processData.SetData(BRAKE, 3);
+	}
+	return;
+}
+
+//-2
+void process5()
+{
+	//SWITCH_F
+	if (processData.GetData(MASTER_KEY) == MASTER_KEY_OFF ||
+	        processData.GetData(EMERGENCY) == EMERGENCY_ON ||
+	        processData.GetData(REVERSER) == REVERSER_NEUTRAL ||
+	        processData.GetData(SPEED_CONST) != SPEED_CONST_MIN)return;
 	int deviceState = Devices.GetState(5);
 	if (deviceState == ACTIVE)
 	{
-		if (processData.GetData(SPEED_CONST) == SPEED_CONST_MIN)
-			processData.SetData(SPEED_CONST, processData.GetData(SPEED));
-		else
-			processData.SetData(SPEED_CONST, SPEED_CONST_MIN);
+		processData.SetData(POWER, 0);
+		processData.SetData(BRAKE, 2);
 	}
 	return;
 }
 
+//-1
 void process6()
 {
-	if (processData.GetData(MASTER_KEY) == MASTER_KEY_OFF)return;
+	//SWITCH_F
+	if (processData.GetData(MASTER_KEY) == MASTER_KEY_OFF ||
+	        processData.GetData(EMERGENCY) == EMERGENCY_ON ||
+	        processData.GetData(REVERSER) == REVERSER_NEUTRAL ||
+	        processData.GetData(SPEED_CONST) != SPEED_CONST_MIN)return;
 	int deviceState = Devices.GetState(6);
 	if (deviceState == ACTIVE)
 	{
-		processData.SetData(EMERGENCY, EMERGENCY_ON);
-	}
-	else
-	{
-		processData.SetData(EMERGENCY, EMERGENCY_OFF);
+		processData.SetData(POWER, 0);
+		processData.SetData(BRAKE, 1);
 	}
 	return;
 }
 
+//1
 void process7()
 {
+	//SWITCH_F
+	if (processData.GetData(MASTER_KEY) == MASTER_KEY_OFF ||
+	        processData.GetData(EMERGENCY) == EMERGENCY_ON ||
+	        processData.GetData(REVERSER) == REVERSER_NEUTRAL ||
+	        processData.GetData(SPEED_CONST) != SPEED_CONST_MIN)return;
 	int deviceState = Devices.GetState(7);
 	if (deviceState == ACTIVE)
 	{
-		processData.SetData(MASTER_KEY, MASTER_KEY_ON);
+		processData.SetData(POWER, 1);
+		processData.SetData(BRAKE, 0);
 	}
-	else
+	return;
+}
+
+//2
+void process8()
+{
+	//SWITCH_F
+	if (processData.GetData(MASTER_KEY) == MASTER_KEY_OFF ||
+	        processData.GetData(EMERGENCY) == EMERGENCY_ON ||
+	        processData.GetData(REVERSER) == REVERSER_NEUTRAL ||
+	        processData.GetData(SPEED_CONST) != SPEED_CONST_MIN)return;
+	int deviceState = Devices.GetState(8);
+	if (deviceState == ACTIVE)
 	{
-		processData.SetData(MASTER_KEY, MASTER_KEY_OFF);
+		processData.SetData(POWER, 2);
+		processData.SetData(BRAKE, 0);
+	}
+	return;
+}
+
+//3
+void process9()
+{
+	//SWITCH_F
+	if (processData.GetData(MASTER_KEY) == MASTER_KEY_OFF ||
+	        processData.GetData(EMERGENCY) == EMERGENCY_ON ||
+	        processData.GetData(REVERSER) == REVERSER_NEUTRAL ||
+	        processData.GetData(SPEED_CONST) != SPEED_CONST_MIN)return;
+	int deviceState = Devices.GetState(9);
+	if (deviceState == ACTIVE)
+	{
+		processData.SetData(POWER, 3);
+		processData.SetData(BRAKE, 0);
 	}
 	return;
 }
