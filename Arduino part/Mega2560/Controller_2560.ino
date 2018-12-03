@@ -443,12 +443,13 @@ TaskManager Queue;
 */
 
 //key for bac horn -3 -2 -1 1 2 3
+bool isHandleZero = true;
+
 
 void process0()
 {
 	//
-	processData.SetData(POWER, 0);
-	processData.SetData(BRAKE, 0);
+	isHandleZero = true;
 	//
 	int deviceState = Devices.GetState(0);
 	if (deviceState == ACTIVE)
@@ -518,8 +519,9 @@ void process4()
 	int deviceState = Devices.GetState(4);
 	if (deviceState == ACTIVE)
 	{
+		isHandleZero = false;
 		processData.SetData(POWER, 0);
-		processData.SetData(BRAKE, 3);
+		processData.SetData(BRAKE, 6);
 	}
 	return;
 }
@@ -535,8 +537,9 @@ void process5()
 	int deviceState = Devices.GetState(5);
 	if (deviceState == ACTIVE)
 	{
+		isHandleZero = false;
 		processData.SetData(POWER, 0);
-		processData.SetData(BRAKE, 2);
+		processData.SetData(BRAKE, 4);
 	}
 	return;
 }
@@ -552,8 +555,9 @@ void process6()
 	int deviceState = Devices.GetState(6);
 	if (deviceState == ACTIVE)
 	{
+		isHandleZero = false;
 		processData.SetData(POWER, 0);
-		processData.SetData(BRAKE, 1);
+		processData.SetData(BRAKE, 2);
 	}
 	return;
 }
@@ -569,6 +573,7 @@ void process7()
 	int deviceState = Devices.GetState(7);
 	if (deviceState == ACTIVE)
 	{
+		isHandleZero = false;
 		processData.SetData(POWER, 1);
 		processData.SetData(BRAKE, 0);
 	}
@@ -586,6 +591,7 @@ void process8()
 	int deviceState = Devices.GetState(8);
 	if (deviceState == ACTIVE)
 	{
+		isHandleZero = false;
 		processData.SetData(POWER, 2);
 		processData.SetData(BRAKE, 0);
 	}
@@ -603,7 +609,14 @@ void process9()
 	int deviceState = Devices.GetState(9);
 	if (deviceState == ACTIVE)
 	{
+		isHandleZero = false;
 		processData.SetData(POWER, 3);
+		processData.SetData(BRAKE, 0);
+	}
+	//
+	if (isHandleZero)
+	{
+		processData.SetData(POWER, 0);
 		processData.SetData(BRAKE, 0);
 	}
 	return;

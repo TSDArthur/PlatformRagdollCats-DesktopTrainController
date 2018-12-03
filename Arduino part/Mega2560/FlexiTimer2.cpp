@@ -25,7 +25,7 @@
   Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
 */
 
-#include <FlexiTimer2.h>
+#include "FlexiTimer2.h"
 
 unsigned long FlexiTimer2::time_units;
 void (*FlexiTimer2::func)();
@@ -34,7 +34,7 @@ volatile char FlexiTimer2::overflowing;
 volatile unsigned int FlexiTimer2::tcnt2;
 
 void FlexiTimer2::set(unsigned long ms, void (*f)()) {
-    FlexiTimer2::set(ms, 0.001, f);
+	FlexiTimer2::set(ms, 0.001, f);
 }
 
 
@@ -45,69 +45,69 @@ void FlexiTimer2::set(unsigned long ms, void (*f)()) {
  */
 void FlexiTimer2::set(unsigned long units, double resolution, void (*f)()) {
 	float prescaler = 0.0;
-	
+
 	if (units == 0)
 		time_units = 1;
 	else
 		time_units = units;
-		
+
 	func = f;
-	
+
 #if defined (__AVR_ATmega168__) || defined (__AVR_ATmega48__) || defined (__AVR_ATmega88__) || defined (__AVR_ATmega328P__) || defined (__AVR_ATmega1280__) || defined (__AVR_ATmega2560__) || defined(__AVR_AT90USB646__) || defined(__AVR_AT90USB1286__)
-	TIMSK2 &= ~(1<<TOIE2);
-	TCCR2A &= ~((1<<WGM21) | (1<<WGM20));
-	TCCR2B &= ~(1<<WGM22);
-	ASSR &= ~(1<<AS2);
-	TIMSK2 &= ~(1<<OCIE2A);
-	
+	TIMSK2 &= ~(1 << TOIE2);
+	TCCR2A &= ~((1 << WGM21) | (1 << WGM20));
+	TCCR2B &= ~(1 << WGM22);
+	ASSR &= ~(1 << AS2);
+	TIMSK2 &= ~(1 << OCIE2A);
+
 	if ((F_CPU >= 1000000UL) && (F_CPU <= 16000000UL)) {	// prescaler set to 64
-		TCCR2B |= (1<<CS22);
-		TCCR2B &= ~((1<<CS21) | (1<<CS20));
+		TCCR2B |= (1 << CS22);
+		TCCR2B &= ~((1 << CS21) | (1 << CS20));
 		prescaler = 64.0;
 	} else if (F_CPU < 1000000UL) {	// prescaler set to 8
-		TCCR2B |= (1<<CS21);
-		TCCR2B &= ~((1<<CS22) | (1<<CS20));
+		TCCR2B |= (1 << CS21);
+		TCCR2B &= ~((1 << CS22) | (1 << CS20));
 		prescaler = 8.0;
 	} else { // F_CPU > 16Mhz, prescaler set to 128
-		TCCR2B |= ((1<<CS22) | (1<<CS20));
-		TCCR2B &= ~(1<<CS21);
+		TCCR2B |= ((1 << CS22) | (1 << CS20));
+		TCCR2B &= ~(1 << CS21);
 		prescaler = 128.0;
 	}
 #elif defined (__AVR_ATmega8__)
-	TIMSK &= ~(1<<TOIE2);
-	TCCR2 &= ~((1<<WGM21) | (1<<WGM20));
-	TIMSK &= ~(1<<OCIE2);
-	ASSR &= ~(1<<AS2);
-	
+	TIMSK &= ~(1 << TOIE2);
+	TCCR2 &= ~((1 << WGM21) | (1 << WGM20));
+	TIMSK &= ~(1 << OCIE2);
+	ASSR &= ~(1 << AS2);
+
 	if ((F_CPU >= 1000000UL) && (F_CPU <= 16000000UL)) {	// prescaler set to 64
-		TCCR2 |= (1<<CS22);
-		TCCR2 &= ~((1<<CS21) | (1<<CS20));
+		TCCR2 |= (1 << CS22);
+		TCCR2 &= ~((1 << CS21) | (1 << CS20));
 		prescaler = 64.0;
 	} else if (F_CPU < 1000000UL) {	// prescaler set to 8
-		TCCR2 |= (1<<CS21);
-		TCCR2 &= ~((1<<CS22) | (1<<CS20));
+		TCCR2 |= (1 << CS21);
+		TCCR2 &= ~((1 << CS22) | (1 << CS20));
 		prescaler = 8.0;
 	} else { // F_CPU > 16Mhz, prescaler set to 128
-		TCCR2 |= ((1<<CS22) && (1<<CS20));
-		TCCR2 &= ~(1<<CS21);
+		TCCR2 |= ((1 << CS22) && (1 << CS20));
+		TCCR2 &= ~(1 << CS21);
 		prescaler = 128.0;
 	}
 #elif defined (__AVR_ATmega128__)
-	TIMSK &= ~(1<<TOIE2);
-	TCCR2 &= ~((1<<WGM21) | (1<<WGM20));
-	TIMSK &= ~(1<<OCIE2);
-	
+	TIMSK &= ~(1 << TOIE2);
+	TCCR2 &= ~((1 << WGM21) | (1 << WGM20));
+	TIMSK &= ~(1 << OCIE2);
+
 	if ((F_CPU >= 1000000UL) && (F_CPU <= 16000000UL)) {	// prescaler set to 64
-		TCCR2 |= ((1<<CS21) | (1<<CS20));
-		TCCR2 &= ~(1<<CS22);
+		TCCR2 |= ((1 << CS21) | (1 << CS20));
+		TCCR2 &= ~(1 << CS22);
 		prescaler = 64.0;
 	} else if (F_CPU < 1000000UL) {	// prescaler set to 8
-		TCCR2 |= (1<<CS21);
-		TCCR2 &= ~((1<<CS22) | (1<<CS20));
+		TCCR2 |= (1 << CS21);
+		TCCR2 &= ~((1 << CS22) | (1 << CS20));
 		prescaler = 8.0;
 	} else { // F_CPU > 16Mhz, prescaler set to 256
-		TCCR2 |= (1<<CS22);
-		TCCR2 &= ~((1<<CS21) | (1<<CS20));
+		TCCR2 |= (1 << CS22);
+		TCCR2 &= ~((1 << CS21) | (1 << CS20));
 		prescaler = 256.0;
 	}
 #elif defined (__AVR_ATmega32U4__)
@@ -117,25 +117,25 @@ void FlexiTimer2::set(unsigned long units, double resolution, void (*f)()) {
 	TCCR4D = 0;
 	TCCR4E = 0;
 	if (F_CPU >= 16000000L) {
-		TCCR4B = (1<<CS43) | (1<<PSR4);
+		TCCR4B = (1 << CS43) | (1 << PSR4);
 		prescaler = 128.0;
 	} else if (F_CPU >= 8000000L) {
-		TCCR4B = (1<<CS42) | (1<<CS41) | (1<<CS40) | (1<<PSR4);
+		TCCR4B = (1 << CS42) | (1 << CS41) | (1 << CS40) | (1 << PSR4);
 		prescaler = 64.0;
 	} else if (F_CPU >= 4000000L) {
-		TCCR4B = (1<<CS42) | (1<<CS41) | (1<<PSR4);
+		TCCR4B = (1 << CS42) | (1 << CS41) | (1 << PSR4);
 		prescaler = 32.0;
 	} else if (F_CPU >= 2000000L) {
-		TCCR4B = (1<<CS42) | (1<<CS40) | (1<<PSR4);
+		TCCR4B = (1 << CS42) | (1 << CS40) | (1 << PSR4);
 		prescaler = 16.0;
 	} else if (F_CPU >= 1000000L) {
-		TCCR4B = (1<<CS42) | (1<<PSR4);
+		TCCR4B = (1 << CS42) | (1 << PSR4);
 		prescaler = 8.0;
 	} else if (F_CPU >= 500000L) {
-		TCCR4B = (1<<CS41) | (1<<CS40) | (1<<PSR4);
+		TCCR4B = (1 << CS41) | (1 << CS40) | (1 << PSR4);
 		prescaler = 4.0;
 	} else {
-		TCCR4B = (1<<CS41) | (1<<PSR4);
+		TCCR4B = (1 << CS41) | (1 << PSR4);
 		prescaler = 2.0;
 	}
 	tcnt2 = (int)((float)F_CPU * resolution / prescaler) - 1;
@@ -144,7 +144,7 @@ void FlexiTimer2::set(unsigned long units, double resolution, void (*f)()) {
 #else
 #error Unsupported CPU type
 #endif
-	
+
 	tcnt2 = 256 - (int)((float)F_CPU * resolution / prescaler);
 }
 
@@ -153,27 +153,27 @@ void FlexiTimer2::start() {
 	overflowing = 0;
 #if defined (__AVR_ATmega168__) || defined (__AVR_ATmega48__) || defined (__AVR_ATmega88__) || defined (__AVR_ATmega328P__) || defined (__AVR_ATmega1280__) || defined(__AVR_ATmega2560__) || defined(__AVR_AT90USB646__) || defined(__AVR_AT90USB1286__)
 	TCNT2 = tcnt2;
-	TIMSK2 |= (1<<TOIE2);
+	TIMSK2 |= (1 << TOIE2);
 #elif defined (__AVR_ATmega128__)
 	TCNT2 = tcnt2;
-	TIMSK |= (1<<TOIE2);
+	TIMSK |= (1 << TOIE2);
 #elif defined (__AVR_ATmega8__)
 	TCNT2 = tcnt2;
-	TIMSK |= (1<<TOIE2);
+	TIMSK |= (1 << TOIE2);
 #elif defined (__AVR_ATmega32U4__)
-	TIFR4 = (1<<TOV4);
+	TIFR4 = (1 << TOV4);
 	TCNT4 = 0;
-	TIMSK4 = (1<<TOIE4);
+	TIMSK4 = (1 << TOIE4);
 #endif
 }
 
 void FlexiTimer2::stop() {
 #if defined (__AVR_ATmega168__) || defined (__AVR_ATmega48__) || defined (__AVR_ATmega88__) || defined (__AVR_ATmega328P__) || defined (__AVR_ATmega1280__) || defined(__AVR_ATmega2560__) || defined(__AVR_AT90USB646__) || defined(__AVR_AT90USB1286__)
-	TIMSK2 &= ~(1<<TOIE2);
+	TIMSK2 &= ~(1 << TOIE2);
 #elif defined (__AVR_ATmega128__)
-	TIMSK &= ~(1<<TOIE2);
+	TIMSK &= ~(1 << TOIE2);
 #elif defined (__AVR_ATmega8__)
-	TIMSK &= ~(1<<TOIE2);
+	TIMSK &= ~(1 << TOIE2);
 #elif defined (__AVR_ATmega32U4__)
 	TIMSK4 = 0;
 #endif
@@ -181,11 +181,11 @@ void FlexiTimer2::stop() {
 
 void FlexiTimer2::_overflow() {
 	count += 1;
-	
+
 	if (count >= time_units && !overflowing) {
 		overflowing = 1;
 		count = count - time_units; // subtract time_uints to catch missed overflows
-					// set to 0 if you don't want this.
+		// set to 0 if you don't want this.
 		(*func)();
 		overflowing = 0;
 	}
