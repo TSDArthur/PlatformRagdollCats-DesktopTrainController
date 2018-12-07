@@ -13,6 +13,8 @@ using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using Vector3 = OpenBveApi.Math.Vector3;
 using OpenBveApi.Objects;
+using OpenBveApi.Graphics;
+using OpenBveApi.Interface;
 
 namespace OpenBve
 {
@@ -26,18 +28,9 @@ namespace OpenBve
         // first frame behavior
         internal enum LoadTextureImmediatelyMode { NotYet, Yes }
         internal static LoadTextureImmediatelyMode LoadTexturesImmediately = LoadTextureImmediatelyMode.NotYet;
-        internal enum TransparencyMode { Sharp, Smooth }
 
         // object list
-        internal enum ObjectType : byte
-        {
-            /// <summary>The object is part of the static scenery. The matching ObjectListType is StaticOpaque for fully opaque faces, and DynamicAlpha for all other faces.</summary>
-            Static = 1,
-            /// <summary>The object is part of the animated scenery or of a train exterior. The matching ObjectListType is DynamicOpaque for fully opaque faces, and DynamicAlpha for all other faces.</summary>
-            Dynamic = 2,
-            /// <summary>The object is part of the cab. The matching ObjectListType is OverlayOpaque for fully opaque faces, and OverlayAlpha for all other faces.</summary>
-            Overlay = 3
-        }
+        
         private struct Object
         {
             internal int ObjectIndex;
@@ -54,6 +47,7 @@ namespace OpenBve
             internal int ObjectIndex;
             internal const int MeshIndex = 0;
             internal int FaceIndex;
+	        internal OpenGlTextureWrapMode Wrap;
         }
         // opaque
         private static ObjectFace[] OpaqueList = new ObjectFace[256];
@@ -80,7 +74,6 @@ namespace OpenBve
         internal static bool LightingEnabled = false;
         internal static bool FogEnabled = false;
         private static bool TexturingEnabled = false;
-        private static bool EmissiveEnabled = false;
         internal static bool TransparentColorDepthSorting = false;
 
         // options
@@ -97,6 +90,7 @@ namespace OpenBve
 
         // background color
         internal static int BackgroundColor = 0;
+	    internal static Color128 TextColor = Color128.White;
         internal const int MaxBackgroundColor = 4;
         internal static string GetBackgroundColorName()
         {
@@ -115,15 +109,19 @@ namespace OpenBve
             {
                 case 0:
                     GL.ClearColor(0.67f, 0.67f, 0.67f, 1.0f);
+					TextColor = Color128.White;
                     break;
                 case 1:
                     GL.ClearColor(1.0f, 1.0f, 1.0f, 1.0f);
+	                TextColor = Color128.Black;
                     break;
                 case 2:
                     GL.ClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+	                TextColor = Color128.White;
                     break;
                 case 3:
                     GL.ClearColor(0.33f, 0.33f, 0.33f, 1.0f);
+	                TextColor = Color128.White;
                     break;
             }
         }
@@ -164,7 +162,6 @@ namespace OpenBve
         internal static void Initialize()
         {
             // opengl
-            //GL.ShadeModel(ShadingModel.Decal); // what is decal?
             GL.ShadeModel(ShadingModel.Smooth);
             GL.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
             GL.ClearColor(0.0f, 0.0f, 0.0f, 0.0f);
@@ -188,7 +185,7 @@ namespace OpenBve
             var mat = Matrix4d.LookAt(0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0, 1.0, 0.0);
             GL.MultMatrix(ref mat);
             GL.PopMatrix();
-            TransparentColorDepthSorting = Interface.CurrentOptions.TransparencyMode == TransparencyMode.Smooth & Interface.CurrentOptions.Interpolation != Interface.InterpolationMode.NearestNeighbor & Interface.CurrentOptions.Interpolation != Interface.InterpolationMode.Bilinear;
+            TransparentColorDepthSorting = Interface.CurrentOptions.TransparencyMode == TransparencyMode.Quality & Interface.CurrentOptions.Interpolation != InterpolationMode.NearestNeighbor & Interface.CurrentOptions.Interpolation != InterpolationMode.Bilinear;
         }
 
         // initialize lighting
@@ -234,9 +231,6 @@ namespace OpenBve
 		    SetAlphaFunc(AlphaFunction.Greater, 0.9f);
 	    }
 
-        // render scene
-        internal static byte[] PixelBuffer = null;
-        internal static int PixelBufferOpenGlTextureIndex = 0;
         internal static void RenderScene()
         {
 	        // initialize
@@ -294,11 +288,11 @@ namespace OpenBve
                     GL.Disable(EnableCap.Lighting);
                 }
                 GL.Color3(1.0, 0.0, 0.0);
-                RenderBox(new Vector3(0.0, 0.0, 0.0), new Vector3(0.0, 0.0, 1.0), new Vector3(0.0, 1.0, 0.0), new Vector3(1.0, 0.0, 0.0), new Vector3(100.0, 0.01, 0.01), cx, cy, cz);
+                RenderBox(Vector3.Zero, Vector3.Right, Vector3.Down, new Vector3(1.0, 0.0, 0.0), new Vector3(100.0, 0.01, 0.01), cx, cy, cz);
                 GL.Color3(0.0, 1.0, 0.0);
-                RenderBox(new Vector3(0.0, 0.0, 0.0), new Vector3(0.0, 0.0, 1.0), new Vector3(0.0, 1.0, 0.0), new Vector3(1.0, 0.0, 0.0), new Vector3(0.01, 100.0, 0.01), cx, cy, cz);
+                RenderBox(Vector3.Zero, Vector3.Right, Vector3.Down, new Vector3(1.0, 0.0, 0.0), new Vector3(0.01, 100.0, 0.01), cx, cy, cz);
                 GL.Color3(0.0, 0.0, 1.0);
-                RenderBox(new Vector3(0.0, 0.0, 0.0), new Vector3(0.0, 0.0, 1.0), new Vector3(0.0, 1.0, 0.0), new Vector3(1.0, 0.0, 0.0), new Vector3(0.01, 0.01, 100.0), cx, cy, cz);
+                RenderBox(Vector3.Zero, Vector3.Right, Vector3.Down, new Vector3(1.0, 0.0, 0.0), new Vector3(0.01, 0.01, 100.0), cx, cy, cz);
                 if (LightingEnabled)
                 {
                     GL.Enable(EnableCap.Lighting);
@@ -312,7 +306,7 @@ namespace OpenBve
 	        ResetOpenGlState();
             // transparent color list
 	        SortPolygons(TransparentColorList, TransparentColorListCount, TransparentColorListDistance, 1, 0.0);
-			if (Interface.CurrentOptions.TransparencyMode == TransparencyMode.Smooth) {
+			if (Interface.CurrentOptions.TransparencyMode == TransparencyMode.Quality) {
 				
 				GL.Disable(EnableCap.Blend); BlendEnabled = false;
 				SetAlphaFunc(AlphaFunction.Equal, 1.0f);
@@ -362,39 +356,60 @@ namespace OpenBve
 			}
 	        ResetOpenGlState();
 			SortPolygons(AlphaList, AlphaListCount, AlphaListDistance, 2, 0.0);
-			if (Interface.CurrentOptions.TransparencyMode == TransparencyMode.Smooth) {
-				BlendEnabled = true; GL.Enable(EnableCap.Blend);
-				bool depthMask = true;
-				for (int i = 0; i < AlphaListCount; i++) {
-					int r = (int)ObjectManager.Objects[AlphaList[i].ObjectIndex].Mesh.Faces[AlphaList[i].FaceIndex].Material;
-					if (ObjectManager.Objects[AlphaList[i].ObjectIndex].Mesh.Materials[r].BlendMode == World.MeshMaterialBlendMode.Additive) {
-						if (depthMask) {
-							GL.DepthMask(false);
-							depthMask = false;
-						}
-						SetAlphaFunc(AlphaFunction.Greater, 0.0f);
-						RenderFace(ref AlphaList[i], cx, cy, cz);
-					} else {
-						if (depthMask) {
-							GL.DepthMask(false);
-							depthMask = false;
-						}
-						SetAlphaFunc(AlphaFunction.Less, 1.0f);
-						RenderFace(ref AlphaList[i], cx, cy, cz);
-						GL.DepthMask(true);
-						depthMask = true;
-						SetAlphaFunc(AlphaFunction.Equal, 1.0f);
-						RenderFace(ref AlphaList[i], cx, cy, cz);
-					}
-				}
-			} else {
-				BlendEnabled = true; GL.Enable(EnableCap.Blend);
-				GL.DepthMask(false);
-				SetAlphaFunc(AlphaFunction.Greater,  0.0f);
-				for (int i = 0; i < AlphaListCount; i++) {
-					RenderFace(ref AlphaList[i], cx, cy, cz);
-				}
-			}
+	        if (Interface.CurrentOptions.TransparencyMode == TransparencyMode.Performance)
+	        {
+		        GL.Enable(EnableCap.Blend); BlendEnabled = true;
+		        GL.DepthMask(false);
+		        SetAlphaFunc(AlphaFunction.Greater, 0.0f);
+		        for (int i = 0; i < AlphaListCount; i++)
+		        {
+			        RenderFace(ref AlphaList[i], cx, cy, cz);
+		        }
+	        }
+	        else
+	        {
+		        GL.Disable(EnableCap.Blend); BlendEnabled = false;
+		        SetAlphaFunc(AlphaFunction.Equal, 1.0f);
+		        GL.DepthMask(true);
+		        for (int i = 0; i < AlphaListCount; i++)
+		        {
+			        int r = (int)ObjectManager.Objects[AlphaList[i].ObjectIndex].Mesh.Faces[AlphaList[i].FaceIndex].Material;
+			        if (ObjectManager.Objects[AlphaList[i].ObjectIndex].Mesh.Materials[r].BlendMode == World.MeshMaterialBlendMode.Additive & ObjectManager.Objects[AlphaList[i].ObjectIndex].Mesh.Materials[r].GlowAttenuationData == 0)
+			        {
+				        if (ObjectManager.Objects[AlphaList[i].ObjectIndex].Mesh.Materials[r].Color.A == 255)
+				        {
+					        RenderFace(ref AlphaList[i], cx, cy, cz);
+				        }
+			        }
+		        }
+		        GL.Enable(EnableCap.Blend); BlendEnabled = true;
+		        SetAlphaFunc(AlphaFunction.Less, 1.0f);
+		        GL.DepthMask(false);
+		        bool additive = false;
+		        for (int i = 0; i < AlphaListCount; i++)
+		        {
+			        int r = (int)ObjectManager.Objects[AlphaList[i].ObjectIndex].Mesh.Faces[AlphaList[i].FaceIndex].Material;
+			        if (ObjectManager.Objects[AlphaList[i].ObjectIndex].Mesh.Materials[r].BlendMode == World.MeshMaterialBlendMode.Additive)
+			        {
+				        if (!additive)
+				        {
+					        AlphaTestEnabled = false;
+					        GL.Disable(EnableCap.AlphaTest);
+					        additive = true;
+				        }
+				        RenderFace(ref AlphaList[i], cx, cy, cz);
+			        }
+			        else
+			        {
+				        if (additive)
+				        {
+					        SetAlphaFunc(AlphaFunction.Less, 1.0f);
+					        additive = false;
+				        }
+				        RenderFace(ref AlphaList[i], cx, cy, cz);
+			        }
+		        }
+	        }
             // overlay list
             GL.Disable(EnableCap.DepthTest);
             GL.DepthMask(false);
@@ -423,11 +438,11 @@ namespace OpenBve
                 GL.BlendFunc(BlendingFactor.SrcAlpha, BlendingFactor.OneMinusSrcAlpha);
                 GL.Enable(EnableCap.Blend);
                 GL.Color4(1.0, 0.0, 0.0, 0.2);
-                RenderBox(new Vector3(0.0, 0.0, 0.0), new Vector3(0.0, 0.0, 1.0), new Vector3(0.0, 1.0, 0.0), new Vector3(1.0, 0.0, 0.0), new Vector3(100.0, 0.01, 0.01), cx, cy, cz);
+                RenderBox(Vector3.Zero, Vector3.Right, Vector3.Down, new Vector3(1.0, 0.0, 0.0), new Vector3(100.0, 0.01, 0.01), cx, cy, cz);
                 GL.Color4(0.0, 1.0, 0.0, 0.2);
-                RenderBox(new Vector3(0.0, 0.0, 0.0), new Vector3(0.0, 0.0, 1.0), new Vector3(0.0, 1.0, 0.0), new Vector3(1.0, 0.0, 0.0), new Vector3(0.01, 100.0, 0.01), cx, cy, cz);
+                RenderBox(Vector3.Zero, Vector3.Right, Vector3.Down, new Vector3(1.0, 0.0, 0.0), new Vector3(0.01, 100.0, 0.01), cx, cy, cz);
                 GL.Color4(0.0, 0.0, 1.0, 0.2);
-                RenderBox(new Vector3(0.0, 0.0, 0.0), new Vector3(0.0, 0.0, 1.0), new Vector3(0.0, 1.0, 0.0), new Vector3(1.0, 0.0, 0.0), new Vector3(0.01, 0.01, 100.0), cx, cy, cz);
+                RenderBox(Vector3.Zero, Vector3.Right, Vector3.Down, new Vector3(1.0, 0.0, 0.0), new Vector3(0.01, 0.01, 100.0), cx, cy, cz);
             }
 	        RenderOverlays();
 	        LastBoundTexture = null; //We bind the character texture, so must reset it at the end of the render sequence
@@ -438,6 +453,7 @@ namespace OpenBve
         // set alpha func
         private static void SetAlphaFunc(AlphaFunction Comparison, float Value)
         {
+	        AlphaTestEnabled = true;
             AlphaFuncComparison = Comparison;
             AlphaFuncValue = Value;
             GL.AlphaFunc(Comparison, Value);
@@ -445,7 +461,7 @@ namespace OpenBve
         }
 
         // render face
-        private static Textures.OpenGlTexture LastBoundTexture = null;
+        private static OpenGlTexture LastBoundTexture = null;
 
 	    /// <summary>
 	    /// Restores the OpenGL alpha function to it's previous state
@@ -463,35 +479,31 @@ namespace OpenBve
 		    }
 	    }
 
-        private static void RenderFace(ref ObjectFace Face, double CameraX, double CameraY, double CameraZ)
-        {
-	        if (CullEnabled)
-	        {
-		        if (!OptionBackfaceCulling || (ObjectManager.Objects[Face.ObjectIndex].Mesh.Faces[Face.FaceIndex].Flags & World.MeshFace.Face2Mask) != 0)
-		        {
-			        GL.Disable(EnableCap.CullFace);
-			        CullEnabled = false;
-		        }
-	        }
-	        else if (OptionBackfaceCulling)
-	        {
-		        if ((ObjectManager.Objects[Face.ObjectIndex].Mesh.Faces[Face.FaceIndex].Flags & World.MeshFace.Face2Mask) == 0)
-		        {
-			        GL.Enable(EnableCap.CullFace);
-			        CullEnabled = true;
-		        }
-	        }
-	        int r = (int)ObjectManager.Objects[Face.ObjectIndex].Mesh.Faces[Face.FaceIndex].Material;
-            RenderFace(ref ObjectManager.Objects[Face.ObjectIndex].Mesh.Materials[r], ObjectManager.Objects[Face.ObjectIndex].Mesh.Vertices, ref ObjectManager.Objects[Face.ObjectIndex].Mesh.Faces[Face.FaceIndex], CameraX, CameraY, CameraZ);
-        }
-        private static void RenderFace(ref World.MeshMaterial Material, VertexTemplate[] Vertices, ref World.MeshFace Face, double CameraX, double CameraY, double CameraZ)
-        {
-	        // texture
-	        Textures.OpenGlTextureWrapMode wrap = Textures.OpenGlTextureWrapMode.RepeatRepeat;
-	        if (Material.WrapMode != null)
-	        {
-		        wrap = (Textures.OpenGlTextureWrapMode)Material.WrapMode;
-	        }
+	    private static void RenderFace(ref ObjectFace Face, double CameraX, double CameraY, double CameraZ)
+	    {
+		    if (CullEnabled)
+		    {
+			    if (!OptionBackfaceCulling || (ObjectManager.Objects[Face.ObjectIndex].Mesh.Faces[Face.FaceIndex].Flags & World.MeshFace.Face2Mask) != 0)
+			    {
+				    GL.Disable(EnableCap.CullFace);
+				    CullEnabled = false;
+			    }
+		    }
+		    else if (OptionBackfaceCulling)
+		    {
+			    if ((ObjectManager.Objects[Face.ObjectIndex].Mesh.Faces[Face.FaceIndex].Flags & World.MeshFace.Face2Mask) == 0)
+			    {
+				    GL.Enable(EnableCap.CullFace);
+				    CullEnabled = true;
+			    }
+		    }
+		    int r = (int)ObjectManager.Objects[Face.ObjectIndex].Mesh.Faces[Face.FaceIndex].Material;
+		    RenderFace(ref ObjectManager.Objects[Face.ObjectIndex].Mesh.Materials[r], ObjectManager.Objects[Face.ObjectIndex].Mesh.Vertices, Face.Wrap, ref ObjectManager.Objects[Face.ObjectIndex].Mesh.Faces[Face.FaceIndex], CameraX, CameraY, CameraZ);
+	    }
+        
+		private static void RenderFace(ref World.MeshMaterial Material, VertexTemplate[] Vertices, OpenGlTextureWrapMode wrap, ref World.MeshFace Face, double CameraX, double CameraY, double CameraZ)
+		{
+			// texture
 			if (Material.DaytimeTexture != null)
 			{
 				if (Textures.LoadTexture(Material.DaytimeTexture, wrap))
@@ -587,11 +599,26 @@ namespace OpenBve
 			if (Material.GlowAttenuationData != 0)
 			{
 				float alphafactor = (float)GetDistanceFactor(Vertices, ref Face, Material.GlowAttenuationData, CameraX, CameraY, CameraZ);
-				GL.Color4(inv255 * (float)Material.Color.R * factor, inv255 * Material.Color.G * factor, inv255 * (float)Material.Color.B * factor, inv255 * (float)Material.Color.A * alphafactor);
+				if (OptionWireframe)
+				{
+					GL.Color4(inv255 * (float)Material.Color.R * factor, inv255 * Material.Color.G * factor, inv255 * (float)Material.Color.B * factor, 1.0f);
+				}
+				else
+				{
+					GL.Color4(inv255 * (float)Material.Color.R * factor, inv255 * Material.Color.G * factor, inv255 * (float)Material.Color.B * factor, inv255 * (float)Material.Color.A * alphafactor);
+				}
 			}
 			else
 			{
-				GL.Color4(inv255 * (float)Material.Color.R * factor, inv255 * Material.Color.G * factor, inv255 * (float)Material.Color.B * factor, inv255 * (float)Material.Color.A);
+				if (OptionWireframe)
+				{
+					GL.Color4(inv255 * (float)Material.Color.R * factor, inv255 * Material.Color.G * factor, inv255 * (float)Material.Color.B * factor, 1.0f);
+				}
+				else
+				{
+					GL.Color4(inv255 * (float)Material.Color.R * factor, inv255 * Material.Color.G * factor, inv255 * (float)Material.Color.B * factor, inv255 * (float)Material.Color.A);
+				}
+				
 			}
 			if ((Material.Flags & World.MeshMaterial.EmissiveColorMask) != 0)
 			{
@@ -609,6 +636,11 @@ namespace OpenBve
 					{
 						GL.Normal3(Face.Vertices[j].Normal.X, Face.Vertices[j].Normal.Y, Face.Vertices[j].Normal.Z);
 						GL.TexCoord2(Vertices[Face.Vertices[j].Index].TextureCoordinates.X, Vertices[Face.Vertices[j].Index].TextureCoordinates.Y);
+						if (Vertices[Face.Vertices[j].Index] is ColoredVertex)
+						{
+							ColoredVertex v = (ColoredVertex) Vertices[Face.Vertices[j].Index];
+							GL.Color3(v.Color.R, v.Color.G, v.Color.B);
+						}
 						GL.Vertex3((float)(Vertices[Face.Vertices[j].Index].Coordinates.X - CameraX), (float)(Vertices[Face.Vertices[j].Index].Coordinates.Y - CameraY), (float)(Vertices[Face.Vertices[j].Index].Coordinates.Z - CameraZ));
 					}
 				}
@@ -617,6 +649,11 @@ namespace OpenBve
 					for (int j = 0; j < Face.Vertices.Length; j++)
 					{
 						GL.TexCoord2(Vertices[Face.Vertices[j].Index].TextureCoordinates.X, Vertices[Face.Vertices[j].Index].TextureCoordinates.Y);
+						if (Vertices[Face.Vertices[j].Index] is ColoredVertex)
+						{
+							ColoredVertex v = (ColoredVertex) Vertices[Face.Vertices[j].Index];
+							GL.Color3(v.Color.R, v.Color.G, v.Color.B);
+						}
 						GL.Vertex3((float)(Vertices[Face.Vertices[j].Index].Coordinates.X - CameraX), (float)(Vertices[Face.Vertices[j].Index].Coordinates.Y - CameraY), (float)(Vertices[Face.Vertices[j].Index].Coordinates.Z - CameraZ));
 					}
 				}
@@ -628,11 +665,11 @@ namespace OpenBve
 					for (int j = 0; j < Face.Vertices.Length; j++)
 					{
 						GL.Normal3(Face.Vertices[j].Normal.X, Face.Vertices[j].Normal.Y, Face.Vertices[j].Normal.Z);
-	                    if (Vertices[Face.Vertices[j].Index] is ColoredVertex)
-	                    {
-		                    ColoredVertex v = (ColoredVertex)Vertices[Face.Vertices[j].Index];
+						if (Vertices[Face.Vertices[j].Index] is ColoredVertex)
+						{
+							ColoredVertex v = (ColoredVertex) Vertices[Face.Vertices[j].Index];
 							GL.Color3(v.Color.R, v.Color.G, v.Color.B);
-	                    }
+						}
 						GL.Vertex3((float)(Vertices[Face.Vertices[j].Index].Coordinates.X - CameraX), (float)(Vertices[Face.Vertices[j].Index].Coordinates.Y - CameraY), (float)(Vertices[Face.Vertices[j].Index].Coordinates.Z - CameraZ));
 					}
 				}
@@ -640,6 +677,11 @@ namespace OpenBve
 				{
 					for (int j = 0; j < Face.Vertices.Length; j++)
 					{
+						if (Vertices[Face.Vertices[j].Index] is ColoredVertex)
+						{
+							ColoredVertex v = (ColoredVertex) Vertices[Face.Vertices[j].Index];
+							GL.Color3(v.Color.R, v.Color.G, v.Color.B);
+						}
 						GL.Vertex3((float)(Vertices[Face.Vertices[j].Index].Coordinates.X - CameraX), (float)(Vertices[Face.Vertices[j].Index].Coordinates.Y - CameraY), (float)(Vertices[Face.Vertices[j].Index].Coordinates.Z - CameraZ));
 					}
 				}
@@ -692,7 +734,15 @@ namespace OpenBve
 					alphafactor = inv255 * (float)Material.DaytimeNighttimeBlend + 1.0f - OptionLightingResultingAmount;
 					if (alphafactor > 1.0f) alphafactor = 1.0f;
 				}
-				GL.Color4(inv255 * (float)Material.Color.R * factor, inv255 * Material.Color.G * factor, inv255 * (float)Material.Color.B * factor, inv255 * (float)Material.Color.A * alphafactor);
+				if (OptionWireframe)
+				{
+					GL.Color4(inv255 * (float)Material.Color.R * factor, inv255 * Material.Color.G * factor, inv255 * (float)Material.Color.B * factor, 1.0f);
+				}
+				else
+				{
+					GL.Color4(inv255 * (float)Material.Color.R * factor, inv255 * Material.Color.G * factor, inv255 * (float)Material.Color.B * factor, inv255 * (float)Material.Color.A * alphafactor);
+				}
+				
 				if ((Material.Flags & World.MeshMaterial.EmissiveColorMask) != 0)
 				{
 					GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Emission, new float[] { inv255 * (float)Material.EmissiveColor.R, inv255 * (float)Material.EmissiveColor.G, inv255 * (float)Material.EmissiveColor.B, 1.0f });
@@ -704,6 +754,11 @@ namespace OpenBve
 				for (int j = 0; j < Face.Vertices.Length; j++)
 				{
 					GL.TexCoord2(Vertices[Face.Vertices[j].Index].TextureCoordinates.X, Vertices[Face.Vertices[j].Index].TextureCoordinates.Y);
+					if (Vertices[Face.Vertices[j].Index] is ColoredVertex)
+					{
+						ColoredVertex v = (ColoredVertex) Vertices[Face.Vertices[j].Index];
+						GL.Color3(v.Color.R, v.Color.G, v.Color.B);
+					}
 					GL.Vertex3((float)(Vertices[Face.Vertices[j].Index].Coordinates.X - CameraX), (float)(Vertices[Face.Vertices[j].Index].Coordinates.Y - CameraY), (float)(Vertices[Face.Vertices[j].Index].Coordinates.Z - CameraZ));
 				}
 				GL.End();
@@ -740,7 +795,7 @@ namespace OpenBve
 					GL.Enable(EnableCap.Fog);
 				}
 			}
-        }
+		}
 
         // render cube
         private static void RenderBox(Vector3 Position, Vector3 Direction, Vector3 Up, Vector3 Side, Vector3 Size, double CameraX, double CameraY, double CameraZ)
@@ -761,7 +816,7 @@ namespace OpenBve
             v[7] = new Vector3(-Size.X, Size.Y, Size.Z);
             for (int i = 0; i < 8; i++)
             {
-                World.Rotate(ref v[i].X, ref v[i].Y, ref v[i].Z, Direction.X, Direction.Y, Direction.Z, Up.X, Up.Y, Up.Z, Side.X, Side.Y, Side.Z);
+	            v[i].Rotate(Direction, Up, Side);
                 v[i].X += Position.X - CameraX;
                 v[i].Y += Position.Y - CameraY;
                 v[i].Z += Position.Z - CameraZ;
@@ -797,7 +852,6 @@ namespace OpenBve
 	        GL.MatrixMode(MatrixMode.Modelview);
 	        GL.PushMatrix();
 	        GL.LoadIdentity();
-
             System.Globalization.CultureInfo Culture = System.Globalization.CultureInfo.InvariantCulture;
             // render
             if (OptionInterface)
@@ -807,28 +861,28 @@ namespace OpenBve
                     string[][] Keys;
                     Keys = new string[][] { new string[] { "F7" }, new string[] { "F8" } };
                     RenderKeys(4.0, 4.0, 20.0, Keys);
-					DrawString(Fonts.SmallFont, "Open one or more objects", new Point(32,4),TextAlignment.TopLeft, Color128.White);
-	                DrawString(Fonts.SmallFont, "Display the options window", new Point(32,24),TextAlignment.TopLeft, Color128.White);
-	                DrawString(Fonts.SmallFont, "v" + System.Windows.Forms.Application.ProductVersion, new Point(ScreenWidth - 8, ScreenHeight - 20),TextAlignment.TopLeft, Color128.White);
+					DrawString(Fonts.SmallFont, "Open one or more objects", new Point(32,4),TextAlignment.TopLeft, TextColor);
+	                DrawString(Fonts.SmallFont, "Display the options window", new Point(32,24),TextAlignment.TopLeft, TextColor);
+	                DrawString(Fonts.SmallFont, "v" + System.Windows.Forms.Application.ProductVersion, new Point(ScreenWidth - 8, ScreenHeight - 20),TextAlignment.TopLeft, TextColor);
                 }
                 else
                 {
-	                DrawString(Fonts.SmallFont, "Position: " + World.AbsoluteCameraPosition.X.ToString("0.00", Culture) + ", " + World.AbsoluteCameraPosition.Y.ToString("0.00", Culture) + ", " + World.AbsoluteCameraPosition.Z.ToString("0.00", Culture), new Point((int)(0.5 * ScreenWidth -88),4),TextAlignment.TopLeft, Color128.White);
+	                DrawString(Fonts.SmallFont, "Position: " + World.AbsoluteCameraPosition.X.ToString("0.00", Culture) + ", " + World.AbsoluteCameraPosition.Y.ToString("0.00", Culture) + ", " + World.AbsoluteCameraPosition.Z.ToString("0.00", Culture), new Point((int)(0.5 * ScreenWidth -88),4),TextAlignment.TopLeft, TextColor);
                     string[][] Keys;
                     Keys = new string[][] { new string[] { "F5" }, new string[] { "F7" }, new string[] { "del" }, new string[] { "F8" } };
                     RenderKeys(4.0, 4.0, 24.0, Keys);
-	                DrawString(Fonts.SmallFont, "Reload the currently open objects", new Point(32,4),TextAlignment.TopLeft, Color128.White);
-	                DrawString(Fonts.SmallFont, "Open additional objects", new Point(32,24),TextAlignment.TopLeft, Color128.White);
-	                DrawString(Fonts.SmallFont, "Clear currently open objects", new Point(32,44),TextAlignment.TopLeft, Color128.White);
-	                DrawString(Fonts.SmallFont, "Display the options window", new Point(32,64),TextAlignment.TopLeft, Color128.White);
+	                DrawString(Fonts.SmallFont, "Reload the currently open objects", new Point(32,4),TextAlignment.TopLeft, TextColor);
+	                DrawString(Fonts.SmallFont, "Open additional objects", new Point(32,24),TextAlignment.TopLeft, TextColor);
+	                DrawString(Fonts.SmallFont, "Clear currently open objects", new Point(32,44),TextAlignment.TopLeft, TextColor);
+	                DrawString(Fonts.SmallFont, "Display the options window", new Point(32,64),TextAlignment.TopLeft, TextColor);
 					Keys = new string[][] { new string[] { "F" }, new string[] { "N" }, new string[] { "L" }, new string[] { "G" }, new string[] { "B" }, new string[] { "I" } };
                     RenderKeys((double)ScreenWidth - 20.0, 4.0, 16.0, Keys);
-	                DrawString(Fonts.SmallFont, "Wireframe: " + (Renderer.OptionWireframe ? "on" : "off"), new Point(ScreenWidth - 28,4),TextAlignment.TopRight, Color128.White);
-	                DrawString(Fonts.SmallFont, "Normals: " + (Renderer.OptionNormals ? "on" : "off"), new Point(ScreenWidth - 28,24),TextAlignment.TopRight, Color128.White);
-	                DrawString(Fonts.SmallFont, "Lighting: " + (Program.LightingTarget == 0 ? "night" : "day"), new Point(ScreenWidth - 28,44),TextAlignment.TopRight, Color128.White);
-	                DrawString(Fonts.SmallFont, "Grid: " + (Renderer.OptionCoordinateSystem ? "on" : "off"), new Point(ScreenWidth - 28,64),TextAlignment.TopRight, Color128.White);
-	                DrawString(Fonts.SmallFont, "Background: " + GetBackgroundColorName(), new Point(ScreenWidth - 28,84),TextAlignment.TopRight, Color128.White);
-	                DrawString(Fonts.SmallFont, "Hide interface", new Point(ScreenWidth - 28,104),TextAlignment.TopRight, Color128.White);
+	                DrawString(Fonts.SmallFont, "Wireframe: " + (Renderer.OptionWireframe ? "on" : "off"), new Point(ScreenWidth - 28,4),TextAlignment.TopRight, TextColor);
+	                DrawString(Fonts.SmallFont, "Normals: " + (Renderer.OptionNormals ? "on" : "off"), new Point(ScreenWidth - 28,24),TextAlignment.TopRight, TextColor);
+	                DrawString(Fonts.SmallFont, "Lighting: " + (Program.LightingTarget == 0 ? "night" : "day"), new Point(ScreenWidth - 28,44),TextAlignment.TopRight, TextColor);
+	                DrawString(Fonts.SmallFont, "Grid: " + (Renderer.OptionCoordinateSystem ? "on" : "off"), new Point(ScreenWidth - 28,64),TextAlignment.TopRight, TextColor);
+	                DrawString(Fonts.SmallFont, "Background: " + GetBackgroundColorName(), new Point(ScreenWidth - 28,84),TextAlignment.TopRight, TextColor);
+	                DrawString(Fonts.SmallFont, "Hide interface", new Point(ScreenWidth - 28,104),TextAlignment.TopRight, TextColor);
                     Keys = new string[][] { new string[] { null, "W", null }, new string[] { "A", "S", "D" } };
                     RenderKeys(4.0, (double)ScreenHeight - 40.0, 16.0, Keys);
                     Keys = new string[][] { new string[] { null, "↑", null }, new string[] { "←", "↓", "→" } };
@@ -839,14 +893,14 @@ namespace OpenBve
                     {
                         Keys = new string[][] { new string[] { "F9" } };
                         RenderKeys(4.0, 92.0, 20.0, Keys);
-	                    if (Interface.Messages[0].Type != Interface.MessageType.Information)
+	                    if (Interface.LogMessages[0].Type != MessageType.Information)
 	                    {
 		                    DrawString(Fonts.SmallFont, "Display the 1 error message recently generated.", new Point(32,92),TextAlignment.TopLeft, new Color128(1.0f, 0.5f, 0.5f));
 						}
 	                    else
 	                    {
 							//If all of our messages are information, then print the message text in grey
-		                    DrawString(Fonts.SmallFont, "Display the 1 message recently generated.", new Point(32,92),TextAlignment.TopLeft, Color128.White);
+		                    DrawString(Fonts.SmallFont, "Display the 1 message recently generated.", new Point(32,92),TextAlignment.TopLeft, TextColor);
 						}
 						
                     }
@@ -857,7 +911,7 @@ namespace OpenBve
 	                    bool error = false;
 	                    for (int i = 0; i < Interface.MessageCount; i++)
 	                    {
-		                    if (Interface.Messages[i].Type != Interface.MessageType.Information)
+		                    if (Interface.LogMessages[i].Type != MessageType.Information)
 		                    {
 			                    error = true;
 			                    break;
@@ -870,7 +924,7 @@ namespace OpenBve
 						}
 	                    else
 	                    {
-		                    DrawString(Fonts.SmallFont, "Display the " + Interface.MessageCount.ToString(Culture) + " messages recently generated.", new Point(32,92),TextAlignment.TopLeft, Color128.White);
+		                    DrawString(Fonts.SmallFont, "Display the " + Interface.MessageCount.ToString(Culture) + " messages recently generated.", new Point(32,92),TextAlignment.TopLeft, TextColor);
 						}
 						
                     }
@@ -983,6 +1037,7 @@ namespace OpenBve
                     else
                     {
                         int k = ObjectManager.Objects[ObjectIndex].Mesh.Faces[i].Material;
+	                    OpenGlTextureWrapMode wrap = OpenGlTextureWrapMode.ClampClamp;
                         bool transparentcolor = false, alpha = false;
                         if (ObjectManager.Objects[ObjectIndex].Mesh.Materials[k].Color.A != 255)
                         {
@@ -1002,25 +1057,30 @@ namespace OpenBve
                             {
 	                            if (ObjectManager.Objects[ObjectIndex].Mesh.Materials[k].WrapMode == null)
 	                            {
-		                            Textures.OpenGlTextureWrapMode wrap = Textures.OpenGlTextureWrapMode.ClampClamp;
+		                            
 		                            // If the object does not have a stored wrapping mode, determine it now
 		                            for (int v = 0; v < ObjectManager.Objects[ObjectIndex].Mesh.Vertices.Length; v++)
 		                            {
 			                            if (ObjectManager.Objects[ObjectIndex].Mesh.Vertices[v].TextureCoordinates.X < 0.0f |
 			                                ObjectManager.Objects[ObjectIndex].Mesh.Vertices[v].TextureCoordinates.X > 1.0f)
 			                            {
-				                            wrap |= Textures.OpenGlTextureWrapMode.RepeatClamp;
+				                            wrap |= OpenGlTextureWrapMode.RepeatClamp;
 			                            }
 			                            if (ObjectManager.Objects[ObjectIndex].Mesh.Vertices[v].TextureCoordinates.Y < 0.0f |
 			                                ObjectManager.Objects[ObjectIndex].Mesh.Vertices[v].TextureCoordinates.Y > 1.0f)
 			                            {
-				                            wrap |= Textures.OpenGlTextureWrapMode.ClampRepeat;
+				                            wrap |= OpenGlTextureWrapMode.ClampRepeat;
 			                            }
 		                            }
 
 		                            ObjectManager.Objects[ObjectIndex].Mesh.Materials[k].WrapMode = wrap;
 	                            }
-	                            Textures.LoadTexture(ObjectManager.Objects[ObjectIndex].Mesh.Materials[k].DaytimeTexture, (Textures.OpenGlTextureWrapMode)ObjectManager.Objects[ObjectIndex].Mesh.Materials[k].WrapMode);
+	                            else
+	                            {
+		                            //Yuck cast, but we need the null, as otherwise requires rewriting the texture indexer
+		                            wrap = (OpenGlTextureWrapMode)ObjectManager.Objects[ObjectIndex].Mesh.Materials[k].WrapMode;
+	                            }
+	                            Textures.LoadTexture(ObjectManager.Objects[ObjectIndex].Mesh.Materials[k].DaytimeTexture, (OpenGlTextureWrapMode)ObjectManager.Objects[ObjectIndex].Mesh.Materials[k].WrapMode);
                                 if (ObjectManager.Objects[ObjectIndex].Mesh.Materials[k].DaytimeTexture.Transparency == TextureTransparencyType.Alpha)
                                 {
                                     alpha = true;
@@ -1032,7 +1092,7 @@ namespace OpenBve
                             }
                             if (ObjectManager.Objects[ObjectIndex].Mesh.Materials[k].NighttimeTexture != null)
                             {
-	                            Textures.LoadTexture(ObjectManager.Objects[ObjectIndex].Mesh.Materials[k].NighttimeTexture, Textures.OpenGlTextureWrapMode.ClampClamp);
+	                            Textures.LoadTexture(ObjectManager.Objects[ObjectIndex].Mesh.Materials[k].NighttimeTexture, (OpenGlTextureWrapMode)ObjectManager.Objects[ObjectIndex].Mesh.Materials[k].WrapMode);
                                 if (ObjectManager.Objects[ObjectIndex].Mesh.Materials[k].NighttimeTexture.Transparency == TextureTransparencyType.Alpha)
                                 {
                                     alpha = true;
@@ -1054,6 +1114,7 @@ namespace OpenBve
                             AlphaList[AlphaListCount].ObjectIndex = ObjectIndex;
                             AlphaList[AlphaListCount].FaceIndex = i;
                             AlphaList[AlphaListCount].ObjectListIndex = ObjectListCount;
+	                        AlphaList[AlphaListCount].Wrap = wrap;
                             ObjectList[ObjectListCount].FaceListIndices[i] = (AlphaListCount << 2) + 2;
                             AlphaListCount++;
                         }
@@ -1068,6 +1129,7 @@ namespace OpenBve
                             TransparentColorList[TransparentColorListCount].ObjectIndex = ObjectIndex;
                             TransparentColorList[TransparentColorListCount].FaceIndex = i;
                             TransparentColorList[TransparentColorListCount].ObjectListIndex = ObjectListCount;
+	                        TransparentColorList[TransparentColorListCount].Wrap = wrap;
                             ObjectList[ObjectListCount].FaceListIndices[i] = (TransparentColorListCount << 2) + 1;
                             TransparentColorListCount++;
                         }
@@ -1081,6 +1143,7 @@ namespace OpenBve
                             OpaqueList[OpaqueListCount].ObjectIndex = ObjectIndex;
                             OpaqueList[OpaqueListCount].FaceIndex = i;
                             OpaqueList[OpaqueListCount].ObjectListIndex = ObjectListCount;
+	                        OpaqueList[OpaqueListCount].Wrap = wrap;
                             ObjectList[ObjectListCount].FaceListIndices[i] = OpaqueListCount << 2;
                             OpaqueListCount++;
                         }
@@ -1221,7 +1284,7 @@ namespace OpenBve
         {
             if (Face.Vertices.Length != 0)
             {
-                World.GlowAttenuationMode mode; double halfdistance;
+				GlowAttenuationMode mode; double halfdistance;
                 World.SplitGlowAttenuationData(GlowAttenuationData, out mode, out halfdistance);
                 int i = (int)Face.Vertices[0].Index;
                 double dx = Vertices[i].Coordinates.X - CameraX;
@@ -1229,12 +1292,12 @@ namespace OpenBve
                 double dz = Vertices[i].Coordinates.Z - CameraZ;
                 switch (mode)
                 {
-                    case World.GlowAttenuationMode.DivisionExponent2:
+                    case GlowAttenuationMode.DivisionExponent2:
                         {
                             double t = dx * dx + dy * dy + dz * dz;
                             return t / (t + halfdistance * halfdistance);
                         }
-                    case World.GlowAttenuationMode.DivisionExponent4:
+                    case GlowAttenuationMode.DivisionExponent4:
                         {
                             double t = dx * dx + dy * dy + dz * dz;
                             t *= t; halfdistance *= halfdistance;

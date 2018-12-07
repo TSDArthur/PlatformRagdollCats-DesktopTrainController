@@ -13,48 +13,26 @@ namespace Plugin {
 		
 		/// <summary>Represents handles that can only be read from.</summary>
 		internal class ReadOnlyHandles {
-			// --- members ---
-			/// <summary>The reverser position.</summary>
-			private int MyReverser;
-			/// <summary>The power notch.</summary>
-			private int MyPowerNotch;
-			/// <summary>The brake notch.</summary>
-			private int MyBrakeNotch;
-			/// <summary>Whether the const speed system is enabled.</summary>
-			private bool MyConstSpeed;
 			// --- properties ---
 			/// <summary>Gets or sets the reverser position.</summary>
-			internal int Reverser {
-				get {
-					return this.MyReverser;
-				}
-			}
+			internal int Reverser { get; private set; }
 			/// <summary>Gets or sets the power notch.</summary>
-			internal int PowerNotch {
-				get {
-					return this.MyPowerNotch;
-				}
-			}
+			internal int PowerNotch { get; private set; }
 			/// <summary>Gets or sets the brake notch.</summary>
-			internal int BrakeNotch {
-				get {
-					return this.MyBrakeNotch;
-				}
-			}
+			internal int BrakeNotch { get; private set; }
+			/// <summary>Gets or sets the brake notch.</summary>
+			internal int LocoBrakeNotch { get; private set; }
 			/// <summary>Gets or sets whether the const speed system is enabled.</summary>
-			internal bool ConstSpeed {
-				get {
-					return this.MyConstSpeed;
-				}
-			}
+			internal bool ConstSpeed { get; private set; }
 			// --- constructors ---
 			/// <summary>Creates a new instance of this class.</summary>
 			/// <param name="handles">The handles</param>
 			internal ReadOnlyHandles(Handles handles) {
-				this.MyReverser = handles.Reverser;
-				this.MyPowerNotch = handles.PowerNotch;
-				this.MyBrakeNotch = handles.BrakeNotch;
-				this.MyConstSpeed = handles.ConstSpeed;
+				this.Reverser = handles.Reverser;
+				this.PowerNotch = handles.PowerNotch;
+				this.BrakeNotch = handles.BrakeNotch;
+				this.ConstSpeed = handles.ConstSpeed;
+				this.LocoBrakeNotch = handles.LocoBrakeNotch;
 			}
 		}
 		
@@ -120,9 +98,9 @@ namespace Plugin {
 		/// <param name="playSound">The delegate to play sounds.</param>
 		internal Train(int[] panel, PlaySoundDelegate playSound) {
 			this.PluginInitializing = false;
-			this.Specs = new VehicleSpecs(0, BrakeTypes.ElectromagneticStraightAirBrake, 0, false, 0);
+			this.Specs = new VehicleSpecs(0, BrakeTypes.ElectromagneticStraightAirBrake, 0, false, false, 0);
 			this.State = new VehicleState(0.0, new Speed(0.0), 0.0, 0.0, 0.0, 0.0, 0.0,0.0,0.0,0.0);
-			this.Handles = new ReadOnlyHandles(new Handles(0, 0, 0, false));
+			this.Handles = new ReadOnlyHandles(new Handles(0, 0, 0, 0, false));
 			this.Doors = DoorStates.None;
 			this.Panel = panel;
 			this.Sounds = new Sounds(playSound);
@@ -136,6 +114,10 @@ namespace Plugin {
 		/// <param name="file">The train.dat file.</param>
 		/// <returns>Whether loading the train.dat file was successful.</returns>
 		internal bool LoadTrainDatFile(string file) {
+			if (!File.Exists(file))
+			{
+				return false;
+			}
 			string[] lines = File.ReadAllLines(file, Encoding.UTF8);
 			for (int i = 0; i < lines.Length; i++) {
 				int semicolon = lines[i].IndexOf(';');

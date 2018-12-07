@@ -4,6 +4,8 @@ using System.Windows.Forms;
 using OpenTK;
 using OpenTK.Graphics;
 using OpenTK.Graphics.OpenGL;
+using OpenBveApi.Interface;
+using OpenBveApi.Runtime;
 
 
 namespace OpenBve
@@ -19,7 +21,9 @@ namespace OpenBve
 		
 		/// <summary>Whether the screen is set to fullscreen mode.</summary>
 		internal static bool Fullscreen = false;
-		
+
+		/// <summary>Whether the window is currently minimized</summary>
+		internal static bool Minimized = false;
 		
 		// --- functions ---
 		
@@ -121,7 +125,7 @@ namespace OpenBve
             Height = newHeight;
             if (Loading.Complete)
             {
-                MainLoop.UpdateViewport(MainLoop.ViewPortChangeMode.NoChange);
+                Renderer.UpdateViewport(Renderer.ViewPortChangeMode.NoChange);
                 World.InitializeCameraRestriction();
                 if (Renderer.OptionBackfaceCulling)
                 {
@@ -177,8 +181,8 @@ namespace OpenBve
 			    System.Threading.Thread.Sleep(20);
 			    if (Program.currentGameWindow.WindowState != WindowState.Fullscreen)
 			    {
-                    MessageBox.Show(Interface.GetInterfaceString("errors_fullscreen_switch1") + System.Environment.NewLine +
-                        Interface.GetInterfaceString("errors_fullscreen_switch2"), Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Hand);
+                    MessageBox.Show(Translations.GetInterfaceString("errors_fullscreen_switch1") + System.Environment.NewLine +
+                        Translations.GetInterfaceString("errors_fullscreen_switch2"), Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Hand);
 			        Fullscreen = false;
 			    }
 			}
@@ -193,7 +197,7 @@ namespace OpenBve
                 Screen.Height = Interface.CurrentOptions.WindowHeight;
 			}
 			Renderer.InitializeLighting();
-			MainLoop.UpdateViewport(MainLoop.ViewPortChangeMode.NoChange);
+			Renderer.UpdateViewport(Renderer.ViewPortChangeMode.NoChange);
 			Renderer.InitializeMotionBlur();
 			Timetable.CreateTimetable();
 			Timetable.UpdateCustomTimetable(null, null);
@@ -212,7 +216,7 @@ namespace OpenBve
 
             //Reset the camera when switching between fullscreen and windowed mode
             //Otherwise, if the aspect ratio changes distortion will occur until the view is changed or the camera reset
-            if (World.CameraMode == World.CameraViewMode.Interior | World.CameraMode == World.CameraViewMode.InteriorLookAhead)
+            if (World.CameraMode == CameraViewMode.Interior | World.CameraMode == CameraViewMode.InteriorLookAhead)
             {
                 World.CameraCurrentAlignment.Position = new OpenBveApi.Math.Vector3(0.0, 0.0, 0.0);
             }

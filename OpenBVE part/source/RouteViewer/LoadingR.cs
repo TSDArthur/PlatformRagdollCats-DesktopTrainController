@@ -1,4 +1,4 @@
-﻿// ╔═════════════════════════════════════════════════════════════╗
+// ╔═════════════════════════════════════════════════════════════╗
 // ║ Loading.cs for the Route Viewer                             ║
 // ╠═════════════════════════════════════════════════════════════╣
 // ║ This file cannot be used in the openBVE main program.       ║
@@ -9,7 +9,9 @@ using System;
 using System.Threading;
 using System.Text;
 using System.Windows.Forms;
+using OpenBveApi.Interface;
 using OpenBveApi.Math;
+using OpenBveApi.Runtime;
 
 namespace OpenBve {
 	internal static class Loading {
@@ -88,7 +90,7 @@ namespace OpenBve {
 			try {
 				LoadEverythingThreaded();
 			} catch (Exception ex) {
-				Interface.AddMessage(Interface.MessageType.Critical, false, "The route and train loader encountered the following critical error: " + ex.Message);
+				Interface.AddMessage(MessageType.Critical, false, "The route and train loader encountered the following critical error: " + ex.Message);
 			}
 			#endif
 			Complete = true;
@@ -123,7 +125,7 @@ namespace OpenBve {
 			World.CameraTrackFollower = new TrackManager.TrackFollower();
 			World.CameraTrackFollower.Train = null;
 			World.CameraTrackFollower.CarIndex = -1;
-			World.CameraMode = World.CameraViewMode.Interior;
+			World.CameraMode = CameraViewMode.Interior;
 			// load route
 			bool IsRW = string.Equals(System.IO.Path.GetExtension(CurrentRouteFile), ".rw", StringComparison.OrdinalIgnoreCase);
 			CsvRwRouteParser.ParseRoute(CurrentRouteFile, IsRW, CurrentRouteEncoding, Application.StartupPath, ObjectFolder, SoundFolder, false);

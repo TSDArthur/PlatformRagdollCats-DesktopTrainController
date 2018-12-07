@@ -1,5 +1,6 @@
 ﻿using System;
 using OpenBveApi.Colors;
+using OpenBveApi.Interface;
 
 namespace OpenBve
 {
@@ -19,6 +20,14 @@ namespace OpenBve
 			}
 			internal override void Trigger(int Direction, EventTriggerType TriggerType, TrainManager.Train Train, int CarIndex)
 			{
+				if (Train == null)
+				{
+					return;
+				}
+				if (Train.RouteLimits == null)
+				{
+					Train.RouteLimits = new double[] {};
+				}
 				if (Direction < 0)
 				{
 					if (TriggerType == EventTriggerType.FrontCarFrontAxle)
@@ -61,7 +70,7 @@ namespace OpenBve
 						}
 						if (Train.Specs.CurrentAverageSpeed > this.NextSpeedLimit)
 						{
-							Game.AddMessage(Interface.GetInterfaceString("message_route_overspeed"), MessageManager.MessageDependency.RouteLimit, Interface.GameMode.Normal, MessageColor.Orange, double.PositiveInfinity, null);
+							Game.AddMessage(Translations.GetInterfaceString("message_route_overspeed"), MessageManager.MessageDependency.RouteLimit, Interface.GameMode.Normal, MessageColor.Orange, double.PositiveInfinity, null);
 						}
 					}
 					else if (TriggerType == EventTriggerType.RearCarRearAxle)

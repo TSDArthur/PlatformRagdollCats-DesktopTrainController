@@ -9,7 +9,7 @@ namespace OpenBve
 		internal struct CarSound
 		{
 			/// <summary>The sound buffer to play</summary>
-			internal Sounds.SoundBuffer Buffer;
+			internal readonly Sounds.SoundBuffer Buffer;
 			/// <summary>The source of the sound within the car</summary>
 			internal Sounds.SoundSource Source;
 			/// <summary>A Vector3 describing the position of the sound source</summary>
@@ -23,7 +23,7 @@ namespace OpenBve
 			}
 
 			/// <summary>Defines a default empty sound</summary>
-			internal static readonly CarSound Empty = new CarSound(null, null, new Vector3(0.0, 0.0, 0.0));
+			internal static readonly CarSound Empty = new CarSound(null, null, Vector3.Zero);
 
 			/// <summary>Attempts to load a sound file into a car-sound</summary>
 			/// <param name="FileName">The sound to load</param>

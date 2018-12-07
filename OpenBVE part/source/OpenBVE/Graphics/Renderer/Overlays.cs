@@ -1,6 +1,8 @@
 ﻿using System;
 using OpenBveApi.Colors;
+using OpenBveApi.Graphics;
 using OpenBveApi.Runtime;
+using OpenBveApi.Textures;
 using OpenTK.Graphics.OpenGL;
 
 namespace OpenBve
@@ -33,29 +35,29 @@ namespace OpenBve
 						//Route info overlay (if selected)
 						Game.routeInfoOverlay.Show();
 						//HUD
-						for (int i = 0; i < Interface.CurrentHudElements.Length; i++)
+						for (int i = 0; i < HUD.CurrentHudElements.Length; i++)
 						{
-							string Command = Interface.CurrentHudElements[i].Subject.ToLowerInvariant();
+							string Command = HUD.CurrentHudElements[i].Subject.ToLowerInvariant();
 							switch (Command)
 							{
 								case "messages":
 									{
-										RenderGameMessages(Interface.CurrentHudElements[i], TimeElapsed);
+										RenderGameMessages(HUD.CurrentHudElements[i], TimeElapsed);
 									}
 									break;
 								case "scoremessages":
 									{
-										RenderScoreMessages(Interface.CurrentHudElements[i], TimeElapsed);
+										RenderScoreMessages(HUD.CurrentHudElements[i], TimeElapsed);
 									}
 									break;
 								case "ats":
 									{
-										RenderATSLamps(Interface.CurrentHudElements[i], TimeElapsed);
+										RenderATSLamps(HUD.CurrentHudElements[i], TimeElapsed);
 									}
 									break;
 								default:
 									{
-										RenderHUDElement(Interface.CurrentHudElements[i], TimeElapsed);
+										RenderHUDElement(HUD.CurrentHudElements[i], TimeElapsed);
 									}
 									break;
 							}
@@ -66,7 +68,7 @@ namespace OpenBve
 							double y = 8.0;
 							for (int i = 0; i < Game.MarkerTextures.Length; i++)
 							{
-								if (Textures.LoadTexture(Game.MarkerTextures[i], Textures.OpenGlTextureWrapMode.ClampClamp))
+								if (Textures.LoadTexture(Game.MarkerTextures[i], OpenGlTextureWrapMode.ClampClamp))
 								{
 									double w = (double)Game.MarkerTextures[i].Width;
 									double h = (double)Game.MarkerTextures[i].Height;
@@ -81,7 +83,7 @@ namespace OpenBve
 						if (Timetable.CurrentTimetable == Timetable.TimetableState.Default)
 						{
 							// default
-							if (Textures.LoadTexture(Timetable.DefaultTimetableTexture, Textures.OpenGlTextureWrapMode.ClampClamp))
+							if (Textures.LoadTexture(Timetable.DefaultTimetableTexture, OpenGlTextureWrapMode.ClampClamp))
 							{
 								int w = Timetable.DefaultTimetableTexture.Width;
 								int h = Timetable.DefaultTimetableTexture.Height;
@@ -92,7 +94,7 @@ namespace OpenBve
 						else if (Timetable.CurrentTimetable == Timetable.TimetableState.Custom & Timetable.CustomObjectsUsed == 0)
 					{
 						// custom
-						if (Textures.LoadTexture(Timetable.CurrentCustomTimetableDaytimeTexture, Textures.OpenGlTextureWrapMode.ClampClamp))
+						if (Textures.LoadTexture(Timetable.CurrentCustomTimetableDaytimeTexture, OpenGlTextureWrapMode.ClampClamp))
 						{
 							int w = Timetable.CurrentCustomTimetableDaytimeTexture.Width;
 							int h = Timetable.CurrentCustomTimetableDaytimeTexture.Height;
@@ -100,7 +102,7 @@ namespace OpenBve
 							RenderOverlayTexture(Timetable.CurrentCustomTimetableDaytimeTexture, (double) (Screen.Width - w), Timetable.CustomTimetablePosition, (double) Screen.Width, (double) h + Timetable.CustomTimetablePosition);
 						}
 
-						if (Textures.LoadTexture(Timetable.CurrentCustomTimetableDaytimeTexture, Textures.OpenGlTextureWrapMode.ClampClamp))
+						if (Textures.LoadTexture(Timetable.CurrentCustomTimetableDaytimeTexture, OpenGlTextureWrapMode.ClampClamp))
 						{
 							int w = Timetable.CurrentCustomTimetableDaytimeTexture.Width;
 							int h = Timetable.CurrentCustomTimetableDaytimeTexture.Height;
@@ -168,7 +170,7 @@ namespace OpenBve
 					FadeToBlackDueToChangeEnds = 0.0;
 				}
 			}
-			if (FadeToBlackDueToChangeEnds > 0.0 & (World.CameraMode == World.CameraViewMode.Interior | World.CameraMode == World.CameraViewMode.InteriorLookAhead))
+			if (FadeToBlackDueToChangeEnds > 0.0 & (World.CameraMode == CameraViewMode.Interior | World.CameraMode == CameraViewMode.InteriorLookAhead))
 			{
 				GL.Color4(0.0, 0.0, 0.0, FadeToBlackDueToChangeEnds);
 				RenderOverlaySolid(0.0, 0.0, (double)Screen.Width, (double)Screen.Height);

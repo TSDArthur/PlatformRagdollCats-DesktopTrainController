@@ -43,7 +43,7 @@
     <DebugType>Full</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>..\..\bin_debug\</OutputPath>
-    <PlatformTarget>x64</PlatformTarget>
+    <PlatformTarget>x86</PlatformTarget>
     <DefineConstants>TRACE;DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -84,59 +84,23 @@
         .dll.config
     </AllowedReferenceRelatedFileExtensions>
   </PropertyGroup>
-  <PropertyGroup>
-    <StartupObject>OpenBve.Program</StartupObject>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>..\..\bin_debug\</OutputPath>
-    <DefineConstants>TRACE;DEBUG</DefineConstants>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <FileAlignment>4096</FileAlignment>
-    <DebugType>Full</DebugType>
-    <PlatformTarget>x64</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <Optimize>true</Optimize>
-    <Prefer32Bit>false</Prefer32Bit>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
-    <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\x64\Release\</OutputPath>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <DocumentationFile>..\..\bin_release\OpenBve.XML</DocumentationFile>
-    <Optimize>true</Optimize>
-    <FileAlignment>4096</FileAlignment>
-    <DebugType>pdbonly</DebugType>
-    <PlatformTarget>x64</PlatformTarget>
-    <ErrorReport>prompt</ErrorReport>
-    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
-    <Prefer32Bit>false</Prefer32Bit>
-  </PropertyGroup>
   <ItemGroup>
     <Reference Include="CSScriptLibrary">
-      <HintPath>..\..\Dependencies\CSScriptLibrary.dll</HintPath>
-    </Reference>
-    <Reference Include="Emgu.CV.UI, Version=3.4.1.2976, Culture=neutral, PublicKeyToken=7281126722ab4438, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\dependencies\OpenCV\Emgu.CV.UI.dll</HintPath>
-    </Reference>
-    <Reference Include="Emgu.CV.World, Version=3.4.1.2976, Culture=neutral, PublicKeyToken=7281126722ab4438, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\dependencies\OpenCV\Emgu.CV.World.dll</HintPath>
+      <HintPath>..\..\dependencies\CSScriptLibrary.dll</HintPath>
     </Reference>
     <Reference Include="NUniversalCharDet, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Dependencies\NUniversalCharDet.dll</HintPath>
+      <HintPath>..\..\dependencies\NUniversalCharDet.dll</HintPath>
     </Reference>
     <Reference Include="OpenTK, Version=1.1.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Dependencies\OpenTK.dll</HintPath>
+      <HintPath>..\..\dependencies\OpenTK.dll</HintPath>
     </Reference>
-    <Reference Include="PIEHid32Net">
-      <HintPath>..\..\dependencies\PIEHid32Net.dll</HintPath>
+    <Reference Include="PIEHid32Net, Version=2.2.4.21348, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\bin_debug\PIEHid32Net.dll</HintPath>
     </Reference>
-    <Reference Include="SharpCompress, Version=0.21.1.0, Culture=neutral, PublicKeyToken=afb0a02973931d96, processorArchitecture=MSIL">
+    <Reference Include="SharpCompress, Version=0.21.1.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\dependencies\SharpCompress.dll</HintPath>
     </Reference>
@@ -145,10 +109,6 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
-    <Reference Include="ZedGraph, Version=5.1.5.28844, Culture=neutral, PublicKeyToken=02a83cbd123fcd60, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\dependencies\OpenCV\ZedGraph.dll</HintPath>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Controller\DataCoverter.cs" />
@@ -197,8 +157,6 @@
     <Compile Include="Game\ObjectManager\AnimatedObjects\TrackFollowingObject.cs" />
     <Compile Include="Game\ObjectManager\AnimatedObjects\WorldSound.cs" />
     <Compile Include="Game\ObjectManager\ObjectManager.cs" />
-    <Compile Include="Game\ObjectManager\ObjectManager.Damping.cs" />
-    <Compile Include="Game\ObjectManager\ObjectManager.ObjectLoadMode.cs" />
     <Compile Include="Game\ObjectManager\ObjectManager.StaticObject.cs" />
     <Compile Include="Game\ObjectManager\ObjectManager.UnifiedObject.cs" />
     <Compile Include="Game\ObjectManager\ObjectManager.Visibility.cs" />
@@ -219,6 +177,17 @@
     <Compile Include="Game\TrackManager\TrackManager.cs" />
     <Compile Include="Game\TrackManager\TrackManager.Track.cs" />
     <Compile Include="Game\TrackManager\TrackManager.TrackFollower.cs" />
+    <Compile Include="Graphics\Camera.CameraRestriction.cs" />
+    <Compile Include="Graphics\HUD\HUD.cs" />
+    <Compile Include="Graphics\HUD\HUD.Element.cs">
+      <DependentUpon>HUD.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Graphics\HUD\HUD.Image.cs">
+      <DependentUpon>HUD.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Graphics\HUD\HUD.Transitions.cs">
+      <DependentUpon>HUD.cs</DependentUpon>
+    </Compile>
     <Compile Include="Graphics\Renderer\Background.cs" />
     <Compile Include="Graphics\Renderer\Colors.cs" />
     <Compile Include="Graphics\Renderer\Events.cs" />
@@ -248,7 +217,11 @@
     </Compile>
     <Compile Include="Graphics\Renderer\Structures.cs" />
     <Compile Include="Graphics\Renderer\Objects.cs" />
+    <Compile Include="Graphics\Renderer\ViewportModes.cs" />
+    <Compile Include="Parsers\Object\Generic\AssimpXParser.cs" />
+    <Compile Include="Parsers\Object\Generic\NewXParser.cs" />
     <Compile Include="Parsers\Object\Generic\WavefrontObjParser.cs" />
+    <Compile Include="Parsers\Object\MeshBuilder.cs" />
     <Compile Include="Parsers\Object\MSTS\ShapeParser.cs" />
     <Compile Include="Parsers\Route\BVE\CsvRwRouteParser.ApplyRouteData.cs" />
     <Compile Include="Parsers\Route\BVE\CsvRwRouteParser.CompatibilityObjects.cs" />
@@ -273,8 +246,9 @@
     <Compile Include="Parsers\SoundConfiguration\SoundCfg.Bve4.cs" />
     <Compile Include="Parsers\SoundConfiguration\SoundCfg.Xml.cs" />
     <Compile Include="Parsers\Train\TrainDatParser.Formats.cs" />
-    <Compile Include="Parsers\Train\TrainXmlParser.CarNode.cs" />
-    <Compile Include="Parsers\Train\TrainXmlParser.cs" />
+    <Compile Include="Parsers\Train\XML\TrainXmlParser.BrakeNode.cs" />
+    <Compile Include="Parsers\Train\XML\TrainXmlParser.CarNode.cs" />
+    <Compile Include="Parsers\Train\XML\TrainXmlParser.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
@@ -285,9 +259,25 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="Simulation\TrainManager\Brake\AirBrake\AirSound.cs" />
+    <Compile Include="Simulation\TrainManager\Brake\AirBrake\AutomaticAirBrake.cs" />
+    <Compile Include="Simulation\TrainManager\Brake\CarBrake.BrakeType.cs" />
+    <Compile Include="Simulation\TrainManager\Brake\AirBrake\Components\AirCompressor.cs" />
+    <Compile Include="Simulation\TrainManager\Brake\AirBrake\Components\BrakeCylinder.cs" />
+    <Compile Include="Simulation\TrainManager\Brake\AirBrake\Components\BrakePipe.cs" />
+    <Compile Include="Simulation\TrainManager\Brake\AirBrake\Components\Reservoirs.cs" />
+    <Compile Include="Simulation\TrainManager\Brake\AirBrake\Components\StraightAirPipe.cs" />
+    <Compile Include="Simulation\TrainManager\Brake\AirBrake\ElectricCommandBrake.cs" />
+    <Compile Include="Simulation\TrainManager\Brake\AirBrake\ElectromagneticStraightAirBrake.cs" />
+    <Compile Include="Simulation\TrainManager\Brake\BrakeSystemType.cs" />
+    <Compile Include="Simulation\TrainManager\Brake\CarBrake.cs" />
+    <Compile Include="Simulation\TrainManager\Brake\ElectropnuematicBrakeType.cs" />
+    <Compile Include="Simulation\TrainManager\Car\Car.Brightness.cs" />
     <Compile Include="Simulation\TrainManager\Car\ConstantSpeedDevice.cs" />
     <Compile Include="Simulation\TrainManager\Car\HoldBrake.cs" />
     <Compile Include="Simulation\TrainManager\Car\ReadhesionDevice.cs" />
+    <Compile Include="Simulation\TrainManager\Car\ReadhesionDevice.Types.cs" />
+    <Compile Include="Simulation\TrainManager\Doors.DoorMode.cs" />
     <Compile Include="Simulation\TrainManager\Motor\AccelerationCurve.cs" />
     <Compile Include="Simulation\TrainManager\Car\Axle.cs" />
     <Compile Include="Simulation\TrainManager\Car\Car.Bogie.cs" />
@@ -300,29 +290,27 @@
     <Compile Include="Simulation\TrainManager\Doors.cs" />
     <Compile Include="Simulation\TrainManager\Functions.cs" />
     <Compile Include="Simulation\TrainManager\Motor\MotorSounds.cs" />
-    <Compile Include="Simulation\TrainManager\Train\BrakeSystem.AirBrake.cs" />
     <Compile Include="Simulation\TrainManager\Train\BrakeSystem.cs" />
     <Compile Include="Simulation\TrainManager\Train\DefaultSafetySystems.cs" />
+    <Compile Include="Simulation\TrainManager\Train\Handles\Handles.AirBrake.States.cs" />
+    <Compile Include="Simulation\TrainManager\Train\Handles\Handles.Eb.Behaviour.cs" />
+    <Compile Include="Simulation\TrainManager\Train\Handles\Handles.Abstract.cs" />
+    <Compile Include="Simulation\TrainManager\Train\Handles\Handles.Brake.cs" />
+    <Compile Include="Simulation\TrainManager\Train\Handles\Handles.cs" />
     <Compile Include="Simulation\TrainManager\Passengers.cs" />
     <Compile Include="Simulation\TrainManager\Station.cs" />
-    <Compile Include="Simulation\TrainManager\Train\Hnadles\Handles.Abstract.cs" />
-    <Compile Include="Simulation\TrainManager\Train\Hnadles\Handles.AirBrake.cs" />
-    <Compile Include="Simulation\TrainManager\Train\Hnadles\Handles.AirBrake.States.cs" />
-    <Compile Include="Simulation\TrainManager\Train\Hnadles\Handles.Brake.cs" />
-    <Compile Include="Simulation\TrainManager\Train\Hnadles\Handles.cs" />
-    <Compile Include="Simulation\TrainManager\Train\Hnadles\Handles.Eb.Behaviour.cs" />
-    <Compile Include="Simulation\TrainManager\Train\Hnadles\Handles.EmergencyBrake.cs" />
-    <Compile Include="Simulation\TrainManager\Train\Hnadles\Handles.HoldBrake.cs" />
-    <Compile Include="Simulation\TrainManager\Train\Hnadles\Handles.LocoBrake.cs" />
-    <Compile Include="Simulation\TrainManager\Train\Hnadles\Handles.LocoBrake.Types.cs" />
-    <Compile Include="Simulation\TrainManager\Train\Hnadles\Handles.Power.cs" />
-    <Compile Include="Simulation\TrainManager\Train\Hnadles\Handles.Reverser.cs" />
-    <Compile Include="Simulation\TrainManager\Train\Hnadles\Handles.Reverser.Positions.cs" />
+    <Compile Include="Simulation\TrainManager\Train\Handles\Handles.EmergencyBrake.cs" />
+    <Compile Include="Simulation\TrainManager\Train\Handles\Handles.HoldBrake.cs" />
+    <Compile Include="Simulation\TrainManager\Train\Handles\Handles.LocoBrake.cs" />
+    <Compile Include="Simulation\TrainManager\Train\Handles\Handles.Power.cs" />
+    <Compile Include="Simulation\TrainManager\Train\Handles\Handles.Reverser.cs" />
+    <Compile Include="Simulation\TrainManager\Train\Handles\Handles.Reverser.Positions.cs" />
     <Compile Include="Simulation\TrainManager\Train\Horn.cs" />
+    <Compile Include="Simulation\TrainManager\Train\Handles\Handles.LocoBrake.Types.cs" />
     <Compile Include="Simulation\TrainManager\Train\PassAlarm.cs" />
-    <Compile Include="Simulation\TrainManager\Train\Reverser.cs" />
     <Compile Include="Simulation\TrainManager\Train\StopSkipMode.cs" />
     <Compile Include="Simulation\TrainManager\Train\Train.cs" />
+    <Compile Include="Simulation\TrainManager\Train\Train.Handles.cs" />
     <Compile Include="Simulation\TrainManager\Train\Train.Specs.cs" />
     <Compile Include="Simulation\TrainManager\Train\Train.States.cs" />
     <Compile Include="Simulation\World\BackgroundManager.cs" />
@@ -330,21 +318,15 @@
     <Compile Include="System\Functions\CrashHandler.cs" />
     <Compile Include="System\Functions\FolderBrowserDialog.cs" />
     <Compile Include="System\Functions\TextEncoding.cs" />
-    <Compile Include="System\Input\Commands.cs" />
+    <Compile Include="System\Input\Controls.Control.cs" />
     <Compile Include="System\Input\Controls.cs" />
+    <Compile Include="System\Input\InputDevicePlugin.cs" />
     <Compile Include="System\Logging\BlackBox.cs" />
     <Compile Include="System\Logging\Score.cs" />
+    <Compile Include="System\Messages\Message.cs" />
+    <Compile Include="System\Messages\Message.MessageType.cs" />
     <Compile Include="System\Options.cs" />
     <Compile Include="System\Program\CommandLine.cs" />
-    <Compile Include="System\Translations\InterfaceStrings.cs" />
-    <Compile Include="System\Translations\KeyInfo.cs" />
-    <Compile Include="System\Translations\LanguageFile.cs" />
-    <Compile Include="UserInterface\formFaceDet.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="UserInterface\formFaceDet.Designer.cs">
-      <DependentUpon>formFaceDet.cs</DependentUpon>
-    </Compile>
     <Compile Include="UserInterface\formHMI.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -388,9 +370,6 @@
     <EmbeddedResource Include="UserInterface\formAbout.resx">
       <DependentUpon>formAbout.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="UserInterface\formFaceDet.resx">
-      <DependentUpon>formFaceDet.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="UserInterface\formHMI.resx">
       <DependentUpon>formHMI.cs</DependentUpon>
     </EmbeddedResource>
@@ -402,7 +381,6 @@
     </EmbeddedResource>
     <None Include="app.config" />
     <Compile Include="Game\ObjectManager\ObjectManager.LoadObject.cs" />
-    <None Include="Graphics\Camera.cs" />
     <Compile Include="Audio\Sounds.Convert.cs">
       <DependentUpon>Sounds.cs</DependentUpon>
     </Compile>
@@ -435,12 +413,6 @@
     </Compile>
     <Compile Include="Graphics\Screen.cs" />
     <Compile Include="Graphics\Textures.cs" />
-    <Compile Include="Graphics\Textures.Texture.cs">
-      <DependentUpon>Textures.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Graphics\Textures.TextureOrigin.cs">
-      <DependentUpon>Textures.cs</DependentUpon>
-    </Compile>
     <Compile Include="UserInterface\formImage.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -498,7 +470,6 @@
     <Compile Include="Parsers\Route\BVE\CsvRwRouteParser.cs" />
     <Compile Include="Parsers\Object\Generic\XObjectParser.cs" />
     <Compile Include="Parsers\Panel\PanelCfgParser.cs" />
-    <Compile Include="System\Functions\FileSystem.cs" />
     <Compile Include="System\Host.cs" />
     <Compile Include="System\Input\JoystickManager.cs" />
     <Compile Include="System\Input\JoystickManager.RailDriver.cs">
@@ -521,6 +492,7 @@
       <DependentUpon>formMain.cs</DependentUpon>
     </EmbeddedResource>
     <Compile Include="Parsers\Train\TrainDatParser.cs" />
+    <Compile Include="Simulation\TrainManager\Train\Handles\Handles.AirBrake.cs" />
   </ItemGroup>
   <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.0,Profile=Client">
@@ -545,13 +517,26 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\AssimpXParser\AssimpXParser.csproj">
+      <Project>{572cd7ff-a0c9-4a48-81b7-79b65e37d3c7}</Project>
+      <Name>AssimpXParser</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\DevTools\LBAHeader\LBAHeader.csproj">
+      <Project>{e9b64673-65b7-4d77-a4db-4b441a7c9197}</Project>
+      <Name>LBAHeader</Name>
+    </ProjectReference>
     <ProjectReference Include="..\OpenBveApi\OpenBveApi.csproj">
       <Project>{27134980-4415-4375-A564-40A9014DFA5F}</Project>
       <Name>OpenBveApi</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Plugins\Formats.DirectX\Formats.DirectX.csproj">
+      <Project>{b8955ca6-e002-48a6-8fbf-90c2084c3508}</Project>
+      <Name>Formats.DirectX</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Plugins\Formats.Msts\Formats.Msts.csproj">
-      <Project>{e81b7bd8-a326-47d3-b7ee-e9c7d4d119fa}</Project>
-      <Name>Formats.Msts</Name>
+      <Project>{E81B7BD8-A326-47D3-B7EE-E9C7D4D119FA}</Project>
+      <Name>OpenBve.Formats.Msts</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
@@ -562,17 +547,17 @@
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>AssemblyInfo.cs</LastGenOutput>
     </Content>
-    <None Include="Resources\CPBackground.jpg" />
-    <None Include="Resources\HMI2.jpg" />
-    <None Include="Resources\HMI1.jpg" />
-    <None Include="Resources\Banner_small.jpg" />
-    <None Include="Resources\Banner.bmp" />
     <None Include="Resources\Switch.png" />
-    <None Include="Resources\Connected.png" />
-    <None Include="Resources\Device.png" />
     <None Include="Resources\Refresh.png" />
     <None Include="Resources\Logo.jpg" />
+    <None Include="Resources\HMI2.jpg" />
+    <None Include="Resources\HMI1.jpg" />
+    <None Include="Resources\Device.png" />
+    <None Include="Resources\CPBackground.jpg" />
+    <None Include="Resources\Connected.png" />
+    <None Include="Resources\Banner_small.jpg" />
     <None Include="Resources\Banner.jpg" />
+    <None Include="Resources\Banner.bmp" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

@@ -92,16 +92,23 @@ namespace TrainEditor {
 				ElectricCommandBrake = 1,
 				AutomaticAirBrake = 2
 			}
+			internal enum LocoBrakeTypes {
+				NotFitted = 0,
+				NotchedAirBrake = 1,
+				AutomaticAirBrake = 2
+			}
 			internal enum BrakeControlSystems {
 				None = 0,
 				ClosingElectromagneticValve = 1,
 				DelayIncludingSystem = 2
 			}
 			internal BrakeTypes BrakeType;
+			internal LocoBrakeTypes LocoBrakeType;
 			internal BrakeControlSystems BrakeControlSystem;
 			internal double BrakeControlSpeed;
 			internal Brake() {
 				this.BrakeType = BrakeTypes.ElectromagneticStraightAirBrake;
+				this.LocoBrakeType = LocoBrakeTypes.NotFitted;
 				this.BrakeControlSystem = BrakeControlSystems.None;
 				this.BrakeControlSpeed = 0.0;
 			}
@@ -152,6 +159,8 @@ namespace TrainEditor {
 			internal EbHandleBehaviour HandleBehaviour;
 			internal LocoBrakeType LocoBrake;
 			internal int LocoBrakeNotches;
+			internal int DriverPowerNotches;
+			internal int DriverBrakeNotches;
 			internal Handle() {
 				this.HandleType = HandleTypes.Separate;
 				this.PowerNotches = 8;
@@ -160,6 +169,8 @@ namespace TrainEditor {
 				this.LocoBrakeNotches = 0;
 				this.HandleBehaviour = EbHandleBehaviour.NoAction;
 				this.LocoBrake = LocoBrakeType.Combined;
+				this.DriverPowerNotches = 8;
+				this.DriverBrakeNotches = 8;
 			}
 		}
 		
@@ -248,6 +259,8 @@ namespace TrainEditor {
 			internal PassAlarmModes PassAlarm;
 			internal DoorModes DoorOpenMode;
 			internal DoorModes DoorCloseMode;
+			internal double DoorWidth;
+			internal double DoorMaxTolerance;
 			internal Device() {
 				this.Ats = AtsModes.AtsSn;
 				this.Atc = AtcModes.None;
@@ -259,6 +272,8 @@ namespace TrainEditor {
 				this.PassAlarm = PassAlarmModes.None;
 				this.DoorOpenMode = DoorModes.SemiAutomatic;
 				this.DoorCloseMode = DoorModes.SemiAutomatic;
+				this.DoorWidth = 1000.0;
+				this.DoorMaxTolerance = 0.0;
 			}
 		}
 		
@@ -317,7 +332,7 @@ namespace TrainEditor {
 			}
 		}
 
-		const int currentVersion = 1535;
+		const int currentVersion = 15311;
 
 		// load
 		/// <summary>Loads a file into an instance of the Train class.</summary>
@@ -357,7 +372,7 @@ namespace TrainEditor {
 							{
 								string tt = s.Substring(7, s.Length - 7);
 								int v;
-								if (int.TryParse(tt, out v))
+								if (int.TryParse(tt, System.Globalization.NumberStyles.Float, Culture, out v))
 								{
 									if (v > currentVersion)
 									{
@@ -477,22 +492,22 @@ namespace TrainEditor {
 								switch (n)
 								{
 									case 0:
-										t.Delay.DelayPowerUp = Lines[i].Split(',').Select(Convert.ToDouble).ToArray();
+										t.Delay.DelayPowerUp = Lines[i].Split(',').Select(x => Double.Parse(x, Culture)).ToArray();
 										break;
 									case 1:
-										t.Delay.DelayPowerDown = Lines[i].Split(',').Select(Convert.ToDouble).ToArray();
+										t.Delay.DelayPowerDown = Lines[i].Split(',').Select(x => Double.Parse(x, Culture)).ToArray();
 										break;
 									case 2:
-										t.Delay.DelayBrakeUp = Lines[i].Split(',').Select(Convert.ToDouble).ToArray();
+										t.Delay.DelayBrakeUp = Lines[i].Split(',').Select(x => Double.Parse(x, Culture)).ToArray();
 										break;
 									case 3:
-										t.Delay.DelayBrakeDown = Lines[i].Split(',').Select(Convert.ToDouble).ToArray();
+										t.Delay.DelayBrakeDown = Lines[i].Split(',').Select(x => Double.Parse(x, Culture)).ToArray();
 										break;
 									case 4:
-										t.Delay.DelayLocoBrakeUp = Lines[i].Split(',').Select(Convert.ToDouble).ToArray();
+										t.Delay.DelayLocoBrakeUp = Lines[i].Split(',').Select(x => Double.Parse(x, Culture)).ToArray();
 										break;
 									case 5:
-										t.Delay.DelayLocoBrakeDown = Lines[i].Split(',').Select(Convert.ToDouble).ToArray();
+										t.Delay.DelayLocoBrakeDown = Lines[i].Split(',').Select(x => Double.Parse(x, Culture)).ToArray();
 										break;
 								}
 							}
@@ -537,6 +552,9 @@ namespace TrainEditor {
 									case 2:
 										if (a >= 0.0) t.Brake.BrakeControlSpeed = a;
 										break;
+									case 3:
+										if (a <= 0 && a > 3) t.Brake.LocoBrakeType = (Brake.LocoBrakeTypes) b;
+										break;
 								}
 							} i++; n++;
 						} i--; break;
@@ -580,13 +598,19 @@ namespace TrainEditor {
 										if (b >= 0) t.Handle.PowerNotchReduceSteps = b;
 										break;
 									case 4:
-										if (a <= 0 && a > 4) t.Handle.HandleBehaviour = (Handle.EbHandleBehaviour) b;
+										if (a >= 0 && a < 4) t.Handle.HandleBehaviour = (Handle.EbHandleBehaviour) b;
 										break;
 									case 5:
 										if (b > 0) t.Handle.LocoBrakeNotches = b;
 										break;
 									case 6:
 										if (a <= 0 && a > 3) t.Handle.LocoBrake = (Handle.LocoBrakeType) b;
+										break;
+									case 7:
+										if (b > 0) t.Handle.DriverPowerNotches = b;
+										break;
+									case 8:
+										if (b > 0) t.Handle.DriverBrakeNotches = b;
 										break;
 								}
 							} i++; n++;
@@ -686,6 +710,12 @@ namespace TrainEditor {
 										break;
 									case 9:
 										if (b >= 0 & b <= 2) t.Device.DoorCloseMode = (Device.DoorModes)b;
+										break;
+									case 10:
+										if (a >= 0.0) t.Device.DoorWidth = a;
+										break;
+									case 11:
+										if (a >= 0.0) t.Device.DoorMaxTolerance = a;
 										break;
 								}
 							} i++; n++;
@@ -836,6 +866,7 @@ namespace TrainEditor {
 			b.AppendLine(((int)t.Brake.BrakeType).ToString(Culture).PadRight(n, ' ') + "; BrakeType");
 			b.AppendLine(((int)t.Brake.BrakeControlSystem).ToString(Culture).PadRight(n, ' ') + "; BrakeControlSystem");
 			b.AppendLine(t.Brake.BrakeControlSpeed.ToString(Culture).PadRight(n, ' ') + "; BrakeControlSpeed");
+			b.AppendLine(((int)t.Brake.LocoBrakeType).ToString(Culture).PadRight(n, ' ') + "; LocoBrakeType (1.5.3.4+)");
 			b.AppendLine("#PRESSURE");
 			b.AppendLine(t.Pressure.BrakeCylinderServiceMaximumPressure.ToString(Culture).PadRight(n, ' ') + "; BrakeCylinderServiceMaximumPressure");
 			b.AppendLine(t.Pressure.BrakeCylinderEmergencyMaximumPressure.ToString(Culture).PadRight(n, ' ') + "; BrakeCylinderEmergencyMaximumPressure");
@@ -850,6 +881,8 @@ namespace TrainEditor {
 			b.AppendLine(((int)t.Handle.HandleBehaviour).ToString(Culture).PadRight(n, ' ') + "; EbHandleBehaviour (1.5.3.3+)");
 			b.AppendLine(t.Handle.LocoBrakeNotches.ToString(Culture).PadRight(n, ' ') + "; LocoBrakeNotches (1.5.3.4+)");
 			b.AppendLine(((int)t.Handle.LocoBrake).ToString(Culture).PadRight(n, ' ') + "; LocoBrakeType (1.5.3.4+)");
+			b.AppendLine(t.Handle.DriverPowerNotches.ToString(Culture).PadRight(n, ' ') + "; DriverPowerNotches");
+			b.AppendLine(t.Handle.DriverBrakeNotches.ToString(Culture).PadRight(n, ' ') + "; DriverBrakeNotches");
 			b.AppendLine("#CAB");
 			b.AppendLine(t.Cab.X.ToString(Culture).PadRight(n, ' ') + "; X");
 			b.AppendLine(t.Cab.Y.ToString(Culture).PadRight(n, ' ') + "; Y");
@@ -878,6 +911,8 @@ namespace TrainEditor {
 			b.AppendLine(((int)t.Device.PassAlarm).ToString(Culture).PadRight(n, ' ') + "; PassAlarm");
 			b.AppendLine(((int)t.Device.DoorOpenMode).ToString(Culture).PadRight(n, ' ') + "; DoorOpenMode");
 			b.AppendLine(((int)t.Device.DoorCloseMode).ToString(Culture).PadRight(n, ' ') + "; DoorCloseMode");
+			b.AppendLine(t.Device.DoorWidth.ToString(Culture).PadRight(n, ' ') + "; DoorWidth");
+			b.AppendLine(t.Device.DoorMaxTolerance.ToString(Culture).PadRight(n, ' ') + "; DoorMaxTolerance");
 			for (int i = 0; i < 4; i++) {
 				Motor m = null;
 				switch (i) {

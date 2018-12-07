@@ -480,10 +480,10 @@ namespace OpenBve.Formats.MsTs
 			}
 
 			string s = getNextValue();
-			int val;
-			if (int.TryParse(s, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out val))
+			uint val;
+			if (uint.TryParse(s, NumberStyles.HexNumber, CultureInfo.InvariantCulture, out val))
 			{
-				return (ushort) val;
+				return val;
 			}
 
 			throw new Exception("Unable to parse " + s + " to a valid integer in block " + Token);
@@ -549,7 +549,7 @@ namespace OpenBve.Formats.MsTs
 				return val;
 			}
 
-			throw new Exception("Unable to parse " + s + " to a valid integer in block " + Token);
+			throw new Exception("Unable to parse " + s + " to a valid single in block " + Token);
 		}
 
 		public override void Skip(int length)

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Globalization;
+using OpenBveApi.Interface;
 
 namespace OpenBve
 {
@@ -86,48 +87,60 @@ namespace OpenBve
 				return;
 			}
 			string BlackBoxFile = OpenBveApi.Path.CombineFile(Program.FileSystem.SettingsFolder, "logs.bin");
-			using (System.IO.FileStream Stream = new System.IO.FileStream(BlackBoxFile, System.IO.FileMode.Create, System.IO.FileAccess.Write))
+			try
 			{
-				//TODO: This code recreates the file every frame.....
-				//It should be possible to spin up a stream in a separate thread which then continously appends
-				using (System.IO.BinaryWriter Writer = new System.IO.BinaryWriter(Stream, System.Text.Encoding.UTF8))
+				using (System.IO.FileStream Stream = new System.IO.FileStream(BlackBoxFile, System.IO.FileMode.Create, System.IO.FileAccess.Write))
 				{
-					byte[] Identifier = new byte[] { 111, 112, 101, 110, 66, 86, 69, 95, 76, 79, 71, 83 };
-					const short Version = 1;
-					Writer.Write(Identifier);
-					Writer.Write(Version);
-					Writer.Write(Game.LogRouteName);
-					Writer.Write(Game.LogTrainName);
-					Writer.Write(Game.LogDateTime.ToBinary());
-					Writer.Write((short)Interface.CurrentOptions.GameMode);
-					Writer.Write(Game.BlackBoxEntryCount);
-					for (int i = 0; i < Game.BlackBoxEntryCount; i++)
+					//TODO: This code recreates the file every frame.....
+					//It should be possible to spin up a stream in a separate thread which then continously appends
+					using (System.IO.BinaryWriter Writer = new System.IO.BinaryWriter(Stream, System.Text.Encoding.UTF8))
 					{
-						Writer.Write(Game.BlackBoxEntries[i].Time);
-						Writer.Write(Game.BlackBoxEntries[i].Position);
-						Writer.Write(Game.BlackBoxEntries[i].Speed);
-						Writer.Write(Game.BlackBoxEntries[i].Acceleration);
-						Writer.Write(Game.BlackBoxEntries[i].ReverserDriver);
-						Writer.Write(Game.BlackBoxEntries[i].ReverserSafety);
-						Writer.Write((short)Game.BlackBoxEntries[i].PowerDriver);
-						Writer.Write((short)Game.BlackBoxEntries[i].PowerSafety);
-						Writer.Write((short)Game.BlackBoxEntries[i].BrakeDriver);
-						Writer.Write((short)Game.BlackBoxEntries[i].BrakeSafety);
-						Writer.Write((short)Game.BlackBoxEntries[i].EventToken);
+						byte[] Identifier = new byte[] {111, 112, 101, 110, 66, 86, 69, 95, 76, 79, 71, 83};
+						const short Version = 1;
+						Writer.Write(Identifier);
+						Writer.Write(Version);
+						Writer.Write(Game.LogRouteName);
+						Writer.Write(Game.LogTrainName);
+						Writer.Write(Game.LogDateTime.ToBinary());
+						Writer.Write((short) Interface.CurrentOptions.GameMode);
+						Writer.Write(Game.BlackBoxEntryCount);
+						for (int i = 0; i < Game.BlackBoxEntryCount; i++)
+						{
+							Writer.Write(Game.BlackBoxEntries[i].Time);
+							Writer.Write(Game.BlackBoxEntries[i].Position);
+							Writer.Write(Game.BlackBoxEntries[i].Speed);
+							Writer.Write(Game.BlackBoxEntries[i].Acceleration);
+							Writer.Write(Game.BlackBoxEntries[i].ReverserDriver);
+							Writer.Write(Game.BlackBoxEntries[i].ReverserSafety);
+							Writer.Write((short) Game.BlackBoxEntries[i].PowerDriver);
+							Writer.Write((short) Game.BlackBoxEntries[i].PowerSafety);
+							Writer.Write((short) Game.BlackBoxEntries[i].BrakeDriver);
+							Writer.Write((short) Game.BlackBoxEntries[i].BrakeSafety);
+							Writer.Write((short) Game.BlackBoxEntries[i].EventToken);
+						}
+
+						Writer.Write(Game.ScoreLogCount);
+						for (int i = 0; i < Game.ScoreLogCount; i++)
+						{
+							Writer.Write(Game.ScoreLogs[i].Time);
+							Writer.Write(Game.ScoreLogs[i].Position);
+							Writer.Write(Game.ScoreLogs[i].Value);
+							Writer.Write((short) Game.ScoreLogs[i].TextToken);
+						}
+
+						Writer.Write(Game.CurrentScore.Maximum);
+						Identifier = new byte[] {95, 102, 105, 108, 101, 69, 78, 68};
+						Writer.Write(Identifier);
+						Writer.Close();
 					}
-					Writer.Write(Game.ScoreLogCount);
-					for (int i = 0; i < Game.ScoreLogCount; i++)
-					{
-						Writer.Write(Game.ScoreLogs[i].Time);
-						Writer.Write(Game.ScoreLogs[i].Position);
-						Writer.Write(Game.ScoreLogs[i].Value);
-						Writer.Write((short)Game.ScoreLogs[i].TextToken);
-					}
-					Writer.Write(Game.CurrentScore.Maximum);
-					Identifier = new byte[] { 95, 102, 105, 108, 101, 69, 78, 68 };
-					Writer.Write(Identifier);
-					Writer.Close();
-				} Stream.Close();
+
+					Stream.Close();
+				}
+			}
+			catch
+			{
+				Interface.CurrentOptions.BlackBox = false;
+				Interface.AddMessage(MessageType.Error, false, "An unexpected error occurred whilst attempting to write to the black box log- Black box has been disabled.");
 			}
 		}
 
@@ -184,14 +197,14 @@ namespace OpenBve
 						System.Text.StringBuilder Builder = new System.Text.StringBuilder();
 						string[][] Lines = new string[Game.BlackBoxEntryCount + 1][];
 						Lines[0] = new string[] {
-							GetInterfaceString("log_time"),
-							GetInterfaceString("log_position"),
-							GetInterfaceString("log_speed"),
-							GetInterfaceString("log_acceleration"),
-							GetInterfaceString("log_reverser"),
-							GetInterfaceString("log_power"),
-							GetInterfaceString("log_brake"),
-							GetInterfaceString("log_event"),
+							Translations.GetInterfaceString("log_time"),
+							Translations.GetInterfaceString("log_position"),
+							Translations.GetInterfaceString("log_speed"),
+							Translations.GetInterfaceString("log_acceleration"),
+							Translations.GetInterfaceString("log_reverser"),
+							Translations.GetInterfaceString("log_power"),
+							Translations.GetInterfaceString("log_brake"),
+							Translations.GetInterfaceString("log_event"),
 						};
 						int Columns = Lines[0].Length;
 						for (int i = 0; i < Game.BlackBoxEntryCount; i++)
@@ -220,13 +233,13 @@ namespace OpenBve
 									switch (r)
 									{
 										case -1:
-											reverser[k] = QuickReferences.HandleBackward;
+											reverser[k] = Translations.QuickReferences.HandleBackward;
 											break;
 										case 0:
-											reverser[k] = QuickReferences.HandleNeutral;
+											reverser[k] = Translations.QuickReferences.HandleNeutral;
 											break;
 										case 1:
-											reverser[k] = QuickReferences.HandleForward;
+											reverser[k] = Translations.QuickReferences.HandleForward;
 											break;
 										default:
 											reverser[k] = r.ToString(Culture);
@@ -243,10 +256,10 @@ namespace OpenBve
 									switch (p)
 									{
 										case Game.BlackBoxPower.PowerNull:
-											power[k] = GetInterfaceString(QuickReferences.HandlePowerNull);
+											power[k] = Translations.GetInterfaceString(Translations.QuickReferences.HandlePowerNull);
 											break;
 										default:
-											power[k] = GetInterfaceString(QuickReferences.HandlePower) + ((short)p).ToString(Culture);
+											power[k] = Translations.GetInterfaceString(Translations.QuickReferences.HandlePower) + ((short)p).ToString(Culture);
 											break;
 									}
 								}
@@ -260,25 +273,25 @@ namespace OpenBve
 									switch (b)
 									{
 										case Game.BlackBoxBrake.BrakeNull:
-											brake[k] = GetInterfaceString(QuickReferences.HandleBrakeNull);
+											brake[k] = Translations.GetInterfaceString(Translations.QuickReferences.HandleBrakeNull);
 											break;
 										case Game.BlackBoxBrake.Emergency:
-											brake[k] = GetInterfaceString(QuickReferences.HandleEmergency);
+											brake[k] = Translations.GetInterfaceString(Translations.QuickReferences.HandleEmergency);
 											break;
 										case Game.BlackBoxBrake.HoldBrake:
-											brake[k] = GetInterfaceString(QuickReferences.HandleHoldBrake);
+											brake[k] = Translations.GetInterfaceString(Translations.QuickReferences.HandleHoldBrake);
 											break;
 										case Game.BlackBoxBrake.Release:
-											brake[k] = GetInterfaceString(QuickReferences.HandleRelease);
+											brake[k] = Translations.GetInterfaceString(Translations.QuickReferences.HandleRelease);
 											break;
 										case Game.BlackBoxBrake.Lap:
-											brake[k] = GetInterfaceString(QuickReferences.HandleLap);
+											brake[k] = Translations.GetInterfaceString(Translations.QuickReferences.HandleLap);
 											break;
 										case Game.BlackBoxBrake.Service:
-											brake[k] = GetInterfaceString(QuickReferences.HandleService);
+											brake[k] = Translations.GetInterfaceString(Translations.QuickReferences.HandleService);
 											break;
 										default:
-											brake[k] = GetInterfaceString(QuickReferences.HandleBrake) + ((short)b).ToString(Culture);
+											brake[k] = Translations.GetInterfaceString(Translations.QuickReferences.HandleBrake) + ((short)b).ToString(Culture);
 											break;
 									}
 								}
@@ -309,11 +322,11 @@ namespace OpenBve
 							Builder.Append("╗\r\n");
 							{
 								Builder.Append('║');
-								Builder.Append((" " + GetInterfaceString("log_route") + " " + Game.LogRouteName).PadRight(TotalWidth, ' '));
+								Builder.Append((" " + Translations.GetInterfaceString("log_route") + " " + Game.LogRouteName).PadRight(TotalWidth, ' '));
 								Builder.Append("║\r\n║");
-								Builder.Append((" " + GetInterfaceString("log_train") + " " + Game.LogTrainName).PadRight(TotalWidth, ' '));
+								Builder.Append((" " + Translations.GetInterfaceString("log_train") + " " + Game.LogTrainName).PadRight(TotalWidth, ' '));
 								Builder.Append("║\r\n║");
-								Builder.Append((" " + GetInterfaceString("log_date") + " " + Game.LogDateTime.ToString("yyyy-MM-dd HH:mm:ss", Culture)).PadRight(TotalWidth, ' '));
+								Builder.Append((" " + Translations.GetInterfaceString("log_date") + " " + Game.LogDateTime.ToString("yyyy-MM-dd HH:mm:ss", Culture)).PadRight(TotalWidth, ' '));
 								Builder.Append("║\r\n");
 							}
 						}

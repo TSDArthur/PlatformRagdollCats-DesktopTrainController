@@ -4,6 +4,8 @@ using System.Drawing;
 using System.IO;
 using System.Text;
 using System.Windows.Forms;
+using OpenBveApi;
+using OpenBveApi.Interface;
 
 namespace OpenBve
 {
@@ -17,7 +19,6 @@ namespace OpenBve
 		private string rf;
 		private FileSystemWatcher routeWatcher;
 		private FileSystemWatcher trainWatcher;
-		static public double StartTime = 0;
 
 		private void textboxRouteFolder_TextChanged(object sender, EventArgs e)
 		{
@@ -26,7 +27,7 @@ namespace OpenBve
 				return;
 			}
 			string Folder = textboxRouteFolder.Text;
-			while (!Directory.Exists(Folder) && Path.IsPathRooted(Folder))
+			while (!Directory.Exists(Folder) && System.IO.Path.IsPathRooted(Folder))
 			{
 				Folder = Directory.GetParent(Folder).ToString();
 			}
@@ -38,7 +39,7 @@ namespace OpenBve
 			rf = Folder;
 			try
 			{
-				if (!OpenTK.Configuration.RunningOnMacOS && !String.IsNullOrEmpty(Folder))
+				if (!OpenTK.Configuration.RunningOnMacOS && !String.IsNullOrEmpty(Folder) && Folder.Length > 2)
 				{
 					//BUG: Mono's filesystem watcher can exceed the OS-X handles limit on some systems
 					//Triggered by NWM which has 600+ files in the route folder
@@ -409,7 +410,7 @@ namespace OpenBve
 				return;
 			}
 			string Folder = textboxTrainFolder.Text;
-			while (!Directory.Exists(Folder) && Path.IsPathRooted(Folder))
+			while (!Directory.Exists(Folder) && System.IO.Path.IsPathRooted(Folder) && Folder.Length > 2)
 			{
 				Folder = Directory.GetParent(Folder).ToString();
 			}
@@ -706,11 +707,15 @@ namespace OpenBve
 		// =====
 
 		// start
+		private readonly object StartGame = new Object();
+
 		private void buttonStart_Click(object sender, EventArgs e) {
 			if (Result.RouteFile != null & Result.TrainFolder != null) {
 				if (System.IO.File.Exists(Result.RouteFile) & System.IO.Directory.Exists(Result.TrainFolder)) {
 					Result.Start = true;
-					this.Close();
+					buttonClose_Click(StartGame, e);
+					//HACK: Call Application.DoEvents() to force the message pump to process all pending messages when the form closes
+					//This fixes the main form failing to close on Linux
 					//
 					MethodInvoker MethInvk0 = new MethodInvoker(() =>
 					{
@@ -722,12 +727,9 @@ namespace OpenBve
 						formHMI FrmHMI = new formHMI();
 						FrmHMI.Show();
 					});
-					StartTime = Result.StartTime;
 					BeginInvoke(MethInvk0);
 					BeginInvoke(MethInvk1);
 					//
-					//HACK: Call Application.DoEvents() to force the message pump to process all pending messages when the form closes
-					//This fixes the main form failing to close on Linux
 					Application.DoEvents();
 				}
 			} else {
@@ -765,7 +767,7 @@ namespace OpenBve
 				pictureboxRouteGradient.Image = null;
 				Result.ErrorFile = Result.RouteFile;
 				Result.RouteFile = null;
-				checkboxTrainDefault.Text = Interface.GetInterfaceString("start_train_usedefault");
+				checkboxTrainDefault.Text = Translations.GetInterfaceString("start_train_usedefault");
 				routeWorkerThread.Dispose();
 				this.Cursor = Cursors.Default;
 				return;
@@ -814,7 +816,7 @@ namespace OpenBve
 				}
 
 				// description
-				string Description = Interface.ConvertNewlinesToCrLf(Game.RouteComment);
+				string Description = Game.RouteComment.ConvertNewlinesToCrLf();
 				if (Description.Length != 0)
 				{
 					textboxRouteDescription.Text = Description;
@@ -823,14 +825,15 @@ namespace OpenBve
 				{
 					textboxRouteDescription.Text = System.IO.Path.GetFileNameWithoutExtension(Result.RouteFile);
 				}
-				textboxRouteEncodingPreview.Text = Interface.ConvertNewlinesToCrLf(Description);
+
+				textboxRouteEncodingPreview.Text = Description.ConvertNewlinesToCrLf();
 				if (Game.TrainName != null)
 				{
-					checkboxTrainDefault.Text = Interface.GetInterfaceString("start_train_usedefault") + @" (" + Game.TrainName + @")";
+					checkboxTrainDefault.Text = Translations.GetInterfaceString("start_train_usedefault") + @" (" + Game.TrainName + @")";
 				}
 				else
 				{
-					checkboxTrainDefault.Text = Interface.GetInterfaceString("start_train_usedefault");
+					checkboxTrainDefault.Text = Translations.GetInterfaceString("start_train_usedefault");
 				}
 				Result.ErrorFile = null;
 			}
@@ -843,7 +846,7 @@ namespace OpenBve
 				pictureboxRouteGradient.Image = null;
 				Result.ErrorFile = Result.RouteFile;
 				Result.RouteFile = null;
-				checkboxTrainDefault.Text = Interface.GetInterfaceString("start_train_usedefault");
+				checkboxTrainDefault.Text = Translations.GetInterfaceString("start_train_usedefault");
 			}
 			
 
@@ -873,7 +876,7 @@ namespace OpenBve
 				this.Cursor = Cursors.WaitCursor;
 				TryLoadImage(pictureboxRouteImage, "loading.png");
 				groupboxRouteDetails.Visible = true;
-				textboxRouteDescription.Text = Interface.GetInterfaceString("start_route_processing");
+				textboxRouteDescription.Text = Translations.GetInterfaceString("start_route_processing");
 
 				// determine encoding
 				if (!UserSelectedEncoding) {
@@ -1070,7 +1073,7 @@ namespace OpenBve
 				if (System.IO.File.Exists(File)) {
 					try {
 						string trainText = System.IO.File.ReadAllText(File, Result.TrainEncoding);
-						trainText = Interface.ConvertNewlinesToCrLf(trainText);
+						trainText = trainText.ConvertNewlinesToCrLf();
 						textboxTrainDescription.Text = trainText;
 						textboxTrainEncodingPreview.Text = trainText;
 					} catch {
@@ -1174,7 +1177,7 @@ namespace OpenBve
 			// train not found
 			Result.TrainFolder = null;
 			TryLoadImage(pictureboxTrainImage, "train_error.png");
-			textboxTrainDescription.Text = Interface.ConvertNewlinesToCrLf(Interface.GetInterfaceString("start_train_notfound") + Game.TrainName);
+			textboxTrainDescription.Text = (Translations.GetInterfaceString("start_train_notfound") + Game.TrainName).ConvertNewlinesToCrLf();
 			comboboxTrainEncoding.Tag = new object();
 			comboboxTrainEncoding.SelectedIndex = 0;
 			comboboxTrainEncoding.Tag = null;

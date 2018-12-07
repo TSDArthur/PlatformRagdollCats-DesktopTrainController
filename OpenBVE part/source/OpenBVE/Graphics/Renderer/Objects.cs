@@ -1,4 +1,7 @@
 ﻿using System;
+using OpenBveApi.Graphics;
+using OpenBveApi.Objects;
+using OpenBveApi.Textures;
 
 namespace OpenBve
 {
@@ -46,7 +49,7 @@ namespace OpenBve
 				{
 					bool alpha = false;
 					int k = ObjectManager.Objects[ObjectIndex].Mesh.Faces[i].Material;
-					Textures.OpenGlTextureWrapMode wrap = Textures.OpenGlTextureWrapMode.ClampClamp;
+					OpenGlTextureWrapMode wrap = OpenGlTextureWrapMode.ClampClamp;
 					if (ObjectManager.Objects[ObjectIndex].Mesh.Materials[k].DaytimeTexture != null | ObjectManager.Objects[ObjectIndex].Mesh.Materials[k].NighttimeTexture != null)
 					{
 						if (ObjectManager.Objects[ObjectIndex].Mesh.Materials[k].WrapMode == null)
@@ -57,31 +60,31 @@ namespace OpenBve
 								if (ObjectManager.Objects[ObjectIndex].Mesh.Vertices[v].TextureCoordinates.X < 0.0f |
 								    ObjectManager.Objects[ObjectIndex].Mesh.Vertices[v].TextureCoordinates.X > 1.0f)
 								{
-									wrap |= Textures.OpenGlTextureWrapMode.RepeatClamp;
+									wrap |= OpenGlTextureWrapMode.RepeatClamp;
 								}
 								if (ObjectManager.Objects[ObjectIndex].Mesh.Vertices[v].TextureCoordinates.Y < 0.0f |
 								    ObjectManager.Objects[ObjectIndex].Mesh.Vertices[v].TextureCoordinates.Y > 1.0f)
 								{
-									wrap |= Textures.OpenGlTextureWrapMode.ClampRepeat;
+									wrap |= OpenGlTextureWrapMode.ClampRepeat;
 								}
 							}							
 						}
 						else
 						{
 							//Yuck cast, but we need the null, as otherwise requires rewriting the texture indexer
-							wrap = (Textures.OpenGlTextureWrapMode)ObjectManager.Objects[ObjectIndex].Mesh.Materials[k].WrapMode;
+							wrap = (OpenGlTextureWrapMode)ObjectManager.Objects[ObjectIndex].Mesh.Materials[k].WrapMode;
 						}
 						if (ObjectManager.Objects[ObjectIndex].Mesh.Materials[k].DaytimeTexture != null)
 						{
 							if (Textures.LoadTexture(ObjectManager.Objects[ObjectIndex].Mesh.Materials[k].DaytimeTexture, wrap))
 							{
-								OpenBveApi.Textures.TextureTransparencyType type =
+								TextureTransparencyType type =
 									ObjectManager.Objects[ObjectIndex].Mesh.Materials[k].DaytimeTexture.Transparency;
-								if (type == OpenBveApi.Textures.TextureTransparencyType.Alpha)
+								if (type == TextureTransparencyType.Alpha)
 								{
 									alpha = true;
 								}
-								else if (type == OpenBveApi.Textures.TextureTransparencyType.Partial &&
+								else if (type == TextureTransparencyType.Partial &&
 								         Interface.CurrentOptions.TransparencyMode == TransparencyMode.Quality)
 								{
 									alpha = true;
@@ -92,13 +95,13 @@ namespace OpenBve
 						{
 							if (Textures.LoadTexture(ObjectManager.Objects[ObjectIndex].Mesh.Materials[k].NighttimeTexture, wrap))
 							{
-								OpenBveApi.Textures.TextureTransparencyType type =
+								TextureTransparencyType type =
 									ObjectManager.Objects[ObjectIndex].Mesh.Materials[k].NighttimeTexture.Transparency;
-								if (type == OpenBveApi.Textures.TextureTransparencyType.Alpha)
+								if (type == TextureTransparencyType.Alpha)
 								{
 									alpha = true;
 								}
-								else if (type == OpenBveApi.Textures.TextureTransparencyType.Partial &
+								else if (type == TextureTransparencyType.Partial &
 								         Interface.CurrentOptions.TransparencyMode == TransparencyMode.Quality)
 								{
 									alpha = true;
@@ -106,7 +109,7 @@ namespace OpenBve
 							}
 						}
 					}
-					if (Type == ObjectType.Overlay & World.CameraRestriction != World.CameraRestrictionMode.NotAvailable)
+					if (Type == ObjectType.Overlay & World.CameraRestriction != Camera.RestrictionMode.NotAvailable)
 					{
 						alpha = true;
 					}

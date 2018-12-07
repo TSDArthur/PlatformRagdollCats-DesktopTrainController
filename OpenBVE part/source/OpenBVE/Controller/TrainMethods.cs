@@ -108,11 +108,12 @@ namespace OpenBve
 					if (Emergency)
 					{
 						SetAutoPilot(0);
-						TrainManager.ApplyEmergencyBrake(nowControl);
+						nowControl.ApplyEmergencyBrake();
 					}
 					else
 					{
-						TrainManager.UnapplyEmergencyBrake(nowControl);
+						nowControl.UnapplyEmergencyBrake();
+						
 					}
 
 					//signal
@@ -146,7 +147,7 @@ namespace OpenBve
 			{
 				int currretPower = nowControl.Handles.Power.Driver;
 				int currentBrake = nowControl.Handles.Brake.Driver;
-				if (nowControl.Handles.EmergencyBrake.Actual) TrainManager.UnapplyEmergencyBrake(nowControl);
+				if (nowControl.Handles.EmergencyBrake.Actual) nowControl.UnapplyEmergencyBrake();
 				if (currentBrake > 0) nowControl.ApplyNotch(0, true, -1, true);
 				else nowControl.ApplyNotch(1, true, 0, true);
 				return;
@@ -203,8 +204,8 @@ namespace OpenBve
 		{
 			try
 			{
-				TrainManager.ApplyReverser(nowControl, 1, true);
-				TrainManager.ApplyReverser(nowControl, 1, true);
+				nowControl.ApplyReverser(1, true);
+				nowControl.ApplyReverser(1, true);
 				return;
 			}
 			catch (Exception ex) { }
@@ -217,9 +218,9 @@ namespace OpenBve
 		{
 			try
 			{
-				TrainManager.ApplyReverser(nowControl, 1, true);
-				TrainManager.ApplyReverser(nowControl, 1, true);
-				TrainManager.ApplyReverser(nowControl, -1, true);
+				nowControl.ApplyReverser(1, true);
+				nowControl.ApplyReverser(1, true);
+				nowControl.ApplyReverser(-1, true);
 				return;
 			}
 			catch (Exception ex) { }
@@ -232,8 +233,8 @@ namespace OpenBve
 		{
 			try
 			{
-				TrainManager.ApplyReverser(nowControl, -1, true);
-				TrainManager.ApplyReverser(nowControl, -1, true);
+				nowControl.ApplyReverser(-1, true);
+				nowControl.ApplyReverser(-1, true);
 				return;
 			}
 			catch (Exception ex) { }
@@ -246,7 +247,7 @@ namespace OpenBve
 		{
 			try
 			{
-				TrainManager.ApplyReverser(nowControl, value, false);
+				nowControl.ApplyReverser(value, false);
 				return;
 			}
 			catch (Exception ex) { }
@@ -537,11 +538,11 @@ namespace OpenBve
 				TrainManager.Train nowControl = TrainManager.PlayerTrain;
 				if (Emergency)
 				{
-					TrainManager.ApplyEmergencyBrake(nowControl);
+					nowControl.ApplyEmergencyBrake();
 				}
 				else
 				{
-					TrainManager.UnapplyEmergencyBrake(nowControl);
+					nowControl.UnapplyEmergencyBrake();
 				}
 			}
 			catch (Exception ex) { }
@@ -576,8 +577,6 @@ namespace OpenBve
 				if (Table.Stations.Length == 0) return errState;
 				for (int i = 0; i < Table.Stations.Length; i++)
 				{
-					int currentSection = nowControl.CurrentSectionIndex;
-					int nextSection = Game.Sections[currentSection].NextSection;
 					double currentSectionPos = nowControl.Cars[nowControl.DriverCar].FrontAxle.Follower.TrackPosition + 1.9;
 					int stationStopIndex = Game.GetStopIndex(i, nowControl.Cars.Length);
 					double nextStationPos = Game.Stations[i].Stops[stationStopIndex].TrackPosition;
@@ -594,7 +593,7 @@ namespace OpenBve
 					double currentStationPos = Game.Stations[stationIndex].Stops[currentStationStopIndex].TrackPosition;
 					if (currentStationPos - currentSectionPos > 0 &&
 						currentStationPos - currentSectionPos <= 50 &&
-						nowControl.StationState == TrainManager.TrainStopState.Boarding)
+						(nowControl.StationState == TrainManager.TrainStopState.Boarding || nowControl.StationState==TrainManager.TrainStopState.Completed))
 					{
 						stationIndex++;
 					}

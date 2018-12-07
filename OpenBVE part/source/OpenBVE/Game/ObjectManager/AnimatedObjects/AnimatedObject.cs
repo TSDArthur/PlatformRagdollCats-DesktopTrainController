@@ -1,7 +1,10 @@
 ﻿using System;
 using CSScriptLibrary;
+using OpenBveApi.FunctionScripting;
+using OpenBveApi.Interface;
 using OpenBveApi.Math;
 using OpenBveApi.Objects;
+using OpenBveApi.World;
 
 namespace OpenBve
 {
@@ -17,34 +20,34 @@ namespace OpenBve
 		{
 			// states
 			internal AnimatedObjectState[] States;
-			internal FunctionScripts.FunctionScript StateFunction;
+			internal FunctionScript StateFunction;
 			internal int CurrentState;
 			internal Vector3 TranslateXDirection;
 			internal Vector3 TranslateYDirection;
 			internal Vector3 TranslateZDirection;
-			internal FunctionScripts.FunctionScript TranslateXFunction;
-			internal FunctionScripts.FunctionScript TranslateYFunction;
-			internal FunctionScripts.FunctionScript TranslateZFunction;
+			internal FunctionScript TranslateXFunction;
+			internal FunctionScript TranslateYFunction;
+			internal FunctionScript TranslateZFunction;
 
 			internal Vector3 RotateXDirection;
 			internal Vector3 RotateYDirection;
 			internal Vector3 RotateZDirection;
-			internal FunctionScripts.FunctionScript RotateXFunction;
-			internal FunctionScripts.FunctionScript RotateYFunction;
-			internal FunctionScripts.FunctionScript RotateZFunction;
+			internal FunctionScript RotateXFunction;
+			internal FunctionScript RotateYFunction;
+			internal FunctionScript RotateZFunction;
 			internal Damping RotateXDamping;
 			internal Damping RotateYDamping;
 			internal Damping RotateZDamping;
 			internal Vector2 TextureShiftXDirection;
 			internal Vector2 TextureShiftYDirection;
-			internal FunctionScripts.FunctionScript TextureShiftXFunction;
-			internal FunctionScripts.FunctionScript TextureShiftYFunction;
+			internal FunctionScript TextureShiftXFunction;
+			internal FunctionScript TextureShiftYFunction;
 			internal bool LEDClockwiseWinding;
 			internal double LEDInitialAngle;
 			internal double LEDLastAngle;
 			/// <summary>If LEDFunction is used, an array of five vectors representing the bottom-left, up-left, up-right, bottom-right and center coordinates of the LED square, or a null reference otherwise.</summary>
 			internal Vector3[] LEDVectors;
-			internal FunctionScripts.FunctionScript LEDFunction;
+			internal FunctionScript LEDFunction;
 			internal double RefreshRate;
 			internal double SecondsSinceLastUpdate;
 			internal int ObjectIndex;
@@ -60,7 +63,7 @@ namespace OpenBve
 			internal AnimationScript TranslateZAnimationScript;
 			internal string TranslateZScriptFile;
 
-			internal FunctionScripts.FunctionScript TrackFollowerFunction;
+			internal FunctionScript TrackFollowerFunction;
 			//This section holds parameters used by the track following function
 			internal double FrontAxlePosition = 1;
 			internal double RearAxlePosition = -1;
@@ -191,11 +194,11 @@ namespace OpenBve
 				{
 					if (Overlay)
 					{
-						Renderer.ShowObject(i, Renderer.ObjectType.Overlay);
+						Renderer.ShowObject(i, ObjectType.Overlay);
 					}
 					else
 					{
-						Renderer.ShowObject(i, Renderer.ObjectType.Dynamic);
+						Renderer.ShowObject(i, ObjectType.Dynamic);
 					}
 				}
 			}
@@ -245,11 +248,10 @@ namespace OpenBve
 					{
 						x = TranslateXFunction.LastResult;
 					}
-					double rx = TranslateXDirection.X, ry = TranslateXDirection.Y, rz = TranslateXDirection.Z;
-					World.Rotate(ref rx, ref ry, ref rz, Direction.X, Direction.Y, Direction.Z, Up.X, Up.Y, Up.Z, Side.X, Side.Y, Side.Z);
-					Position.X += x * rx;
-					Position.Y += x * ry;
-					Position.Z += x * rz;
+					Vector3 translationVector = new Vector3(TranslateXDirection); //Must clone
+					translationVector.Rotate(Direction, Up, Side);
+					translationVector *= x;
+					Position += translationVector;
 				}
 				else if (TranslateXScriptFile != null)
 				{
@@ -266,7 +268,7 @@ namespace OpenBve
 						}
 						catch
 						{
-							Interface.AddMessage(Interface.MessageType.Error, false,
+							Interface.AddMessage(MessageType.Error, false,
 								"An error occcured whilst parsing script " + TranslateXScriptFile);
 							TranslateXScriptFile = null;
 							return;
@@ -274,12 +276,10 @@ namespace OpenBve
 					}
 					double x = TranslateXAnimationScript.ExecuteScript(Train, Position, TrackPosition, SectionIndex,
 						IsPartOfTrain, TimeElapsed);
-					double rx = TranslateXDirection.X, ry = TranslateXDirection.Y, rz = TranslateXDirection.Z;
-					World.Rotate(ref rx, ref ry, ref rz, Direction.X, Direction.Y, Direction.Z, Up.X, Up.Y, Up.Z, Side.X, Side.Y,
-						Side.Z);
-					Position.X += x * rx;
-					Position.Y += x * ry;
-					Position.Z += x * rz;
+					Vector3 translationVector = new Vector3(TranslateXDirection); //Must clone
+					translationVector.Rotate(Direction, Up, Side);
+					translationVector *= x;
+					Position += translationVector;
 				}
 
 
@@ -294,11 +294,10 @@ namespace OpenBve
 					{
 						y = TranslateYFunction.LastResult;
 					}
-					double rx = TranslateYDirection.X, ry = TranslateYDirection.Y, rz = TranslateYDirection.Z;
-					World.Rotate(ref rx, ref ry, ref rz, Direction.X, Direction.Y, Direction.Z, Up.X, Up.Y, Up.Z, Side.X, Side.Y, Side.Z);
-					Position.X += y * rx;
-					Position.Y += y * ry;
-					Position.Z += y * rz;
+					Vector3 translationVector = new Vector3(TranslateYDirection); //Must clone
+					translationVector.Rotate(Direction, Up, Side);
+					translationVector *= y;
+					Position += translationVector;
 				}
 				else if (TranslateYScriptFile != null)
 				{
@@ -315,7 +314,7 @@ namespace OpenBve
 						}
 						catch
 						{
-							Interface.AddMessage(Interface.MessageType.Error, false,
+							Interface.AddMessage(MessageType.Error, false,
 								"An error occcured whilst parsing script " + TranslateYScriptFile);
 							TranslateYScriptFile = null;
 							return;
@@ -323,12 +322,10 @@ namespace OpenBve
 					}
 					double y = TranslateYAnimationScript.ExecuteScript(Train, Position, TrackPosition, SectionIndex,
 						IsPartOfTrain, TimeElapsed);
-					double rx = TranslateYDirection.X, ry = TranslateYDirection.Y, rz = TranslateYDirection.Z;
-					World.Rotate(ref rx, ref ry, ref rz, Direction.X, Direction.Y, Direction.Z, Up.X, Up.Y, Up.Z, Side.X, Side.Y,
-						Side.Z);
-					Position.X += y * rx;
-					Position.Y += y * ry;
-					Position.Z += y * rz;
+					Vector3 translationVector = new Vector3(TranslateYDirection); //Must clone
+					translationVector.Rotate(Direction, Up, Side);
+					translationVector *= y;
+					Position += translationVector;
 				}
 
 				if (TranslateZFunction != null)
@@ -342,11 +339,10 @@ namespace OpenBve
 					{
 						z = TranslateZFunction.LastResult;
 					}
-					double rx = TranslateZDirection.X, ry = TranslateZDirection.Y, rz = TranslateZDirection.Z;
-					World.Rotate(ref rx, ref ry, ref rz, Direction.X, Direction.Y, Direction.Z, Up.X, Up.Y, Up.Z, Side.X, Side.Y, Side.Z);
-					Position.X += z * rx;
-					Position.Y += z * ry;
-					Position.Z += z * rz;
+					Vector3 translationVector = new Vector3(TranslateZDirection); //Must clone
+					translationVector.Rotate(Direction, Up, Side);
+					translationVector *= z;
+					Position += translationVector;
 				}
 				else if (TranslateZScriptFile != null)
 				{
@@ -363,7 +359,7 @@ namespace OpenBve
 						}
 						catch
 						{
-							Interface.AddMessage(Interface.MessageType.Error, false,
+							Interface.AddMessage(MessageType.Error, false,
 								"An error occcured whilst parsing script " + TranslateZScriptFile);
 							TranslateZScriptFile = null;
 							return;
@@ -371,12 +367,10 @@ namespace OpenBve
 					}
 					double z = TranslateZAnimationScript.ExecuteScript(Train, Position, TrackPosition, SectionIndex,
 						IsPartOfTrain, TimeElapsed);
-					double rx = TranslateZDirection.X, ry = TranslateZDirection.Y, rz = TranslateZDirection.Z;
-					World.Rotate(ref rx, ref ry, ref rz, Direction.X, Direction.Y, Direction.Z, Up.X, Up.Y, Up.Z, Side.X, Side.Y,
-						Side.Z);
-					Position.X += z * rx;
-					Position.Y += z * ry;
-					Position.Z += z * rz;
+					Vector3 translationVector = new Vector3(TranslateZDirection); //Must clone
+					translationVector.Rotate(Direction, Up, Side);
+					translationVector *= z;
+					Position += translationVector;
 				}
 				// rotation
 				bool rotateX = RotateXFunction != null;
@@ -743,23 +737,23 @@ namespace OpenBve
 					// rotate
 					if (rotateX)
 					{
-						World.Rotate(ref ObjectManager.Objects[i].Mesh.Vertices[k].Coordinates, RotateXDirection, cosX, sinX);
+						ObjectManager.Objects[i].Mesh.Vertices[k].Coordinates.Rotate(RotateXDirection, cosX, sinX);
 					}
 					if (rotateY)
 					{
-						World.Rotate(ref ObjectManager.Objects[i].Mesh.Vertices[k].Coordinates, RotateYDirection, cosY, sinY);
+						ObjectManager.Objects[i].Mesh.Vertices[k].Coordinates.Rotate(RotateYDirection, cosY, sinY);
 					}
 					if (rotateZ)
 					{
-						World.Rotate(ref ObjectManager.Objects[i].Mesh.Vertices[k].Coordinates, RotateZDirection, cosZ, sinZ);
+						ObjectManager.Objects[i].Mesh.Vertices[k].Coordinates.Rotate(RotateZDirection, cosZ, sinZ);
 					}
 					// translate
-					if (Overlay & World.CameraRestriction != World.CameraRestrictionMode.NotAvailable)
+					if (Overlay & World.CameraRestriction != Camera.RestrictionMode.NotAvailable)
 					{
 						ObjectManager.Objects[i].Mesh.Vertices[k].Coordinates.X += States[s].Position.X - Position.X;
 						ObjectManager.Objects[i].Mesh.Vertices[k].Coordinates.Y += States[s].Position.Y - Position.Y;
 						ObjectManager.Objects[i].Mesh.Vertices[k].Coordinates.Z += States[s].Position.Z - Position.Z;
-						World.Rotate(ref ObjectManager.Objects[i].Mesh.Vertices[k].Coordinates.X, ref ObjectManager.Objects[i].Mesh.Vertices[k].Coordinates.Y, ref ObjectManager.Objects[i].Mesh.Vertices[k].Coordinates.Z, World.AbsoluteCameraDirection.X, World.AbsoluteCameraDirection.Y, World.AbsoluteCameraDirection.Z, World.AbsoluteCameraUp.X, World.AbsoluteCameraUp.Y, World.AbsoluteCameraUp.Z, World.AbsoluteCameraSide.X, World.AbsoluteCameraSide.Y, World.AbsoluteCameraSide.Z);
+						ObjectManager.Objects[i].Mesh.Vertices[k].Coordinates.Rotate(World.AbsoluteCameraDirection, World.AbsoluteCameraUp, World.AbsoluteCameraSide);
 						double dx = -Math.Tan(World.CameraCurrentAlignment.Yaw) - World.CameraCurrentAlignment.Position.X;
 						double dy = -Math.Tan(World.CameraCurrentAlignment.Pitch) - World.CameraCurrentAlignment.Position.Y;
 						double dz = -World.CameraCurrentAlignment.Position.Z;
@@ -772,7 +766,7 @@ namespace OpenBve
 						ObjectManager.Objects[i].Mesh.Vertices[k].Coordinates.X += States[s].Position.X;
 						ObjectManager.Objects[i].Mesh.Vertices[k].Coordinates.Y += States[s].Position.Y;
 						ObjectManager.Objects[i].Mesh.Vertices[k].Coordinates.Z += States[s].Position.Z;
-						World.Rotate(ref ObjectManager.Objects[i].Mesh.Vertices[k].Coordinates.X, ref ObjectManager.Objects[i].Mesh.Vertices[k].Coordinates.Y, ref ObjectManager.Objects[i].Mesh.Vertices[k].Coordinates.Z, Direction.X, Direction.Y, Direction.Z, Up.X, Up.Y, Up.Z, Side.X, Side.Y, Side.Z);
+						ObjectManager.Objects[i].Mesh.Vertices[k].Coordinates.Rotate(Direction, Up, Side);
 						ObjectManager.Objects[i].Mesh.Vertices[k].Coordinates.X += Position.X;
 						ObjectManager.Objects[i].Mesh.Vertices[k].Coordinates.Y += Position.Y;
 						ObjectManager.Objects[i].Mesh.Vertices[k].Coordinates.Z += Position.Z;
@@ -791,17 +785,17 @@ namespace OpenBve
 						{
 							if (rotateX)
 							{
-								World.Rotate(ref ObjectManager.Objects[i].Mesh.Faces[k].Vertices[h].Normal, RotateXDirection, cosX, sinX);
+								ObjectManager.Objects[i].Mesh.Faces[k].Vertices[h].Normal.Rotate(RotateXDirection, cosX, sinX);
 							}
 							if (rotateY)
 							{
-								World.Rotate(ref ObjectManager.Objects[i].Mesh.Faces[k].Vertices[h].Normal, RotateYDirection, cosY, sinY);
+								ObjectManager.Objects[i].Mesh.Faces[k].Vertices[h].Normal.Rotate(RotateYDirection, cosY, sinY);
 							}
 							if (rotateZ)
 							{
-								World.Rotate(ref ObjectManager.Objects[i].Mesh.Faces[k].Vertices[h].Normal, RotateZDirection, cosZ, sinZ);
+								ObjectManager.Objects[i].Mesh.Faces[k].Vertices[h].Normal.Rotate(RotateZDirection, cosZ, sinZ);
 							}
-							World.Rotate(ref ObjectManager.Objects[i].Mesh.Faces[k].Vertices[h].Normal.X, ref ObjectManager.Objects[i].Mesh.Faces[k].Vertices[h].Normal.Y, ref ObjectManager.Objects[i].Mesh.Faces[k].Vertices[h].Normal.Z, Direction.X, Direction.Y, Direction.Z, Up.X, Up.Y, Up.Z, Side.X, Side.Y, Side.Z);
+							ObjectManager.Objects[i].Mesh.Faces[k].Vertices[h].Normal.Rotate(Direction, Up, Side);
 						}
 					}
 					// visibility changed
@@ -809,11 +803,11 @@ namespace OpenBve
 					{
 						if (Overlay)
 						{
-							Renderer.ShowObject(i, Renderer.ObjectType.Overlay);
+							Renderer.ShowObject(i, ObjectType.Overlay);
 						}
 						else
 						{
-							Renderer.ShowObject(i, Renderer.ObjectType.Dynamic);
+							Renderer.ShowObject(i, ObjectType.Dynamic);
 						}
 					}
 					else
@@ -823,14 +817,14 @@ namespace OpenBve
 				}
 			}
 
-			internal void CreateObject(Vector3 Position, World.Transformation BaseTransformation, World.Transformation AuxTransformation, int SectionIndex, double TrackPosition, double Brightness)
+			internal void CreateObject(Vector3 Position, Transformation BaseTransformation, Transformation AuxTransformation, int SectionIndex, double TrackPosition, double Brightness)
 			{
 				int a = AnimatedWorldObjectsUsed;
 				if (a >= AnimatedWorldObjects.Length)
 				{
 					Array.Resize<WorldObject>(ref AnimatedWorldObjects, AnimatedWorldObjects.Length << 1);
 				}
-				World.Transformation FinalTransformation = new World.Transformation(AuxTransformation, BaseTransformation);
+				Transformation FinalTransformation = new Transformation(AuxTransformation, BaseTransformation);
 				
 				//Place track followers if required
 				if (TrackFollowerFunction != null)

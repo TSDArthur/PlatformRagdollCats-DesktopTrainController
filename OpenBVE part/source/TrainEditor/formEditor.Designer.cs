@@ -73,10 +73,14 @@
 			this.groupboxHandle = new System.Windows.Forms.GroupBox();
 			this.numericUpDownBrakeNotches = new System.Windows.Forms.NumericUpDown();
 			this.numericUpDownPowerNotches = new System.Windows.Forms.NumericUpDown();
+			this.numericUpDownDriverBrakeNotches = new System.Windows.Forms.NumericUpDown();
+			this.numericUpDownDriverPowerNotches = new System.Windows.Forms.NumericUpDown();
 			this.textboxPowerNotchReduceSteps = new System.Windows.Forms.TextBox();
 			this.labelPowerNotchReduceSteps = new System.Windows.Forms.Label();
 			this.labelBrakeNotches = new System.Windows.Forms.Label();
 			this.labelPowerNotches = new System.Windows.Forms.Label();
+			this.labelDriverBrakeNotches = new System.Windows.Forms.Label();
+			this.labelDriverPowerNotches = new System.Windows.Forms.Label();
 			this.comboboxHandleType = new System.Windows.Forms.ComboBox();
 			this.labelHandleType = new System.Windows.Forms.Label();
 			this.groupboxBrake = new System.Windows.Forms.GroupBox();
@@ -98,9 +102,6 @@
 			this.textboxDeceleration = new System.Windows.Forms.TextBox();
 			this.labelDeceleration = new System.Windows.Forms.Label();
 			this.tabpagePropertiesTwo = new System.Windows.Forms.TabPage();
-			this.groupBoxOther = new System.Windows.Forms.GroupBox();
-			this.comboBoxHandleBehaviour = new System.Windows.Forms.ComboBox();
-			this.label1 = new System.Windows.Forms.Label();
 			this.groupboxCar = new System.Windows.Forms.GroupBox();
 			this.labelCenterOfGravityHeightUnit = new System.Windows.Forms.Label();
 			this.textboxCenterOfGravityHeight = new System.Windows.Forms.TextBox();
@@ -219,6 +220,25 @@
 			this.splitMotorB = new System.Windows.Forms.SplitContainer();
 			this.pictureboxMotorB1 = new System.Windows.Forms.PictureBox();
 			this.pictureboxMotorB2 = new System.Windows.Forms.PictureBox();
+			this.tabPageExtended = new System.Windows.Forms.TabPage();
+			this.groupBoxLanguage = new System.Windows.Forms.GroupBox();
+			this.comboboxLanguages = new System.Windows.Forms.ComboBox();
+			this.groupBoxMisc = new System.Windows.Forms.GroupBox();
+			this.comboBoxEBHandleBehaviour = new System.Windows.Forms.ComboBox();
+			this.labelEBHandleBehaviour = new System.Windows.Forms.Label();
+			this.groupBoxLocoBrake = new System.Windows.Forms.GroupBox();
+			this.comboBoxLocoBrakeSystemType = new System.Windows.Forms.ComboBox();
+			this.labelLocoBrakeSystemType = new System.Windows.Forms.Label();
+			this.comboBoxLocoBrakeType = new System.Windows.Forms.ComboBox();
+			this.label2 = new System.Windows.Forms.Label();
+			this.buttonLocoBrakeDelayDown = new System.Windows.Forms.Button();
+			this.labelLocoBrakeDelayDown = new System.Windows.Forms.Label();
+			this.buttonLocoBrakeDelayUp = new System.Windows.Forms.Button();
+			this.labelLocoBrakeDelayUp = new System.Windows.Forms.Label();
+			this.numericUpDownLocoBrakeNotches = new System.Windows.Forms.NumericUpDown();
+			this.labelLocoBrakeNotches = new System.Windows.Forms.Label();
+			this.labelMinVersion = new System.Windows.Forms.Label();
+			this.labelExtendedNote = new System.Windows.Forms.Label();
 			this.panelPane = new System.Windows.Forms.Panel();
 			this.labelLineHorizontal = new System.Windows.Forms.Label();
 			this.buttonClose = new System.Windows.Forms.Button();
@@ -228,21 +248,12 @@
 			this.buttonNew = new System.Windows.Forms.Button();
 			this.pictureboxLogo = new System.Windows.Forms.PictureBox();
 			this.labelLineVertical = new System.Windows.Forms.Label();
-			this.tabPageExtended = new System.Windows.Forms.TabPage();
-			this.labelExtendedNote = new System.Windows.Forms.Label();
-			this.labelMinVersion = new System.Windows.Forms.Label();
-			this.groupBoxLocoBrake = new System.Windows.Forms.GroupBox();
-			this.labelLocoBrakeNotches = new System.Windows.Forms.Label();
-			this.numericUpDownLocoBrakeNotches = new System.Windows.Forms.NumericUpDown();
-			this.labelLocoBrakeDelayUp = new System.Windows.Forms.Label();
-			this.buttonLocoBrakeDelayUp = new System.Windows.Forms.Button();
-			this.buttonLocoBrakeDelayDown = new System.Windows.Forms.Button();
-			this.labelLocoBrakeDelayDown = new System.Windows.Forms.Label();
-			this.label2 = new System.Windows.Forms.Label();
-			this.comboBoxLocoBrakeType = new System.Windows.Forms.ComboBox();
-			this.groupBoxMisc = new System.Windows.Forms.GroupBox();
-			this.labelEBHandleBehaviour = new System.Windows.Forms.Label();
-			this.comboBoxEBHandleBehaviour = new System.Windows.Forms.ComboBox();
+			this.textboxDoorMaxTolerance = new System.Windows.Forms.TextBox();
+			this.labelDoorMaxToleranceUnit = new System.Windows.Forms.Label();
+			this.labelDoorMaxTolerance = new System.Windows.Forms.Label();
+			this.textboxDoorWidth = new System.Windows.Forms.TextBox();
+			this.labelDoorWidthUnit = new System.Windows.Forms.Label();
+			this.labelDoorWidth = new System.Windows.Forms.Label();
 			this.tabcontrolTabs.SuspendLayout();
 			this.tabpagePropertiesOne.SuspendLayout();
 			this.groupboxPressure.SuspendLayout();
@@ -251,10 +262,11 @@
 			this.groupboxHandle.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.numericUpDownBrakeNotches)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.numericUpDownPowerNotches)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.numericUpDownDriverBrakeNotches)).BeginInit();
+			((System.ComponentModel.ISupportInitialize)(this.numericUpDownDriverPowerNotches)).BeginInit();
 			this.groupboxBrake.SuspendLayout();
 			this.groupboxPerformance.SuspendLayout();
 			this.tabpagePropertiesTwo.SuspendLayout();
-			this.groupBoxOther.SuspendLayout();
 			this.groupboxCar.SuspendLayout();
 			this.groupboxCab.SuspendLayout();
 			this.groupboxDevice.SuspendLayout();
@@ -281,12 +293,13 @@
 			this.splitMotorB.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.pictureboxMotorB1)).BeginInit();
 			((System.ComponentModel.ISupportInitialize)(this.pictureboxMotorB2)).BeginInit();
-			this.panelPane.SuspendLayout();
-			((System.ComponentModel.ISupportInitialize)(this.pictureboxLogo)).BeginInit();
 			this.tabPageExtended.SuspendLayout();
+			this.groupBoxLanguage.SuspendLayout();
+			this.groupBoxMisc.SuspendLayout();
 			this.groupBoxLocoBrake.SuspendLayout();
 			((System.ComponentModel.ISupportInitialize)(this.numericUpDownLocoBrakeNotches)).BeginInit();
-			this.groupBoxMisc.SuspendLayout();
+			this.panelPane.SuspendLayout();
+			((System.ComponentModel.ISupportInitialize)(this.pictureboxLogo)).BeginInit();
 			this.SuspendLayout();
 			// 
 			// tabcontrolTabs
@@ -302,7 +315,7 @@
 			this.tabcontrolTabs.Location = new System.Drawing.Point(128, 8);
 			this.tabcontrolTabs.Name = "tabcontrolTabs";
 			this.tabcontrolTabs.SelectedIndex = 0;
-			this.tabcontrolTabs.Size = new System.Drawing.Size(648, 464);
+			this.tabcontrolTabs.Size = new System.Drawing.Size(680, 512);
 			this.tabcontrolTabs.TabIndex = 0;
 			this.tabcontrolTabs.Selecting += new System.Windows.Forms.TabControlCancelEventHandler(this.TabcontrolTabsSelecting);
 			// 
@@ -317,7 +330,7 @@
 			this.tabpagePropertiesOne.Location = new System.Drawing.Point(4, 22);
 			this.tabpagePropertiesOne.Name = "tabpagePropertiesOne";
 			this.tabpagePropertiesOne.Padding = new System.Windows.Forms.Padding(3);
-			this.tabpagePropertiesOne.Size = new System.Drawing.Size(640, 438);
+			this.tabpagePropertiesOne.Size = new System.Drawing.Size(672, 486);
 			this.tabpagePropertiesOne.TabIndex = 1;
 			this.tabpagePropertiesOne.Text = "Properties (1)";
 			this.tabpagePropertiesOne.UseVisualStyleBackColor = true;
@@ -797,15 +810,19 @@
 			// 
 			this.groupboxHandle.Controls.Add(this.numericUpDownBrakeNotches);
 			this.groupboxHandle.Controls.Add(this.numericUpDownPowerNotches);
+			this.groupboxHandle.Controls.Add(this.numericUpDownDriverBrakeNotches);
+			this.groupboxHandle.Controls.Add(this.numericUpDownDriverPowerNotches);
 			this.groupboxHandle.Controls.Add(this.textboxPowerNotchReduceSteps);
 			this.groupboxHandle.Controls.Add(this.labelPowerNotchReduceSteps);
 			this.groupboxHandle.Controls.Add(this.labelBrakeNotches);
 			this.groupboxHandle.Controls.Add(this.labelPowerNotches);
+			this.groupboxHandle.Controls.Add(this.labelDriverBrakeNotches);
+			this.groupboxHandle.Controls.Add(this.labelDriverPowerNotches);
 			this.groupboxHandle.Controls.Add(this.comboboxHandleType);
 			this.groupboxHandle.Controls.Add(this.labelHandleType);
 			this.groupboxHandle.Location = new System.Drawing.Point(296, 304);
 			this.groupboxHandle.Name = "groupboxHandle";
-			this.groupboxHandle.Size = new System.Drawing.Size(336, 120);
+			this.groupboxHandle.Size = new System.Drawing.Size(336, 168);
 			this.groupboxHandle.TabIndex = 5;
 			this.groupboxHandle.TabStop = false;
 			this.groupboxHandle.Text = "Handle";
@@ -846,6 +863,40 @@
             0});
 			this.numericUpDownPowerNotches.ValueChanged += new System.EventHandler(this.numericUpDownPowerNotches_ValueChanged);
 			// 
+			// numericUpDownDriverBrakeNotches
+			// 
+			this.numericUpDownDriverBrakeNotches.Location = new System.Drawing.Point(168, 136);
+			this.numericUpDownDriverBrakeNotches.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+			this.numericUpDownDriverBrakeNotches.Name = "numericUpDownDriverBrakeNotches";
+			this.numericUpDownDriverBrakeNotches.Size = new System.Drawing.Size(160, 20);
+			this.numericUpDownDriverBrakeNotches.TabIndex = 11;
+			this.numericUpDownDriverBrakeNotches.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+			// 
+			// numericUpDownDriverPowerNotches
+			// 
+			this.numericUpDownDriverPowerNotches.Location = new System.Drawing.Point(168, 112);
+			this.numericUpDownDriverPowerNotches.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+			this.numericUpDownDriverPowerNotches.Name = "numericUpDriverDownPowerNotches";
+			this.numericUpDownDriverPowerNotches.Size = new System.Drawing.Size(160, 20);
+			this.numericUpDownDriverPowerNotches.TabIndex = 9;
+			this.numericUpDownDriverPowerNotches.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+			// 
 			// textboxPowerNotchReduceSteps
 			// 
 			this.textboxPowerNotchReduceSteps.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
@@ -881,6 +932,24 @@
 			this.labelPowerNotches.TabIndex = 2;
 			this.labelPowerNotches.Text = "PowerNotches:";
 			this.labelPowerNotches.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			// 
+			// labelDriverBrakeNotches
+			// 
+			this.labelDriverBrakeNotches.Location = new System.Drawing.Point(8, 136);
+			this.labelDriverBrakeNotches.Name = "labelDriverBrakeNotches";
+			this.labelDriverBrakeNotches.Size = new System.Drawing.Size(160, 16);
+			this.labelDriverBrakeNotches.TabIndex = 10;
+			this.labelDriverBrakeNotches.Text = "DriverBrakeNotches:";
+			this.labelDriverBrakeNotches.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			// 
+			// labelPowerNotches
+			// 
+			this.labelDriverPowerNotches.Location = new System.Drawing.Point(8, 112);
+			this.labelDriverPowerNotches.Name = "labelDriverPowerNotches";
+			this.labelDriverPowerNotches.Size = new System.Drawing.Size(160, 16);
+			this.labelDriverPowerNotches.TabIndex = 8;
+			this.labelDriverPowerNotches.Text = "DriverPowerNotches:";
+			this.labelDriverPowerNotches.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			// 
 			// comboboxHandleType
 			// 
@@ -1091,49 +1160,16 @@
 			// 
 			// tabpagePropertiesTwo
 			// 
-			this.tabpagePropertiesTwo.Controls.Add(this.groupBoxOther);
 			this.tabpagePropertiesTwo.Controls.Add(this.groupboxCar);
 			this.tabpagePropertiesTwo.Controls.Add(this.groupboxCab);
 			this.tabpagePropertiesTwo.Controls.Add(this.groupboxDevice);
 			this.tabpagePropertiesTwo.Location = new System.Drawing.Point(4, 22);
 			this.tabpagePropertiesTwo.Name = "tabpagePropertiesTwo";
 			this.tabpagePropertiesTwo.Padding = new System.Windows.Forms.Padding(3);
-			this.tabpagePropertiesTwo.Size = new System.Drawing.Size(640, 438);
+			this.tabpagePropertiesTwo.Size = new System.Drawing.Size(672, 486);
 			this.tabpagePropertiesTwo.TabIndex = 2;
 			this.tabpagePropertiesTwo.Text = "Properties (2)";
 			this.tabpagePropertiesTwo.UseVisualStyleBackColor = true;
-			// 
-			// groupBoxOther
-			// 
-			this.groupBoxOther.Controls.Add(this.comboBoxHandleBehaviour);
-			this.groupBoxOther.Controls.Add(this.label1);
-			this.groupBoxOther.Location = new System.Drawing.Point(296, 257);
-			this.groupBoxOther.Name = "groupBoxOther";
-			this.groupBoxOther.Size = new System.Drawing.Size(347, 166);
-			this.groupBoxOther.TabIndex = 3;
-			this.groupBoxOther.TabStop = false;
-			this.groupBoxOther.Text = "Other";
-			// 
-			// comboBoxHandleBehaviour
-			// 
-			this.comboBoxHandleBehaviour.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.comboBoxHandleBehaviour.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-			this.comboBoxHandleBehaviour.FormattingEnabled = true;
-			this.comboBoxHandleBehaviour.Location = new System.Drawing.Point(168, 19);
-			this.comboBoxHandleBehaviour.Name = "comboBoxHandleBehaviour";
-			this.comboBoxHandleBehaviour.Size = new System.Drawing.Size(160, 21);
-			this.comboBoxHandleBehaviour.TabIndex = 13;
-			// 
-			// label1
-			// 
-			this.label1.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-			this.label1.Location = new System.Drawing.Point(8, 19);
-			this.label1.Name = "label1";
-			this.label1.Size = new System.Drawing.Size(160, 16);
-			this.label1.TabIndex = 12;
-			this.label1.Text = "EbHandlesBehaviour:";
-			this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			// 
 			// groupboxCar
 			// 
@@ -1593,6 +1629,12 @@
 			// 
 			// groupboxDevice
 			// 
+			this.groupboxDevice.Controls.Add(this.labelDoorMaxTolerance);
+			this.groupboxDevice.Controls.Add(this.labelDoorMaxToleranceUnit);
+			this.groupboxDevice.Controls.Add(this.textboxDoorMaxTolerance);
+			this.groupboxDevice.Controls.Add(this.labelDoorWidth);
+			this.groupboxDevice.Controls.Add(this.labelDoorWidthUnit);
+			this.groupboxDevice.Controls.Add(this.textboxDoorWidth);
 			this.groupboxDevice.Controls.Add(this.comboboxDoorCloseMode);
 			this.groupboxDevice.Controls.Add(this.labelDoorCloseMode);
 			this.groupboxDevice.Controls.Add(this.comboboxDoorOpenMode);
@@ -1613,7 +1655,7 @@
 			this.groupboxDevice.Controls.Add(this.labelAtc);
 			this.groupboxDevice.Location = new System.Drawing.Point(296, 8);
 			this.groupboxDevice.Name = "groupboxDevice";
-			this.groupboxDevice.Size = new System.Drawing.Size(336, 240);
+			this.groupboxDevice.Size = new System.Drawing.Size(336, 288);
 			this.groupboxDevice.TabIndex = 2;
 			this.groupboxDevice.TabStop = false;
 			this.groupboxDevice.Text = "Device";
@@ -1817,7 +1859,7 @@
 			this.tabpageAcceleration.Location = new System.Drawing.Point(4, 22);
 			this.tabpageAcceleration.Name = "tabpageAcceleration";
 			this.tabpageAcceleration.Padding = new System.Windows.Forms.Padding(3);
-			this.tabpageAcceleration.Size = new System.Drawing.Size(640, 438);
+			this.tabpageAcceleration.Size = new System.Drawing.Size(672, 486);
 			this.tabpageAcceleration.TabIndex = 0;
 			this.tabpageAcceleration.Text = "Acceleration";
 			this.tabpageAcceleration.UseVisualStyleBackColor = true;
@@ -1831,7 +1873,7 @@
 			this.pictureboxAcceleration.Cursor = System.Windows.Forms.Cursors.Cross;
 			this.pictureboxAcceleration.Location = new System.Drawing.Point(8, 8);
 			this.pictureboxAcceleration.Name = "pictureboxAcceleration";
-			this.pictureboxAcceleration.Size = new System.Drawing.Size(472, 424);
+			this.pictureboxAcceleration.Size = new System.Drawing.Size(472, 472);
 			this.pictureboxAcceleration.TabIndex = 5;
 			this.pictureboxAcceleration.TabStop = false;
 			this.pictureboxAcceleration.Paint += new System.Windows.Forms.PaintEventHandler(this.PictureboxAccelerationPaint);
@@ -1848,9 +1890,9 @@
 			this.groupboxAccelerationPreview.Controls.Add(this.labelAccelerationMaxXUnit);
 			this.groupboxAccelerationPreview.Controls.Add(this.checkboxAccelerationSubtractDeceleration);
 			this.groupboxAccelerationPreview.Controls.Add(this.labelAccelerationInfo);
-			this.groupboxAccelerationPreview.Location = new System.Drawing.Point(488, 232);
+			this.groupboxAccelerationPreview.Location = new System.Drawing.Point(488, 248);
 			this.groupboxAccelerationPreview.Name = "groupboxAccelerationPreview";
-			this.groupboxAccelerationPreview.Size = new System.Drawing.Size(144, 160);
+			this.groupboxAccelerationPreview.Size = new System.Drawing.Size(176, 160);
 			this.groupboxAccelerationPreview.TabIndex = 3;
 			this.groupboxAccelerationPreview.TabStop = false;
 			this.groupboxAccelerationPreview.Text = "Preview";
@@ -1859,7 +1901,7 @@
 			// 
 			this.textboxAccelerationMaxY.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-			this.textboxAccelerationMaxY.Location = new System.Drawing.Point(48, 128);
+			this.textboxAccelerationMaxY.Location = new System.Drawing.Point(80, 128);
 			this.textboxAccelerationMaxY.Name = "textboxAccelerationMaxY";
 			this.textboxAccelerationMaxY.Size = new System.Drawing.Size(40, 20);
 			this.textboxAccelerationMaxY.TabIndex = 8;
@@ -1872,7 +1914,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
 			this.labelAccelerationMaxY.Location = new System.Drawing.Point(8, 128);
 			this.labelAccelerationMaxY.Name = "labelAccelerationMaxY";
-			this.labelAccelerationMaxY.Size = new System.Drawing.Size(40, 16);
+			this.labelAccelerationMaxY.Size = new System.Drawing.Size(72, 16);
 			this.labelAccelerationMaxY.TabIndex = 7;
 			this.labelAccelerationMaxY.Text = "Ymax:";
 			this.labelAccelerationMaxY.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -1880,7 +1922,7 @@
 			// labelAccelerationMaxYUnit
 			// 
 			this.labelAccelerationMaxYUnit.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.labelAccelerationMaxYUnit.Location = new System.Drawing.Point(88, 128);
+			this.labelAccelerationMaxYUnit.Location = new System.Drawing.Point(120, 128);
 			this.labelAccelerationMaxYUnit.Name = "labelAccelerationMaxYUnit";
 			this.labelAccelerationMaxYUnit.Size = new System.Drawing.Size(48, 16);
 			this.labelAccelerationMaxYUnit.TabIndex = 9;
@@ -1891,7 +1933,7 @@
 			// 
 			this.textboxAccelerationMaxX.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-			this.textboxAccelerationMaxX.Location = new System.Drawing.Point(48, 104);
+			this.textboxAccelerationMaxX.Location = new System.Drawing.Point(80, 104);
 			this.textboxAccelerationMaxX.Name = "textboxAccelerationMaxX";
 			this.textboxAccelerationMaxX.Size = new System.Drawing.Size(40, 20);
 			this.textboxAccelerationMaxX.TabIndex = 5;
@@ -1904,7 +1946,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
 			this.labelAccelerationMaxX.Location = new System.Drawing.Point(8, 104);
 			this.labelAccelerationMaxX.Name = "labelAccelerationMaxX";
-			this.labelAccelerationMaxX.Size = new System.Drawing.Size(40, 16);
+			this.labelAccelerationMaxX.Size = new System.Drawing.Size(72, 16);
 			this.labelAccelerationMaxX.TabIndex = 4;
 			this.labelAccelerationMaxX.Text = "Xmax:";
 			this.labelAccelerationMaxX.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -1912,7 +1954,7 @@
 			// labelAccelerationMaxXUnit
 			// 
 			this.labelAccelerationMaxXUnit.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.labelAccelerationMaxXUnit.Location = new System.Drawing.Point(88, 104);
+			this.labelAccelerationMaxXUnit.Location = new System.Drawing.Point(120, 104);
 			this.labelAccelerationMaxXUnit.Name = "labelAccelerationMaxXUnit";
 			this.labelAccelerationMaxXUnit.Size = new System.Drawing.Size(48, 16);
 			this.labelAccelerationMaxXUnit.TabIndex = 6;
@@ -1956,7 +1998,7 @@
 			this.groupboxAccelerationData.Controls.Add(this.textboxA0);
 			this.groupboxAccelerationData.Location = new System.Drawing.Point(488, 32);
 			this.groupboxAccelerationData.Name = "groupboxAccelerationData";
-			this.groupboxAccelerationData.Size = new System.Drawing.Size(144, 192);
+			this.groupboxAccelerationData.Size = new System.Drawing.Size(176, 208);
 			this.groupboxAccelerationData.TabIndex = 2;
 			this.groupboxAccelerationData.TabStop = false;
 			this.groupboxAccelerationData.Text = "Data";
@@ -1965,16 +2007,16 @@
 			// 
 			this.labelE.Location = new System.Drawing.Point(8, 160);
 			this.labelE.Name = "labelE";
-			this.labelE.Size = new System.Drawing.Size(56, 16);
+			this.labelE.Size = new System.Drawing.Size(48, 13);
 			this.labelE.TabIndex = 11;
 			this.labelE.Text = "e (2.0):";
-			this.labelE.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			this.labelE.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
 			// 
 			// textboxE
 			// 
 			this.textboxE.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-			this.textboxE.Location = new System.Drawing.Point(64, 160);
+			this.textboxE.Location = new System.Drawing.Point(8, 176);
 			this.textboxE.Name = "textboxE";
 			this.textboxE.Size = new System.Drawing.Size(72, 20);
 			this.textboxE.TabIndex = 12;
@@ -2097,7 +2139,7 @@
 			this.comboboxAccelerationNotch.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
 			this.comboboxAccelerationNotch.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
 			this.comboboxAccelerationNotch.FormattingEnabled = true;
-			this.comboboxAccelerationNotch.Location = new System.Drawing.Point(568, 8);
+			this.comboboxAccelerationNotch.Location = new System.Drawing.Point(600, 8);
 			this.comboboxAccelerationNotch.Name = "comboboxAccelerationNotch";
 			this.comboboxAccelerationNotch.Size = new System.Drawing.Size(64, 21);
 			this.comboboxAccelerationNotch.TabIndex = 1;
@@ -2106,7 +2148,7 @@
 			// labelAccelerationNotch
 			// 
 			this.labelAccelerationNotch.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.labelAccelerationNotch.Location = new System.Drawing.Point(488, 8);
+			this.labelAccelerationNotch.Location = new System.Drawing.Point(520, 8);
 			this.labelAccelerationNotch.Name = "labelAccelerationNotch";
 			this.labelAccelerationNotch.Size = new System.Drawing.Size(80, 16);
 			this.labelAccelerationNotch.TabIndex = 0;
@@ -2121,7 +2163,7 @@
 			this.tabpageMotor.Location = new System.Drawing.Point(4, 22);
 			this.tabpageMotor.Name = "tabpageMotor";
 			this.tabpageMotor.Padding = new System.Windows.Forms.Padding(3);
-			this.tabpageMotor.Size = new System.Drawing.Size(640, 438);
+			this.tabpageMotor.Size = new System.Drawing.Size(672, 486);
 			this.tabpageMotor.TabIndex = 3;
 			this.tabpageMotor.Text = "Motor sound";
 			this.tabpageMotor.UseVisualStyleBackColor = true;
@@ -2146,7 +2188,7 @@
 			this.groupboxMotorPreview.Controls.Add(this.labelMotorMaxYPitch);
 			this.groupboxMotorPreview.Location = new System.Drawing.Point(488, 136);
 			this.groupboxMotorPreview.Name = "groupboxMotorPreview";
-			this.groupboxMotorPreview.Size = new System.Drawing.Size(144, 248);
+			this.groupboxMotorPreview.Size = new System.Drawing.Size(176, 248);
 			this.groupboxMotorPreview.TabIndex = 1;
 			this.groupboxMotorPreview.TabStop = false;
 			this.groupboxMotorPreview.Text = "Preview";
@@ -2199,7 +2241,7 @@
 			// 
 			this.textboxMotorMaxYVolume.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-			this.textboxMotorMaxYVolume.Location = new System.Drawing.Point(96, 216);
+			this.textboxMotorMaxYVolume.Location = new System.Drawing.Point(128, 216);
 			this.textboxMotorMaxYVolume.Name = "textboxMotorMaxYVolume";
 			this.textboxMotorMaxYVolume.Size = new System.Drawing.Size(40, 20);
 			this.textboxMotorMaxYVolume.TabIndex = 10;
@@ -2210,7 +2252,7 @@
 			// 
 			this.textboxMotorMaxYPitch.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-			this.textboxMotorMaxYPitch.Location = new System.Drawing.Point(96, 192);
+			this.textboxMotorMaxYPitch.Location = new System.Drawing.Point(128, 192);
 			this.textboxMotorMaxYPitch.Name = "textboxMotorMaxYPitch";
 			this.textboxMotorMaxYPitch.Size = new System.Drawing.Size(40, 20);
 			this.textboxMotorMaxYPitch.TabIndex = 8;
@@ -2221,7 +2263,7 @@
 			// 
 			this.textboxMotorMaxX.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-			this.textboxMotorMaxX.Location = new System.Drawing.Point(56, 112);
+			this.textboxMotorMaxX.Location = new System.Drawing.Point(88, 112);
 			this.textboxMotorMaxX.Name = "textboxMotorMaxX";
 			this.textboxMotorMaxX.Size = new System.Drawing.Size(40, 20);
 			this.textboxMotorMaxX.TabIndex = 5;
@@ -2232,7 +2274,7 @@
 			// 
 			this.textboxMotorMinX.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-			this.textboxMotorMinX.Location = new System.Drawing.Point(56, 88);
+			this.textboxMotorMinX.Location = new System.Drawing.Point(88, 88);
 			this.textboxMotorMinX.Name = "textboxMotorMinX";
 			this.textboxMotorMinX.Size = new System.Drawing.Size(40, 20);
 			this.textboxMotorMinX.TabIndex = 2;
@@ -2242,7 +2284,7 @@
 			// labelMotorMinXUnit
 			// 
 			this.labelMotorMinXUnit.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.labelMotorMinXUnit.Location = new System.Drawing.Point(96, 88);
+			this.labelMotorMinXUnit.Location = new System.Drawing.Point(128, 88);
 			this.labelMotorMinXUnit.Name = "labelMotorMinXUnit";
 			this.labelMotorMinXUnit.Size = new System.Drawing.Size(40, 16);
 			this.labelMotorMinXUnit.TabIndex = 3;
@@ -2253,7 +2295,7 @@
 			// 
 			this.labelMotorMaxYVolume.Location = new System.Drawing.Point(8, 216);
 			this.labelMotorMaxYVolume.Name = "labelMotorMaxYVolume";
-			this.labelMotorMaxYVolume.Size = new System.Drawing.Size(88, 16);
+			this.labelMotorMaxYVolume.Size = new System.Drawing.Size(120, 16);
 			this.labelMotorMaxYVolume.TabIndex = 9;
 			this.labelMotorMaxYVolume.Text = "YmaxVolume:";
 			this.labelMotorMaxYVolume.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -2262,7 +2304,7 @@
 			// 
 			this.labelMotorMinX.Location = new System.Drawing.Point(8, 88);
 			this.labelMotorMinX.Name = "labelMotorMinX";
-			this.labelMotorMinX.Size = new System.Drawing.Size(48, 16);
+			this.labelMotorMinX.Size = new System.Drawing.Size(80, 16);
 			this.labelMotorMinX.TabIndex = 1;
 			this.labelMotorMinX.Text = "Xmin:";
 			this.labelMotorMinX.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -2273,14 +2315,14 @@
             | System.Windows.Forms.AnchorStyles.Right)));
 			this.labelMotorInfo.Location = new System.Drawing.Point(8, 24);
 			this.labelMotorInfo.Name = "labelMotorInfo";
-			this.labelMotorInfo.Size = new System.Drawing.Size(128, 56);
+			this.labelMotorInfo.Size = new System.Drawing.Size(160, 56);
 			this.labelMotorInfo.TabIndex = 0;
 			this.labelMotorInfo.Text = "X: 0.00 km/h\r\n\r\nYpitch: 100.00 (100%)\r\nYvolume: 128.00 (100%)";
 			// 
 			// labelMotorMaxXUnit
 			// 
 			this.labelMotorMaxXUnit.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-			this.labelMotorMaxXUnit.Location = new System.Drawing.Point(96, 112);
+			this.labelMotorMaxXUnit.Location = new System.Drawing.Point(128, 112);
 			this.labelMotorMaxXUnit.Name = "labelMotorMaxXUnit";
 			this.labelMotorMaxXUnit.Size = new System.Drawing.Size(40, 16);
 			this.labelMotorMaxXUnit.TabIndex = 6;
@@ -2291,7 +2333,7 @@
 			// 
 			this.labelMotorMaxX.Location = new System.Drawing.Point(8, 112);
 			this.labelMotorMaxX.Name = "labelMotorMaxX";
-			this.labelMotorMaxX.Size = new System.Drawing.Size(48, 16);
+			this.labelMotorMaxX.Size = new System.Drawing.Size(80, 16);
 			this.labelMotorMaxX.TabIndex = 4;
 			this.labelMotorMaxX.Text = "Xmax:";
 			this.labelMotorMaxX.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -2300,7 +2342,7 @@
 			// 
 			this.labelMotorMaxYPitch.Location = new System.Drawing.Point(8, 192);
 			this.labelMotorMaxYPitch.Name = "labelMotorMaxYPitch";
-			this.labelMotorMaxYPitch.Size = new System.Drawing.Size(88, 16);
+			this.labelMotorMaxYPitch.Size = new System.Drawing.Size(120, 16);
 			this.labelMotorMaxYPitch.TabIndex = 7;
 			this.labelMotorMaxYPitch.Text = "YmaxPitch:";
 			this.labelMotorMaxYPitch.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -2314,7 +2356,7 @@
 			this.groupboxMotorEdit.Controls.Add(this.radiobuttonVolume);
 			this.groupboxMotorEdit.Location = new System.Drawing.Point(488, 8);
 			this.groupboxMotorEdit.Name = "groupboxMotorEdit";
-			this.groupboxMotorEdit.Size = new System.Drawing.Size(144, 120);
+			this.groupboxMotorEdit.Size = new System.Drawing.Size(176, 120);
 			this.groupboxMotorEdit.TabIndex = 0;
 			this.groupboxMotorEdit.TabStop = false;
 			this.groupboxMotorEdit.Text = "Edit mode";
@@ -2379,7 +2421,7 @@
 			// splitMotorPB.Panel2
 			// 
 			this.splitMotorPB.Panel2.Controls.Add(this.splitMotorB);
-			this.splitMotorPB.Size = new System.Drawing.Size(472, 424);
+			this.splitMotorPB.Size = new System.Drawing.Size(472, 472);
 			this.splitMotorPB.SplitterDistance = 236;
 			this.splitMotorPB.TabIndex = 12;
 			// 
@@ -2479,6 +2521,217 @@
 			this.pictureboxMotorB2.MouseMove += new System.Windows.Forms.MouseEventHandler(this.PictureboxMotorB2MouseMove);
 			this.pictureboxMotorB2.MouseUp += new System.Windows.Forms.MouseEventHandler(this.PictureboxMotorB2MouseUp);
 			// 
+			// tabPageExtended
+			// 
+			this.tabPageExtended.Controls.Add(this.groupBoxLanguage);
+			this.tabPageExtended.Controls.Add(this.groupBoxMisc);
+			this.tabPageExtended.Controls.Add(this.groupBoxLocoBrake);
+			this.tabPageExtended.Controls.Add(this.labelMinVersion);
+			this.tabPageExtended.Controls.Add(this.labelExtendedNote);
+			this.tabPageExtended.Location = new System.Drawing.Point(4, 22);
+			this.tabPageExtended.Name = "tabPageExtended";
+			this.tabPageExtended.Padding = new System.Windows.Forms.Padding(3);
+			this.tabPageExtended.Size = new System.Drawing.Size(672, 486);
+			this.tabPageExtended.TabIndex = 4;
+			this.tabPageExtended.Text = "Extended Features";
+			this.tabPageExtended.UseVisualStyleBackColor = true;
+			//
+			// groupBoxLanguage
+			//
+			this.groupBoxLanguage.Controls.Add(this.comboboxLanguages);
+			this.groupBoxLanguage.Location = new System.Drawing.Point(295, 195);
+			this.groupBoxLanguage.Name = "groupBoxLanguage";
+			this.groupBoxLanguage.Size = new System.Drawing.Size(339, 50);
+			this.groupBoxLanguage.TabIndex = 4;
+			this.groupBoxLanguage.TabStop = false;
+			this.groupBoxLanguage.Text = "Language";
+			//
+			// comboboxLanguages
+			//
+			this.comboboxLanguages.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.comboboxLanguages.FormattingEnabled = true;
+			this.comboboxLanguages.Location = new System.Drawing.Point(139, 18);
+			this.comboboxLanguages.Name = "comboboxLanguages";
+			this.comboboxLanguages.Size = new System.Drawing.Size(194, 20);
+			this.comboboxLanguages.TabIndex = 0;
+			this.comboboxLanguages.SelectedIndexChanged += new System.EventHandler(this.comboboxLanguages_SelectedIndexChanged);
+			// 
+			// groupBoxMisc
+			// 
+			this.groupBoxMisc.Controls.Add(this.comboBoxEBHandleBehaviour);
+			this.groupBoxMisc.Controls.Add(this.labelEBHandleBehaviour);
+			this.groupBoxMisc.Location = new System.Drawing.Point(295, 55);
+			this.groupBoxMisc.Name = "groupBoxMisc";
+			this.groupBoxMisc.Size = new System.Drawing.Size(339, 131);
+			this.groupBoxMisc.TabIndex = 3;
+			this.groupBoxMisc.TabStop = false;
+			this.groupBoxMisc.Text = "Miscellaneous Features";
+			// 
+			// comboBoxEBHandleBehaviour
+			// 
+			this.comboBoxEBHandleBehaviour.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.comboBoxEBHandleBehaviour.FormattingEnabled = true;
+			this.comboBoxEBHandleBehaviour.Location = new System.Drawing.Point(139, 17);
+			this.comboBoxEBHandleBehaviour.Name = "comboBoxEBHandleBehaviour";
+			this.comboBoxEBHandleBehaviour.Size = new System.Drawing.Size(194, 21);
+			this.comboBoxEBHandleBehaviour.TabIndex = 8;
+			this.comboBoxEBHandleBehaviour.SelectedIndexChanged += new System.EventHandler(this.comboBoxEBHandleBehaviour_SelectedIndexChanged);
+			// 
+			// labelEBHandleBehaviour
+			// 
+			this.labelEBHandleBehaviour.AutoSize = true;
+			this.labelEBHandleBehaviour.Location = new System.Drawing.Point(7, 20);
+			this.labelEBHandleBehaviour.Name = "labelEBHandleBehaviour";
+			this.labelEBHandleBehaviour.Size = new System.Drawing.Size(126, 13);
+			this.labelEBHandleBehaviour.TabIndex = 0;
+			this.labelEBHandleBehaviour.Text = "Handle behaviour on EB:";
+			// 
+			// groupBoxLocoBrake
+			// 
+			this.groupBoxLocoBrake.Controls.Add(this.comboBoxLocoBrakeSystemType);
+			this.groupBoxLocoBrake.Controls.Add(this.labelLocoBrakeSystemType);
+			this.groupBoxLocoBrake.Controls.Add(this.comboBoxLocoBrakeType);
+			this.groupBoxLocoBrake.Controls.Add(this.label2);
+			this.groupBoxLocoBrake.Controls.Add(this.buttonLocoBrakeDelayDown);
+			this.groupBoxLocoBrake.Controls.Add(this.labelLocoBrakeDelayDown);
+			this.groupBoxLocoBrake.Controls.Add(this.buttonLocoBrakeDelayUp);
+			this.groupBoxLocoBrake.Controls.Add(this.labelLocoBrakeDelayUp);
+			this.groupBoxLocoBrake.Controls.Add(this.numericUpDownLocoBrakeNotches);
+			this.groupBoxLocoBrake.Controls.Add(this.labelLocoBrakeNotches);
+			this.groupBoxLocoBrake.Location = new System.Drawing.Point(8, 55);
+			this.groupBoxLocoBrake.Name = "groupBoxLocoBrake";
+			this.groupBoxLocoBrake.Size = new System.Drawing.Size(280, 190);
+			this.groupBoxLocoBrake.TabIndex = 2;
+			this.groupBoxLocoBrake.TabStop = false;
+			this.groupBoxLocoBrake.Text = "Locomotive Brake";
+			// 
+			// comboBoxLocoBrakeSystemType
+			// 
+			this.comboBoxLocoBrakeSystemType.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+			this.comboBoxLocoBrakeSystemType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.comboBoxLocoBrakeSystemType.FormattingEnabled = true;
+			this.comboBoxLocoBrakeSystemType.Location = new System.Drawing.Point(6, 32);
+			this.comboBoxLocoBrakeSystemType.Name = "comboBoxLocoBrakeSystemType";
+			this.comboBoxLocoBrakeSystemType.Size = new System.Drawing.Size(268, 21);
+			this.comboBoxLocoBrakeSystemType.TabIndex = 9;
+			this.comboBoxLocoBrakeSystemType.SelectedIndexChanged += new System.EventHandler(this.comboBoxLocoBrakeSystemType_SelectedIndexChanged);
+			// 
+			// labelLocoBrakeSystemType
+			// 
+			this.labelLocoBrakeSystemType.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+			this.labelLocoBrakeSystemType.Location = new System.Drawing.Point(6, 16);
+			this.labelLocoBrakeSystemType.Name = "labelLocoBrakeSystemType";
+			this.labelLocoBrakeSystemType.Size = new System.Drawing.Size(268, 16);
+			this.labelLocoBrakeSystemType.TabIndex = 8;
+			this.labelLocoBrakeSystemType.Text = "BrakeType:";
+			this.labelLocoBrakeSystemType.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			// 
+			// comboBoxLocoBrakeType
+			// 
+			this.comboBoxLocoBrakeType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+			this.comboBoxLocoBrakeType.FormattingEnabled = true;
+			this.comboBoxLocoBrakeType.Items.AddRange(new object[] {
+            "Combined",
+            "Independant",
+            "Blocking"});
+			this.comboBoxLocoBrakeType.Location = new System.Drawing.Point(156, 148);
+			this.comboBoxLocoBrakeType.Name = "comboBoxLocoBrakeType";
+			this.comboBoxLocoBrakeType.Size = new System.Drawing.Size(118, 21);
+			this.comboBoxLocoBrakeType.TabIndex = 7;
+			this.comboBoxLocoBrakeType.SelectedIndexChanged += new System.EventHandler(this.comboBoxLocoBrakeType_SelectedIndexChanged);
+			// 
+			// label2
+			// 
+			this.label2.AutoSize = true;
+			this.label2.Location = new System.Drawing.Point(6, 151);
+			this.label2.Name = "label2";
+			this.label2.Size = new System.Drawing.Size(34, 13);
+			this.label2.TabIndex = 6;
+			this.label2.Text = "Type:";
+			// 
+			// buttonLocoBrakeDelayDown
+			// 
+			this.buttonLocoBrakeDelayDown.Location = new System.Drawing.Point(156, 117);
+			this.buttonLocoBrakeDelayDown.Name = "buttonLocoBrakeDelayDown";
+			this.buttonLocoBrakeDelayDown.Size = new System.Drawing.Size(118, 25);
+			this.buttonLocoBrakeDelayDown.TabIndex = 5;
+			this.buttonLocoBrakeDelayDown.Text = "Set";
+			this.buttonLocoBrakeDelayDown.UseVisualStyleBackColor = true;
+			this.buttonLocoBrakeDelayDown.Click += new System.EventHandler(this.buttonLocoBrakeDelayDown_Click);
+			// 
+			// labelLocoBrakeDelayDown
+			// 
+			this.labelLocoBrakeDelayDown.AutoSize = true;
+			this.labelLocoBrakeDelayDown.Location = new System.Drawing.Point(6, 125);
+			this.labelLocoBrakeDelayDown.Name = "labelLocoBrakeDelayDown";
+			this.labelLocoBrakeDelayDown.Size = new System.Drawing.Size(65, 13);
+			this.labelLocoBrakeDelayDown.TabIndex = 4;
+			this.labelLocoBrakeDelayDown.Text = "DelayDown:";
+			// 
+			// buttonLocoBrakeDelayUp
+			// 
+			this.buttonLocoBrakeDelayUp.Location = new System.Drawing.Point(156, 91);
+			this.buttonLocoBrakeDelayUp.Name = "buttonLocoBrakeDelayUp";
+			this.buttonLocoBrakeDelayUp.Size = new System.Drawing.Size(118, 25);
+			this.buttonLocoBrakeDelayUp.TabIndex = 3;
+			this.buttonLocoBrakeDelayUp.Text = "Set";
+			this.buttonLocoBrakeDelayUp.UseVisualStyleBackColor = true;
+			this.buttonLocoBrakeDelayUp.Click += new System.EventHandler(this.buttonLocoBrakeDelayUp_Click);
+			// 
+			// labelLocoBrakeDelayUp
+			// 
+			this.labelLocoBrakeDelayUp.AutoSize = true;
+			this.labelLocoBrakeDelayUp.Location = new System.Drawing.Point(6, 98);
+			this.labelLocoBrakeDelayUp.Name = "labelLocoBrakeDelayUp";
+			this.labelLocoBrakeDelayUp.Size = new System.Drawing.Size(51, 13);
+			this.labelLocoBrakeDelayUp.TabIndex = 2;
+			this.labelLocoBrakeDelayUp.Text = "DelayUp:";
+			// 
+			// numericUpDownLocoBrakeNotches
+			// 
+			this.numericUpDownLocoBrakeNotches.Location = new System.Drawing.Point(156, 65);
+			this.numericUpDownLocoBrakeNotches.Maximum = new decimal(new int[] {
+            20,
+            0,
+            0,
+            0});
+			this.numericUpDownLocoBrakeNotches.Name = "numericUpDownLocoBrakeNotches";
+			this.numericUpDownLocoBrakeNotches.Size = new System.Drawing.Size(118, 20);
+			this.numericUpDownLocoBrakeNotches.TabIndex = 1;
+			// 
+			// labelLocoBrakeNotches
+			// 
+			this.labelLocoBrakeNotches.AutoSize = true;
+			this.labelLocoBrakeNotches.Location = new System.Drawing.Point(6, 67);
+			this.labelLocoBrakeNotches.Name = "labelLocoBrakeNotches";
+			this.labelLocoBrakeNotches.Size = new System.Drawing.Size(50, 13);
+			this.labelLocoBrakeNotches.TabIndex = 0;
+			this.labelLocoBrakeNotches.Text = "Notches:";
+			// 
+			// labelMinVersion
+			// 
+			this.labelMinVersion.AutoSize = true;
+			this.labelMinVersion.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.labelMinVersion.Location = new System.Drawing.Point(6, 35);
+			this.labelMinVersion.Name = "labelMinVersion";
+			this.labelMinVersion.Size = new System.Drawing.Size(52, 16);
+			this.labelMinVersion.TabIndex = 1;
+			this.labelMinVersion.Text = "v1.5.3.4";
+			// 
+			// labelExtendedNote
+			// 
+			this.labelExtendedNote.AutoSize = true;
+			this.labelExtendedNote.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+			this.labelExtendedNote.Location = new System.Drawing.Point(6, 3);
+			this.labelExtendedNote.MaximumSize = new System.Drawing.Size(640, 0);
+			this.labelExtendedNote.Name = "labelExtendedNote";
+			this.labelExtendedNote.Size = new System.Drawing.Size(607, 32);
+			this.labelExtendedNote.TabIndex = 0;
+			this.labelExtendedNote.Text = "Please note: Features found on this page may require the following minimum versio" +
+    "n of openBVE:";
+			// 
 			// panelPane
 			// 
 			this.panelPane.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -2493,7 +2746,7 @@
 			this.panelPane.Controls.Add(this.pictureboxLogo);
 			this.panelPane.Location = new System.Drawing.Point(0, 0);
 			this.panelPane.Name = "panelPane";
-			this.panelPane.Size = new System.Drawing.Size(120, 480);
+			this.panelPane.Size = new System.Drawing.Size(120, 528);
 			this.panelPane.TabIndex = 0;
 			// 
 			// labelLineHorizontal
@@ -2510,7 +2763,7 @@
 			// 
 			this.buttonClose.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
 			this.buttonClose.BackColor = System.Drawing.SystemColors.ButtonFace;
-			this.buttonClose.Location = new System.Drawing.Point(8, 448);
+			this.buttonClose.Location = new System.Drawing.Point(8, 496);
 			this.buttonClose.Name = "buttonClose";
 			this.buttonClose.Size = new System.Drawing.Size(103, 24);
 			this.buttonClose.TabIndex = 5;
@@ -2581,184 +2834,64 @@
 			this.labelLineVertical.BackColor = System.Drawing.Color.White;
 			this.labelLineVertical.Location = new System.Drawing.Point(120, 0);
 			this.labelLineVertical.Name = "labelLineVertical";
-			this.labelLineVertical.Size = new System.Drawing.Size(2, 480);
+			this.labelLineVertical.Size = new System.Drawing.Size(2, 528);
 			this.labelLineVertical.TabIndex = 13;
-			// 
-			// tabPageExtended
-			// 
-			this.tabPageExtended.Controls.Add(this.groupBoxMisc);
-			this.tabPageExtended.Controls.Add(this.groupBoxLocoBrake);
-			this.tabPageExtended.Controls.Add(this.labelMinVersion);
-			this.tabPageExtended.Controls.Add(this.labelExtendedNote);
-			this.tabPageExtended.Location = new System.Drawing.Point(4, 22);
-			this.tabPageExtended.Name = "tabPageExtended";
-			this.tabPageExtended.Padding = new System.Windows.Forms.Padding(3);
-			this.tabPageExtended.Size = new System.Drawing.Size(640, 438);
-			this.tabPageExtended.TabIndex = 4;
-			this.tabPageExtended.Text = "Extended Features";
-			this.tabPageExtended.UseVisualStyleBackColor = true;
-			// 
-			// labelExtendedNote
-			// 
-			this.labelExtendedNote.AutoSize = true;
-			this.labelExtendedNote.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.labelExtendedNote.Location = new System.Drawing.Point(6, 3);
-			this.labelExtendedNote.MaximumSize = new System.Drawing.Size(640, 0);
-			this.labelExtendedNote.Name = "labelExtendedNote";
-			this.labelExtendedNote.Size = new System.Drawing.Size(607, 32);
-			this.labelExtendedNote.TabIndex = 0;
-			this.labelExtendedNote.Text = "Please note: Features found on this page may require the following minimum versio" +
-    "n of openBVE:";
-			// 
-			// labelMinVersion
-			// 
-			this.labelMinVersion.AutoSize = true;
-			this.labelMinVersion.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.labelMinVersion.Location = new System.Drawing.Point(6, 35);
-			this.labelMinVersion.Name = "labelMinVersion";
-			this.labelMinVersion.Size = new System.Drawing.Size(52, 16);
-			this.labelMinVersion.TabIndex = 1;
-			this.labelMinVersion.Text = "v1.5.3.4";
-			// 
-			// groupBoxLocoBrake
-			// 
-			this.groupBoxLocoBrake.Controls.Add(this.comboBoxLocoBrakeType);
-			this.groupBoxLocoBrake.Controls.Add(this.label2);
-			this.groupBoxLocoBrake.Controls.Add(this.buttonLocoBrakeDelayDown);
-			this.groupBoxLocoBrake.Controls.Add(this.labelLocoBrakeDelayDown);
-			this.groupBoxLocoBrake.Controls.Add(this.buttonLocoBrakeDelayUp);
-			this.groupBoxLocoBrake.Controls.Add(this.labelLocoBrakeDelayUp);
-			this.groupBoxLocoBrake.Controls.Add(this.numericUpDownLocoBrakeNotches);
-			this.groupBoxLocoBrake.Controls.Add(this.labelLocoBrakeNotches);
-			this.groupBoxLocoBrake.Location = new System.Drawing.Point(8, 55);
-			this.groupBoxLocoBrake.Name = "groupBoxLocoBrake";
-			this.groupBoxLocoBrake.Size = new System.Drawing.Size(280, 134);
-			this.groupBoxLocoBrake.TabIndex = 2;
-			this.groupBoxLocoBrake.TabStop = false;
-			this.groupBoxLocoBrake.Text = "Locomotive Brake";
-			// 
-			// labelLocoBrakeNotches
-			// 
-			this.labelLocoBrakeNotches.AutoSize = true;
-			this.labelLocoBrakeNotches.Location = new System.Drawing.Point(6, 15);
-			this.labelLocoBrakeNotches.Name = "labelLocoBrakeNotches";
-			this.labelLocoBrakeNotches.Size = new System.Drawing.Size(50, 13);
-			this.labelLocoBrakeNotches.TabIndex = 0;
-			this.labelLocoBrakeNotches.Text = "Notches:";
-			// 
-			// numericUpDownLocoBrakeNotches
-			// 
-			this.numericUpDownLocoBrakeNotches.Location = new System.Drawing.Point(156, 13);
-			this.numericUpDownLocoBrakeNotches.Maximum = new decimal(new int[] {
-            20,
-            0,
-            0,
-            0});
-			this.numericUpDownLocoBrakeNotches.Name = "numericUpDownLocoBrakeNotches";
-			this.numericUpDownLocoBrakeNotches.Size = new System.Drawing.Size(118, 20);
-			this.numericUpDownLocoBrakeNotches.TabIndex = 1;
-			// 
-			// labelLocoBrakeDelayUp
-			// 
-			this.labelLocoBrakeDelayUp.AutoSize = true;
-			this.labelLocoBrakeDelayUp.Location = new System.Drawing.Point(6, 46);
-			this.labelLocoBrakeDelayUp.Name = "labelLocoBrakeDelayUp";
-			this.labelLocoBrakeDelayUp.Size = new System.Drawing.Size(51, 13);
-			this.labelLocoBrakeDelayUp.TabIndex = 2;
-			this.labelLocoBrakeDelayUp.Text = "DelayUp:";
-			// 
-			// buttonLocoBrakeDelayUp
-			// 
-			this.buttonLocoBrakeDelayUp.Location = new System.Drawing.Point(156, 41);
-			this.buttonLocoBrakeDelayUp.Name = "buttonLocoBrakeDelayUp";
-			this.buttonLocoBrakeDelayUp.Size = new System.Drawing.Size(118, 23);
-			this.buttonLocoBrakeDelayUp.TabIndex = 3;
-			this.buttonLocoBrakeDelayUp.Text = "Set";
-			this.buttonLocoBrakeDelayUp.UseVisualStyleBackColor = true;
-			this.buttonLocoBrakeDelayUp.Click += new System.EventHandler(this.buttonLocoBrakeDelayUp_Click);
-			// 
-			// buttonLocoBrakeDelayDown
-			// 
-			this.buttonLocoBrakeDelayDown.Location = new System.Drawing.Point(156, 67);
-			this.buttonLocoBrakeDelayDown.Name = "buttonLocoBrakeDelayDown";
-			this.buttonLocoBrakeDelayDown.Size = new System.Drawing.Size(118, 23);
-			this.buttonLocoBrakeDelayDown.TabIndex = 5;
-			this.buttonLocoBrakeDelayDown.Text = "Set";
-			this.buttonLocoBrakeDelayDown.UseVisualStyleBackColor = true;
-			this.buttonLocoBrakeDelayDown.Click += new System.EventHandler(this.buttonLocoBrakeDelayDown_Click);
-			// 
-			// labelLocoBrakeDelayDown
-			// 
-			this.labelLocoBrakeDelayDown.AutoSize = true;
-			this.labelLocoBrakeDelayDown.Location = new System.Drawing.Point(6, 73);
-			this.labelLocoBrakeDelayDown.Name = "labelLocoBrakeDelayDown";
-			this.labelLocoBrakeDelayDown.Size = new System.Drawing.Size(65, 13);
-			this.labelLocoBrakeDelayDown.TabIndex = 4;
-			this.labelLocoBrakeDelayDown.Text = "DelayDown:";
-			// 
-			// label2
-			// 
-			this.label2.AutoSize = true;
-			this.label2.Location = new System.Drawing.Point(6, 99);
-			this.label2.Name = "label2";
-			this.label2.Size = new System.Drawing.Size(34, 13);
-			this.label2.TabIndex = 6;
-			this.label2.Text = "Type:";
-			// 
-			// comboBoxLocoBrakeType
-			// 
-			this.comboBoxLocoBrakeType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-			this.comboBoxLocoBrakeType.FormattingEnabled = true;
-			this.comboBoxLocoBrakeType.Items.AddRange(new object[] {
-            "Combined",
-            "Independant",
-            "Blocking"});
-			this.comboBoxLocoBrakeType.Location = new System.Drawing.Point(156, 96);
-			this.comboBoxLocoBrakeType.Name = "comboBoxLocoBrakeType";
-			this.comboBoxLocoBrakeType.Size = new System.Drawing.Size(118, 21);
-			this.comboBoxLocoBrakeType.TabIndex = 7;
-			this.comboBoxLocoBrakeType.SelectedIndexChanged += new System.EventHandler(this.comboBoxLocoBrakeType_SelectedIndexChanged);
-			// 
-			// groupBoxMisc
-			// 
-			this.groupBoxMisc.Controls.Add(this.comboBoxEBHandleBehaviour);
-			this.groupBoxMisc.Controls.Add(this.labelEBHandleBehaviour);
-			this.groupBoxMisc.Location = new System.Drawing.Point(295, 58);
-			this.groupBoxMisc.Name = "groupBoxMisc";
-			this.groupBoxMisc.Size = new System.Drawing.Size(339, 131);
-			this.groupBoxMisc.TabIndex = 3;
-			this.groupBoxMisc.TabStop = false;
-			this.groupBoxMisc.Text = "Miscellaneous Features";
-			// 
-			// labelEBHandleBehaviour
-			// 
-			this.labelEBHandleBehaviour.AutoSize = true;
-			this.labelEBHandleBehaviour.Location = new System.Drawing.Point(7, 20);
-			this.labelEBHandleBehaviour.Name = "labelEBHandleBehaviour";
-			this.labelEBHandleBehaviour.Size = new System.Drawing.Size(126, 13);
-			this.labelEBHandleBehaviour.TabIndex = 0;
-			this.labelEBHandleBehaviour.Text = "Handle behaviour on EB:";
-			// 
-			// comboBoxEBHandleBehaviour
-			// 
-			this.comboBoxEBHandleBehaviour.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-			this.comboBoxEBHandleBehaviour.FormattingEnabled = true;
-			this.comboBoxEBHandleBehaviour.Items.AddRange(new object[] {
-            "No Action",
-            "Power to Neutral",
-            "Reverser to Neutral",
-            "Power and Reverser to Neutral"});
-			this.comboBoxEBHandleBehaviour.Location = new System.Drawing.Point(139, 17);
-			this.comboBoxEBHandleBehaviour.Name = "comboBoxEBHandleBehaviour";
-			this.comboBoxEBHandleBehaviour.Size = new System.Drawing.Size(194, 21);
-			this.comboBoxEBHandleBehaviour.TabIndex = 8;
-			this.comboBoxEBHandleBehaviour.SelectedIndexChanged += new System.EventHandler(this.comboBoxEBHandleBehaviour_SelectedIndexChanged);
+			//
+			// textboxDoorWidth
+			//
+			this.textboxDoorWidth.Location = new System.Drawing.Point(168, 232);
+			this.textboxDoorWidth.Name = "textboxDoorWidth";
+			this.textboxDoorWidth.Size = new System.Drawing.Size(112, 20);
+			this.textboxDoorWidth.TabIndex = 18;
+			//
+			// labelDoorWidthUnit
+			//
+			this.labelDoorWidthUnit.Location = new System.Drawing.Point(280, 232);
+			this.labelDoorWidthUnit.Name = "labelDoorWidthUnit";
+			this.labelDoorWidthUnit.Size = new System.Drawing.Size(48, 16);
+			this.labelDoorWidthUnit.TabIndex = 19;
+			this.labelDoorWidthUnit.Text = "mm";
+			this.labelDoorWidthUnit.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			//
+			// labelDoorWidth
+			//
+			this.labelDoorWidth.Location = new System.Drawing.Point(10, 232);
+			this.labelDoorWidth.Name = "labelDoorWidth";
+			this.labelDoorWidth.Size = new System.Drawing.Size(158, 16);
+			this.labelDoorWidth.TabIndex = 20;
+			this.labelDoorWidth.Text = "DoorWidth:";
+			this.labelDoorWidth.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+			//
+			// textboxDoorMaxTolerance
+			//
+			this.textboxDoorMaxTolerance.Location = new System.Drawing.Point(168, 256);
+			this.textboxDoorMaxTolerance.Name = "textboxDoorMaxTolerance";
+			this.textboxDoorMaxTolerance.Size = new System.Drawing.Size(112, 20);
+			this.textboxDoorMaxTolerance.TabIndex = 21;
+			//
+			// labelDoorMaxToleranceUnit
+			//
+			this.labelDoorMaxToleranceUnit.Location = new System.Drawing.Point(280, 256);
+			this.labelDoorMaxToleranceUnit.Name = "labelDoorMaxToleranceUnit";
+			this.labelDoorMaxToleranceUnit.Size = new System.Drawing.Size(48, 16);
+			this.labelDoorMaxToleranceUnit.TabIndex = 22;
+			this.labelDoorMaxToleranceUnit.Text = "mm";
+			this.labelDoorMaxToleranceUnit.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
+			//
+			// labelDoorMaxTolerance
+			//
+			this.labelDoorMaxTolerance.Location = new System.Drawing.Point(10, 256);
+			this.labelDoorMaxTolerance.Name = "labelDoorMaxTolerance";
+			this.labelDoorMaxTolerance.Size = new System.Drawing.Size(158, 16);
+			this.labelDoorMaxTolerance.TabIndex = 23;
+			this.labelDoorMaxTolerance.Text = "DoorMaxTolerance:";
+			this.labelDoorMaxTolerance.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
 			// 
 			// formEditor
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(784, 480);
+			this.ClientSize = new System.Drawing.Size(816, 528);
 			this.Controls.Add(this.panelPane);
 			this.Controls.Add(this.tabcontrolTabs);
 			this.Controls.Add(this.labelLineVertical);
@@ -2780,12 +2913,13 @@
 			this.groupboxHandle.PerformLayout();
 			((System.ComponentModel.ISupportInitialize)(this.numericUpDownBrakeNotches)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.numericUpDownPowerNotches)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.numericUpDownDriverBrakeNotches)).EndInit();
+			((System.ComponentModel.ISupportInitialize)(this.numericUpDownDriverPowerNotches)).EndInit();
 			this.groupboxBrake.ResumeLayout(false);
 			this.groupboxBrake.PerformLayout();
 			this.groupboxPerformance.ResumeLayout(false);
 			this.groupboxPerformance.PerformLayout();
 			this.tabpagePropertiesTwo.ResumeLayout(false);
-			this.groupBoxOther.ResumeLayout(false);
 			this.groupboxCar.ResumeLayout(false);
 			this.groupboxCar.PerformLayout();
 			this.groupboxCab.ResumeLayout(false);
@@ -2819,15 +2953,16 @@
 			this.splitMotorB.ResumeLayout(false);
 			((System.ComponentModel.ISupportInitialize)(this.pictureboxMotorB1)).EndInit();
 			((System.ComponentModel.ISupportInitialize)(this.pictureboxMotorB2)).EndInit();
-			this.panelPane.ResumeLayout(false);
-			((System.ComponentModel.ISupportInitialize)(this.pictureboxLogo)).EndInit();
 			this.tabPageExtended.ResumeLayout(false);
 			this.tabPageExtended.PerformLayout();
+			this.groupBoxLanguage.ResumeLayout(false);
+			this.groupBoxMisc.ResumeLayout(false);
+			this.groupBoxMisc.PerformLayout();
 			this.groupBoxLocoBrake.ResumeLayout(false);
 			this.groupBoxLocoBrake.PerformLayout();
 			((System.ComponentModel.ISupportInitialize)(this.numericUpDownLocoBrakeNotches)).EndInit();
-			this.groupBoxMisc.ResumeLayout(false);
-			this.groupBoxMisc.PerformLayout();
+			this.panelPane.ResumeLayout(false);
+			((System.ComponentModel.ISupportInitialize)(this.pictureboxLogo)).EndInit();
 			this.ResumeLayout(false);
 
 		}
@@ -3020,6 +3155,8 @@
 		private System.Windows.Forms.Label labelPowerNotchReduceSteps;
 		private System.Windows.Forms.Label labelBrakeNotches;
 		private System.Windows.Forms.Label labelPowerNotches;
+		private System.Windows.Forms.Label labelDriverBrakeNotches;
+		private System.Windows.Forms.Label labelDriverPowerNotches;
 		private System.Windows.Forms.ComboBox comboboxHandleType;
 		private System.Windows.Forms.Label labelHandleType;
 		private System.Windows.Forms.GroupBox groupboxDelay;
@@ -3029,15 +3166,14 @@
 		private System.Windows.Forms.Label labelUnexposedFrontalAreaUnit;
 		private System.Windows.Forms.TextBox textboxUnexposedFrontalArea;
 		private System.Windows.Forms.Label labelUnexposedFrontalArea;
-		private System.Windows.Forms.GroupBox groupBoxOther;
-		private System.Windows.Forms.ComboBox comboBoxHandleBehaviour;
-		private System.Windows.Forms.Label label1;
 		private System.Windows.Forms.Button buttonSetDelayPowerUp;
 		private System.Windows.Forms.Button buttonSetDelayBrakeDown;
 		private System.Windows.Forms.Button buttonSetDelayBrakeUp;
 		private System.Windows.Forms.Button buttonSetDelayPowerDown;
 		private System.Windows.Forms.NumericUpDown numericUpDownBrakeNotches;
 		private System.Windows.Forms.NumericUpDown numericUpDownPowerNotches;
+		private System.Windows.Forms.NumericUpDown numericUpDownDriverBrakeNotches;
+		private System.Windows.Forms.NumericUpDown numericUpDownDriverPowerNotches;
 		private System.Windows.Forms.TabPage tabPageExtended;
 		private System.Windows.Forms.GroupBox groupBoxLocoBrake;
 		private System.Windows.Forms.Label labelMinVersion;
@@ -3053,6 +3189,16 @@
 		private System.Windows.Forms.GroupBox groupBoxMisc;
 		private System.Windows.Forms.ComboBox comboBoxEBHandleBehaviour;
 		private System.Windows.Forms.Label labelEBHandleBehaviour;
+		private System.Windows.Forms.ComboBox comboBoxLocoBrakeSystemType;
+		private System.Windows.Forms.Label labelLocoBrakeSystemType;
+		private System.Windows.Forms.GroupBox groupBoxLanguage;
+		private System.Windows.Forms.ComboBox comboboxLanguages;
+		private System.Windows.Forms.Label labelDoorWidth;
+		private System.Windows.Forms.Label labelDoorWidthUnit;
+		private System.Windows.Forms.TextBox textboxDoorWidth;
+		private System.Windows.Forms.Label labelDoorMaxTolerance;
+		private System.Windows.Forms.Label labelDoorMaxToleranceUnit;
+		private System.Windows.Forms.TextBox textboxDoorMaxTolerance;
 	}
 }
 

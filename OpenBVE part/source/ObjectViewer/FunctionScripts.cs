@@ -1,53 +1,14 @@
 ﻿using System;
+using OpenBveApi.FunctionScripting;
 using OpenBveApi.Math;
+using OpenBveApi.Interface;
+using OpenBveApi.Runtime;
 
 namespace OpenBve {
 	internal static class FunctionScripts {
 
-		// instruction set
-		internal enum Instructions {
-			SystemHalt, SystemConstant, SystemConstantArray, SystemValue, SystemDelta,
-			StackCopy, StackSwap,
-			MathPlus, MathSubtract, MathMinus, MathTimes, MathDivide, MathReciprocal, MathPower, MathRandom, MathRandomInt,
-			MathIncrement, MathDecrement, MathFusedMultiplyAdd,
-			MathQuotient, MathMod, MathFloor, MathCeiling, MathRound, MathMin, MathMax, MathAbs, MathSign,
-			MathExp, MathLog, MathSqrt, MathSin, MathCos, MathTan, MathArcTan,
-			CompareEqual, CompareUnequal, CompareLess, CompareGreater, CompareLessEqual, CompareGreaterEqual, CompareConditional,
-			LogicalNot, LogicalAnd, LogicalOr, LogicalNand, LogicalNor, LogicalXor,
-			TimeSecondsSinceMidnight, CameraDistance,CameraView,
-			TrainCars, TrainDestination,
-			TrainSpeed, TrainSpeedometer, TrainAcceleration, TrainAccelerationMotor,
-			TrainSpeedOfCar, TrainSpeedometerOfCar, TrainAccelerationOfCar, TrainAccelerationMotorOfCar,
-			TrainDistance, TrainDistanceToCar, TrainTrackDistance, TrainTrackDistanceToCar, CurveRadius, FrontAxleCurveRadius, RearAxleCurveRadius, CurveCant, Odometer, OdometerOfCar,
-			Doors, DoorsIndex,
-			LeftDoors, LeftDoorsIndex, RightDoors, RightDoorsIndex,
-			LeftDoorsTarget, LeftDoorsTargetIndex, RightDoorsTarget, RightDoorsTargetIndex,
-			ReverserNotch, PowerNotch, PowerNotches, BrakeNotch, BrakeNotches, BrakeNotchLinear, BrakeNotchesLinear, EmergencyBrake, Klaxon,
-			HasAirBrake, HoldBrake, HasHoldBrake, ConstSpeed, HasConstSpeed,
-			BrakeMainReservoir, BrakeEqualizingReservoir, BrakeBrakePipe, BrakeBrakeCylinder, BrakeStraightAirPipe,
-			BrakeMainReservoirOfCar, BrakeEqualizingReservoirOfCar, BrakeBrakePipeOfCar, BrakeBrakeCylinderOfCar, BrakeStraightAirPipeOfCar,
-			SafetyPluginAvailable, SafetyPluginState,
-			TimetableVisible,
-			SectionAspectNumber, CurrentObjectState
-		}
-
-		// function script
-		internal class FunctionScript {
-			internal Instructions[] Instructions;
-			internal double[] Stack;
-			internal double[] Constants;
-			internal double LastResult;
-			internal double Perform(TrainManager.Train Train, int CarIndex, Vector3 Position, double TrackPosition, int SectionIndex, bool IsPartOfTrain, double TimeElapsed, int CurrentState) {
-				ExecuteFunctionScript(this, Train, CarIndex, Position, TrackPosition, SectionIndex, IsPartOfTrain, TimeElapsed, CurrentState);
-				return this.LastResult;
-			}
-			internal FunctionScript Clone() {
-				return (FunctionScript)this.MemberwiseClone();
-			}
-		}
-
 		// execute function script
-		private static void ExecuteFunctionScript(FunctionScript Function, TrainManager.Train Train, int CarIndex, Vector3 Position, double TrackPosition, int SectionIndex, bool IsPartOfTrain, double TimeElapsed, int CurrentState) {
+		internal static void ExecuteFunctionScript(FunctionScript Function, TrainManager.Train Train, int CarIndex, Vector3 Position, double TrackPosition, int SectionIndex, bool IsPartOfTrain, double TimeElapsed, int CurrentState) {
 			int s = 0, c = 0;
 			for (int i = 0; i < Function.Instructions.Length; i++) {
 				switch (Function.Instructions[i]) {
@@ -267,7 +228,7 @@ namespace OpenBve {
 						} break;
 					case Instructions.CameraView:
 						//Returns whether the camera is in interior or exterior mode
-						if (World.CameraMode == World.CameraViewMode.Interior)
+						if (World.CameraMode == CameraViewMode.Interior)
 						{
 							Function.Stack[s] = 0;
 						}
@@ -437,7 +398,11 @@ namespace OpenBve {
 							Function.Stack[s] = 0.0;
 						}
 						s++; break;
-                    case Instructions.CurveRadius:
+					case Instructions.CurveRadius:
+						Function.Stack[s] = 0.0;
+						s++;
+						break;
+                    case Instructions.CurveRadiusOfCar:
                         if (Train == null)
                         {
                             Function.Stack[s - 1] = 0.0;
@@ -456,7 +421,11 @@ namespace OpenBve {
                             }
                         }
                         break;
-                    case Instructions.FrontAxleCurveRadius:
+					case Instructions.FrontAxleCurveRadius:
+						Function.Stack[s] = 0.0;
+						s++;
+						break;
+                    case Instructions.FrontAxleCurveRadiusOfCar:
                         if (Train == null)
                         {
                             Function.Stack[s - 1] = 0.0;
@@ -475,7 +444,11 @@ namespace OpenBve {
                             }
                         }
                         break;
-                    case Instructions.RearAxleCurveRadius:
+					case Instructions.RearAxleCurveRadius:
+						Function.Stack[s] = 0.0;
+						s++;
+						break;
+                    case Instructions.RearAxleCurveRadiusOfCar:
                         if (Train == null)
                         {
                             Function.Stack[s - 1] = 0.0;
@@ -494,7 +467,11 @@ namespace OpenBve {
                             }
                         }
                         break;
-                    case Instructions.CurveCant:
+					case Instructions.CurveCant:
+						Function.Stack[s] = 0.0;
+						s++;
+						break;
+                    case Instructions.CurveCantOfCar:
                         if (Train == null)
                         {
                             Function.Stack[s - 1] = 0.0;
@@ -513,6 +490,29 @@ namespace OpenBve {
                             }
                         }
                         break;
+					case Instructions.Pitch:
+						Function.Stack[s] = 0.0;
+						s++;
+						break;
+					case Instructions.PitchOfCar:
+						if (Train == null)
+						{
+							Function.Stack[s - 1] = 0.0;
+						}
+						else
+						{
+							int j = (int)Math.Round(Function.Stack[s - 1]);
+							if (j < 0) j += Train.Cars.Length;
+							if (j >= 0 & j < Train.Cars.Length)
+							{
+								Function.Stack[s - 1] = Train.Cars[j].FrontAxle.Follower.Pitch;
+							}
+							else
+							{
+								Function.Stack[s - 1] = 0.0;
+							}
+						}
+						break;
 					case Instructions.Odometer:
 						Function.Stack[s] = 0.0;
 						s++;
@@ -1359,6 +1359,10 @@ namespace OpenBve {
 				if (Expression.EndsWith("]")) {
 					throw new System.IO.InvalidDataException("Unexpected closing bracket encountered in " + Expression);
 				} else {
+					// ReSharper disable once NotAccessedVariable
+					/*
+					 * If this is a simple number, we can short-circuit the rest of this function
+					 */
 					double value;
 					if (double.TryParse(Expression, System.Globalization.NumberStyles.Float, System.Globalization.CultureInfo.InvariantCulture, out value)) {
 						return Expression;
@@ -1607,6 +1611,7 @@ namespace OpenBve {
 				case "frontaxlecurveradius":
 				case "rearaxlecurveradius":
 				case "curvecant":
+				case "pitch":
 				case "odometer":
 				case "speed":
 				case "speedometer":
@@ -2142,7 +2147,7 @@ namespace OpenBve {
 		internal static FunctionScript GetFunctionScriptFromPostfixNotation(string Expression) {
 			Expression = GetOptimizedPostfixNotation(Expression);
 			System.Globalization.CultureInfo Culture = System.Globalization.CultureInfo.InvariantCulture;
-			FunctionScript Result = new FunctionScript();
+			FunctionScript Result = new FunctionScript(Program.CurrentHost);
 			string[] Arguments = Expression.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
 			Result.Instructions = new Instructions[16]; int n = 0;
 			Result.Stack = new double[16]; int m = 0, s = 0;
@@ -2243,13 +2248,13 @@ namespace OpenBve {
                             if (s < 2) throw new System.InvalidOperationException(Arguments[i] + " requires at least 2 arguments on the stack in function script " + Expression);
                             if (n >= Result.Instructions.Length) Array.Resize<Instructions>(ref Result.Instructions, Result.Instructions.Length << 1);
                             Result.Instructions[n] = Instructions.MathRandom;
-                            Interface.AddMessage(Interface.MessageType.Information, false, "" + Arguments[i] + " is only supported in OpenBVE versions 1.4.4.0 and above.");
+                            Interface.AddMessage(MessageType.Information, false, "" + Arguments[i] + " is only supported in OpenBVE versions 1.4.4.0 and above.");
                             n++; s--; break;
                         case "randomint":
                             if (s < 2) throw new System.InvalidOperationException(Arguments[i] + " requires at least 2 arguments on the stack in function script " + Expression);
                             if (n >= Result.Instructions.Length) Array.Resize<Instructions>(ref Result.Instructions, Result.Instructions.Length << 1);
                             Result.Instructions[n] = Instructions.MathRandomInt;
-                            Interface.AddMessage(Interface.MessageType.Information, false, "" + Arguments[i] + " is only supported in OpenBVE versions 1.4.4.0 and above.");
+                            Interface.AddMessage(MessageType.Information, false, "" + Arguments[i] + " is only supported in OpenBVE versions 1.4.4.0 and above.");
                             n++; s--; break;
 						case "floor":
 							if (s < 1) throw new System.InvalidOperationException(Arguments[i] + " requires at least 1 argument on the stack in function script " + Expression);
@@ -2460,15 +2465,50 @@ namespace OpenBve {
 							if (n >= Result.Instructions.Length) Array.Resize<Instructions>(ref Result.Instructions, Result.Instructions.Length << 1);
 							Result.Instructions[n] = Instructions.TrainTrackDistanceToCar;
 							n++; break;
+						case "curveradius":
+							if (n >= Result.Instructions.Length) Array.Resize<Instructions>(ref Result.Instructions, Result.Instructions.Length << 1);
+							Result.Instructions[n] = Instructions.CurveRadius;
+							n++; s++; if (s >= m) m = s; break;
                         case "curveradiusindex":
                             if (s < 1) throw new System.InvalidOperationException(Arguments[i] + " requires at least 1 argument on the stack in function script " + Expression);
                             if (n >= Result.Instructions.Length) Array.Resize<Instructions>(ref Result.Instructions, Result.Instructions.Length << 1);
-                            Result.Instructions[n] = Instructions.CurveRadius;
+                            Result.Instructions[n] = Instructions.CurveRadiusOfCar;
                             n++; break;
+						case "frontaxlecurveradius":
+							if (n >= Result.Instructions.Length) Array.Resize<Instructions>(ref Result.Instructions, Result.Instructions.Length << 1);
+							Result.Instructions[n] = Instructions.FrontAxleCurveRadius;
+							n++; s++; if (s >= m) m = s; break;
+						case "frontaxlecurveradiusindex":
+							if (s < 1) throw new System.InvalidOperationException(Arguments[i] + " requires at least 1 argument on the stack in function script " + Expression);
+							if (n >= Result.Instructions.Length) Array.Resize<Instructions>(ref Result.Instructions, Result.Instructions.Length << 1);
+							Result.Instructions[n] = Instructions.FrontAxleCurveRadiusOfCar;
+							n++; break;
+						case "rearaxlecurveradius":
+							if (n >= Result.Instructions.Length) Array.Resize<Instructions>(ref Result.Instructions, Result.Instructions.Length << 1);
+							Result.Instructions[n] = Instructions.RearAxleCurveRadius;
+							n++; s++; if (s >= m) m = s; break;
+						case "rearaxlecurveradiusindex":
+							if (s < 1) throw new System.InvalidOperationException(Arguments[i] + " requires at least 1 argument on the stack in function script " + Expression);
+							if (n >= Result.Instructions.Length) Array.Resize<Instructions>(ref Result.Instructions, Result.Instructions.Length << 1);
+							Result.Instructions[n] = Instructions.RearAxleCurveRadiusOfCar;
+							n++; break;
+						case "curvecant":
+							if (n >= Result.Instructions.Length) Array.Resize<Instructions>(ref Result.Instructions, Result.Instructions.Length << 1);
+							Result.Instructions[n] = Instructions.CurveCant;
+							n++; s++; if (s >= m) m = s; break;
 						case "curvecantindex":
 							if (s < 1) throw new System.InvalidOperationException(Arguments[i] + " requires at least 1 argument on the stack in function script " + Expression);
 							if (n >= Result.Instructions.Length) Array.Resize<Instructions>(ref Result.Instructions, Result.Instructions.Length << 1);
-							Result.Instructions[n] = Instructions.CurveCant;
+							Result.Instructions[n] = Instructions.CurveCantOfCar;
+							n++; break;
+						case "pitch":
+							if (n >= Result.Instructions.Length) Array.Resize<Instructions>(ref Result.Instructions, Result.Instructions.Length << 1);
+							Result.Instructions[n] = Instructions.Pitch;
+							n++; s++; if (s >= m) m = s; break;
+						case "pitchindex":
+							if (s < 1) throw new System.InvalidOperationException(Arguments[i] + " requires at least 1 argument on the stack in function script " + Expression);
+							if (n >= Result.Instructions.Length) Array.Resize<Instructions>(ref Result.Instructions, Result.Instructions.Length << 1);
+							Result.Instructions[n] = Instructions.PitchOfCar;
 							n++; break;
 						case "odometer":
 							if (n >= Result.Instructions.Length) Array.Resize<Instructions>(ref Result.Instructions, Result.Instructions.Length << 1);

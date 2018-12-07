@@ -2,40 +2,31 @@
 using System.Drawing;
 using System.Drawing.Imaging;
 using OpenBveApi.Colors;
+using OpenBveApi.Graphics;
+using OpenBveApi.Interface;
+using OpenBveApi.Textures;
 using OpenTK.Graphics.OpenGL;
 using GDIPixelFormat = System.Drawing.Imaging.PixelFormat;
 using GLPixelFormat = OpenTK.Graphics.OpenGL.PixelFormat;
+
 namespace OpenBve
 {
 	internal static class TextureManager
 	{
-
-		// options
-		internal enum InterpolationMode
-		{
-			NearestNeighbor,
-			Bilinear,
-			NearestNeighborMipmapped,
-			BilinearMipmapped,
-			TrilinearMipmapped,
-			AnisotropicFiltering
-		}
-
 		// textures
 		internal enum TextureLoadMode { Normal, Bve4SignalGlow }
-		internal enum TextureWrapMode { Repeat, ClampToEdge }
-		internal enum TextureTransparencyMode { None, TransparentColor, Alpha }
+
 		internal class Texture
 		{
 			internal bool Queried;
 			internal bool Loaded;
 			internal string FileName;
 			internal TextureLoadMode LoadMode;
-			internal TextureWrapMode WrapModeX;
-			internal TextureWrapMode WrapModeY;
+			internal OpenGlTextureWrapMode WrapModeX;
+			internal OpenGlTextureWrapMode WrapModeY;
 			internal Color24 TransparentColor;
 			internal byte TransparentColorUsed;
-			internal TextureTransparencyMode Transparency;
+			internal TextureTransparencyType Transparency;
 			internal int ClipLeft;
 			internal int ClipTop;
 			internal int ClipWidth;
@@ -118,7 +109,7 @@ namespace OpenBve
 						}
 						catch (Exception ex)
 						{
-							Interface.AddMessage(Interface.MessageType.Error, false, "Internal error in TextureManager.cs::UseTexture: " + ex.Message);
+							Interface.AddMessage(MessageType.Error, false, "Internal error in TextureManager.cs::UseTexture: " + ex.Message);
 							throw;
 						}
 					}
@@ -181,19 +172,6 @@ namespace OpenBve
 		{
 			int i = UseTexture(TextureIndex, TextureManager.UseMode.LoadImmediately);
 			if (i == 0) TextureIndex = -1;
-		}
-
-		// perform asynchronous operations
-		internal static void PerformAsynchronousOperations()
-		{
-			for (int i = 0; i < Textures.Length; i++)
-			{
-				if (Textures[i] != null && Textures[i].Queried & !Textures[i].Loaded & Textures[i].Data == null)
-				{
-					LoadTextureData(i);
-					System.Threading.Thread.Sleep(0);
-				}
-			}
 		}
 
 		// load texture data
@@ -270,15 +248,15 @@ namespace OpenBve
 		}
 
 		// register texture
-		internal static int RegisterTexture(string FileName, TextureWrapMode WrapModeX, TextureWrapMode WrapModeY, bool DontAllowUnload)
+		internal static int RegisterTexture(string FileName, OpenGlTextureWrapMode WrapModeX, OpenGlTextureWrapMode WrapModeY, bool DontAllowUnload)
 		{
-			return RegisterTexture(FileName, new Color24(0, 0, 0), 0, TextureLoadMode.Normal, WrapModeX, WrapModeY, DontAllowUnload, 0, 0, 0, 0);
+			return RegisterTexture(FileName, Color24.Black, 0, TextureLoadMode.Normal, WrapModeX, WrapModeY, DontAllowUnload, 0, 0, 0, 0);
 		}
-		internal static int RegisterTexture(string FileName, Color24 TransparentColor, byte TransparentColorUsed, TextureWrapMode WrapModeX, TextureWrapMode WrapModeY, bool DontAllowUnload)
+		internal static int RegisterTexture(string FileName, Color24 TransparentColor, byte TransparentColorUsed, OpenGlTextureWrapMode WrapModeX, OpenGlTextureWrapMode WrapModeY, bool DontAllowUnload)
 		{
 			return RegisterTexture(FileName, TransparentColor, TransparentColorUsed, TextureLoadMode.Normal, WrapModeX, WrapModeY, DontAllowUnload, 0, 0, 0, 0);
 		}
-		internal static int RegisterTexture(string FileName, Color24 TransparentColor, byte TransparentColorUsed, TextureLoadMode LoadMode, TextureWrapMode WrapModeX, TextureWrapMode WrapModeY, bool DontAllowUnload, int ClipLeft, int ClipTop, int ClipWidth, int ClipHeight)
+		internal static int RegisterTexture(string FileName, Color24 TransparentColor, byte TransparentColorUsed, TextureLoadMode LoadMode, OpenGlTextureWrapMode WrapModeX, OpenGlTextureWrapMode WrapModeY, bool DontAllowUnload, int ClipLeft, int ClipTop, int ClipWidth, int ClipHeight)
 		{
 			if (FileName == null)
 			{
@@ -323,17 +301,17 @@ namespace OpenBve
 				}
 				if (alpha)
 				{
-					Textures[i].Transparency = TextureTransparencyMode.Alpha;
+					Textures[i].Transparency = TextureTransparencyType.Alpha;
 				}
 				else if (TransparentColorUsed != 0)
 				{
-					Textures[i].Transparency = TextureTransparencyMode.TransparentColor;
+					Textures[i].Transparency = TextureTransparencyType.Partial;
 				}
 				else
 				{
-					Textures[i].Transparency = TextureTransparencyMode.None;
+					Textures[i].Transparency = TextureTransparencyType.Opaque;
 				}
-				Textures[i].IsRGBA = Textures[i].Transparency != TextureTransparencyMode.None | LoadMode != TextureLoadMode.Normal;
+				Textures[i].IsRGBA = Textures[i].Transparency != TextureTransparencyType.Opaque | LoadMode != TextureLoadMode.Normal;
 				return i;
 			}
 		}
@@ -346,8 +324,8 @@ namespace OpenBve
 			{
 				Queried = false,
 				OpenGlTextureIndex = a[0],
-				Transparency = TextureTransparencyMode.None,
-				TransparentColor = new Color24(0, 0, 0),
+				Transparency = TextureTransparencyType.Opaque,
+				TransparentColor = Color24.Black,
 				TransparentColorUsed = 0,
 				FileName = null,
 				Loaded = true,
@@ -357,8 +335,8 @@ namespace OpenBve
 			};
 			if (Alpha)
 			{
-				Textures[i].Transparency = TextureTransparencyMode.Alpha;
-				LoadTextureRGBAforData(Bitmap, new Color24(0, 0, 0), 0, i);
+				Textures[i].Transparency = TextureTransparencyType.Alpha;
+				LoadTextureRGBAforData(Bitmap, Color24.Black, 0, i);
 				LoadTextureRGBAforOpenGl(i);
 			}
 			else
@@ -378,7 +356,7 @@ namespace OpenBve
 			{
 				Queried = false,
 				OpenGlTextureIndex = a[0],
-				Transparency = TextureTransparencyMode.TransparentColor,
+				Transparency = TextureTransparencyType.Partial,
 				TransparentColor = TransparentColor,
 				TransparentColorUsed = 1,
 				FileName = null,
@@ -405,13 +383,13 @@ namespace OpenBve
 			}
 			catch (Exception ex)
 			{
-				Interface.AddMessage(Interface.MessageType.Error, false, "Internal error in TextureManager.cs::GetImageDimensions: " + ex.Message);
+				Interface.AddMessage(MessageType.Error, false, "Internal error in TextureManager.cs::GetImageDimensions: " + ex.Message);
 				throw;
 			}
 		}
 
 		// find texture
-		private static int FindTexture(string FileName, Color24 TransparentColor, byte TransparentColorUsed, TextureLoadMode LoadMode, TextureWrapMode WrapModeX, TextureWrapMode WrapModeY, int ClipLeft, int ClipTop, int ClipWidth, int ClipHeight)
+		private static int FindTexture(string FileName, Color24 TransparentColor, byte TransparentColorUsed, TextureLoadMode LoadMode, OpenGlTextureWrapMode WrapModeX, OpenGlTextureWrapMode WrapModeY, int ClipLeft, int ClipTop, int ClipWidth, int ClipHeight)
 		{
 			for (int i = 1; i < Textures.Length; i++)
 			{
@@ -494,7 +472,7 @@ namespace OpenBve
 			}
 			catch (Exception ex)
 			{
-				Interface.AddMessage(Interface.MessageType.Error, false, "Internal error in TextureManager.cs::LoadTextureRGBForData: " + ex.Message);
+				Interface.AddMessage(MessageType.Error, false, "Internal error in TextureManager.cs::LoadTextureRGBForData: " + ex.Message);
 				throw;
 			}
 		}
@@ -538,7 +516,7 @@ namespace OpenBve
 				{
 					GL.TexParameter(TextureTarget.Texture2D, (TextureParameterName)ExtTextureFilterAnisotropic.TextureMaxAnisotropyExt, Interface.CurrentOptions.AnisotropicFilteringLevel);
 				}
-				if (Textures[TextureIndex].WrapModeX == TextureWrapMode.Repeat)
+				if (Textures[TextureIndex].WrapModeX == OpenGlTextureWrapMode.RepeatRepeat)
 				{
 					GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)OpenTK.Graphics.OpenGL.TextureWrapMode.Repeat);
 				}
@@ -546,7 +524,7 @@ namespace OpenBve
 				{
 					GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)OpenTK.Graphics.OpenGL.TextureWrapMode.ClampToEdge);
 				}
-				if (Textures[TextureIndex].WrapModeY == TextureWrapMode.Repeat)
+				if (Textures[TextureIndex].WrapModeY == OpenGlTextureWrapMode.RepeatRepeat)
 				{
 					GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)OpenTK.Graphics.OpenGL.TextureWrapMode.Repeat);
 				}
@@ -680,7 +658,7 @@ namespace OpenBve
 							p += 4;
 						} p += pn;
 					}
-					Textures[TextureIndex].Transparency = TextureTransparencyMode.None;
+					Textures[TextureIndex].Transparency = TextureTransparencyType.Opaque;
 					Textures[TextureIndex].DontAllowUnload = true;
 				}
 				else if (TransparentColorUsed != 0)
@@ -706,7 +684,7 @@ namespace OpenBve
 					}
 					if (y == Height)
 					{
-						Textures[TextureIndex].Transparency = TextureTransparencyMode.TransparentColor;
+						Textures[TextureIndex].Transparency = TextureTransparencyType.Partial;
 					}
 					// duplicate color data from adjacent pixels
 					p = 0; pn = Stride - 4 * Width;
@@ -766,12 +744,12 @@ namespace OpenBve
 						} p += pn;
 					}
 					// transparent color is not actually used
-					if (!used & Textures[TextureIndex].Transparency == TextureTransparencyMode.TransparentColor)
+					if (!used & Textures[TextureIndex].Transparency == TextureTransparencyType.Partial)
 					{
-						Textures[TextureIndex].Transparency = TextureTransparencyMode.None;
+						Textures[TextureIndex].Transparency = TextureTransparencyType.Opaque;
 					}
 				}
-				else if (Textures[TextureIndex].Transparency == TextureTransparencyMode.Alpha)
+				else if (Textures[TextureIndex].Transparency == TextureTransparencyType.Alpha)
 				{
 					// check if alpha is actually used
 					int p = 0, pn = Stride - 4 * Width;
@@ -788,7 +766,7 @@ namespace OpenBve
 					}
 					if (y == Height)
 					{
-						Textures[TextureIndex].Transparency = TextureTransparencyMode.None;
+						Textures[TextureIndex].Transparency = TextureTransparencyType.Opaque;
 					}
 				}
 				// non-power of two
@@ -818,7 +796,7 @@ namespace OpenBve
 			}
 			catch (Exception ex)
 			{
-				Interface.AddMessage(Interface.MessageType.Error, false, "Internal error in TextureManager.cs::LoadTextureRGBAForData: " + ex.Message);
+				Interface.AddMessage(MessageType.Error, false, "Internal error in TextureManager.cs::LoadTextureRGBAForData: " + ex.Message);
 				throw;
 			}
 		}
@@ -870,7 +848,7 @@ namespace OpenBve
 				{
 					GL.TexParameter(TextureTarget.Texture2D, (TextureParameterName)ExtTextureFilterAnisotropic.TextureMaxAnisotropyExt, Interface.CurrentOptions.AnisotropicFilteringLevel);
 				}
-				if (Textures[TextureIndex].WrapModeX == TextureWrapMode.Repeat)
+				if (Textures[TextureIndex].WrapModeX == OpenGlTextureWrapMode.RepeatRepeat)
 				{
 					GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)OpenTK.Graphics.OpenGL.TextureWrapMode.Repeat);
 				}
@@ -878,7 +856,7 @@ namespace OpenBve
 				{
 					GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapS, (int)OpenTK.Graphics.OpenGL.TextureWrapMode.ClampToEdge);
 				}
-				if (Textures[TextureIndex].WrapModeY == TextureWrapMode.Repeat)
+				if (Textures[TextureIndex].WrapModeY == OpenGlTextureWrapMode.RepeatRepeat)
 				{
 					GL.TexParameter(TextureTarget.Texture2D, TextureParameterName.TextureWrapT, (int)OpenTK.Graphics.OpenGL.TextureWrapMode.Repeat);
 				}

@@ -1,6 +1,8 @@
 ﻿using System;
 using OpenBveApi.Colors;
 using OpenBveApi.Runtime;
+using OpenBveApi.Textures;
+using OpenBveApi.Interface;
 using OpenTK.Graphics.OpenGL;
 
 namespace OpenBve
@@ -26,21 +28,21 @@ namespace OpenBve
 					World.CameraCar = TrainManager.PlayerTrain.DriverCar;
 					MainLoop.SaveCameraSettings();
 					bool lookahead = false;
-					if (World.CameraMode != World.CameraViewMode.InteriorLookAhead & World.CameraRestriction == World.CameraRestrictionMode.NotAvailable)
+					if (World.CameraMode != CameraViewMode.InteriorLookAhead & World.CameraRestriction == Camera.RestrictionMode.NotAvailable)
 					{
-						Game.AddMessage(Interface.GetInterfaceString("notification_interior_lookahead"),
+						Game.AddMessage(Translations.GetInterfaceString("notification_interior_lookahead"),
 							MessageManager.MessageDependency.CameraView, Interface.GameMode.Expert,
 							MessageColor.White, Game.SecondsSinceMidnight + 2.0, null);
 						lookahead = true;
 					}
 					else
 					{
-						Game.AddMessage(Interface.GetInterfaceString("notification_interior"),
+						Game.AddMessage(Translations.GetInterfaceString("notification_interior"),
 							MessageManager.MessageDependency.CameraView, Interface.GameMode.Expert,
 							MessageColor.White, Game.SecondsSinceMidnight + 2.0, null);
 					}
 
-					World.CameraMode = World.CameraViewMode.Interior;
+					World.CameraMode = CameraViewMode.Interior;
 					MainLoop.RestoreCameraSettings();
 					bool returnToCab = false;
 					for (int j = 0; j < TrainManager.PlayerTrain.Cars.Length; j++)
@@ -81,10 +83,10 @@ namespace OpenBve
 
 					World.CameraAlignmentDirection = new World.CameraAlignment();
 					World.CameraAlignmentSpeed = new World.CameraAlignment();
-					UpdateViewport(MainLoop.ViewPortChangeMode.NoChange);
+					Renderer.UpdateViewport(Renderer.ViewPortChangeMode.NoChange);
 					World.UpdateAbsoluteCamera(TimeElapsed);
 					World.UpdateViewingDistances();
-					if (World.CameraRestriction != World.CameraRestrictionMode.NotAvailable)
+					if (World.CameraRestriction != Camera.RestrictionMode.NotAvailable)
 					{
 						if (!World.PerformCameraRestrictionTest())
 						{
@@ -94,12 +96,12 @@ namespace OpenBve
 
 					if (lookahead)
 					{
-						World.CameraMode = World.CameraViewMode.InteriorLookAhead;
+						World.CameraMode = CameraViewMode.InteriorLookAhead;
 					}
 					TrainManager.PlayerTrain.AI = new Game.SimpleHumanDriverAI(TrainManager.PlayerTrain);
 					if (TrainManager.PlayerTrain.Plugin != null && !TrainManager.PlayerTrain.Plugin.SupportsAI)
 					{
-						Game.AddMessage(Interface.GetInterfaceString("notification_aiunable"), MessageManager.MessageDependency.None, Interface.GameMode.Expert, MessageColor.White, Game.SecondsSinceMidnight + 10.0, null);
+						Game.AddMessage(Translations.GetInterfaceString("notification_aiunable"), MessageManager.MessageDependency.None, Interface.GameMode.Expert, MessageColor.White, Game.SecondsSinceMidnight + 10.0, null);
 					}
 
 				}
@@ -113,7 +115,7 @@ namespace OpenBve
 					kioskModeTimer = 0;
 					for (int i = 0; i < Interface.CurrentControls.Length; i++)
 					{
-						if (Interface.CurrentControls[i].InheritedType == Interface.CommandType.Digital)
+						if (Interface.CurrentControls[i].InheritedType == Translations.CommandType.Digital)
 						{
 							if (Interface.CurrentControls[i].DigitalState == Interface.DigitalControlState.Pressed)
 							{
@@ -121,19 +123,19 @@ namespace OpenBve
 									Interface.DigitalControlState.PressedAcknowledged;
 								switch (Interface.CurrentControls[i].Command)
 								{
-									case Interface.Command.MiscPause:
+									case Translations.Command.MiscPause:
 										Game.CurrentInterface = Game.InterfaceType.Normal;
 										break;
-									case Interface.Command.MenuActivate:
+									case Translations.Command.MenuActivate:
 										Game.Menu.PushMenu(Menu.MenuType.Top);
 										break;
-									case Interface.Command.MiscQuit:
+									case Translations.Command.MiscQuit:
 										Game.Menu.PushMenu(Menu.MenuType.Quit);
 										break;
-									case Interface.Command.MiscFullscreen:
+									case Translations.Command.MiscFullscreen:
 										Screen.ToggleFullscreen();
 										break;
-									case Interface.Command.MiscMute:
+									case Translations.Command.MiscMute:
 										Sounds.GlobalMute = !Sounds.GlobalMute;
 										Sounds.Update(TimeElapsed, Interface.CurrentOptions.SoundModel);
 										break;
@@ -150,7 +152,7 @@ namespace OpenBve
 					kioskModeTimer = 0;
 					for (int i = 0; i < Interface.CurrentControls.Length; i++)
 					{
-						if (Interface.CurrentControls[i].InheritedType == Interface.CommandType.Digital
+						if (Interface.CurrentControls[i].InheritedType == Translations.CommandType.Digital
 								&& Interface.CurrentControls[i].DigitalState == Interface.DigitalControlState.Pressed)
 						{
 							Interface.CurrentControls[i].DigitalState =
@@ -164,21 +166,21 @@ namespace OpenBve
 					// normal
 					for (int i = 0; i < Interface.CurrentControls.Length; i++)
 					{
-						if (Interface.CurrentControls[i].InheritedType == Interface.CommandType.AnalogHalf |
-							Interface.CurrentControls[i].InheritedType == Interface.CommandType.AnalogFull)
+						if (Interface.CurrentControls[i].InheritedType == Translations.CommandType.AnalogHalf |
+							Interface.CurrentControls[i].InheritedType == Translations.CommandType.AnalogFull)
 						{
 							// analog control
 							if (Interface.CurrentControls[i].AnalogState != 0.0)
 							{
 								switch (Interface.CurrentControls[i].Command)
 								{
-									case Interface.Command.PowerHalfAxis:
-									case Interface.Command.PowerFullAxis:
+									case Translations.Command.PowerHalfAxis:
+									case Translations.Command.PowerFullAxis:
 										// power half/full-axis
 										if (!TrainManager.PlayerTrain.Handles.SingleHandle)
 										{
 											double a = Interface.CurrentControls[i].AnalogState;
-											if (Interface.CurrentControls[i].Command == Interface.Command.BrakeFullAxis)
+											if (Interface.CurrentControls[i].Command == Translations.Command.BrakeFullAxis)
 											{
 												a = 0.5*(a + 1.0);
 											}
@@ -187,18 +189,16 @@ namespace OpenBve
 											TrainManager.PlayerTrain.ApplyNotch(p, false, 0, true);
 										}
 										break;
-									case Interface.Command.BrakeHalfAxis:
-									case Interface.Command.BrakeFullAxis:
+									case Translations.Command.BrakeHalfAxis:
+									case Translations.Command.BrakeFullAxis:
 										// brake half/full-axis
 										if (!TrainManager.PlayerTrain.Handles.SingleHandle)
 										{
-											int d = TrainManager.PlayerTrain.DriverCar;
-											if (TrainManager.PlayerTrain.Cars[d].Specs.BrakeType ==
-												TrainManager.CarBrakeType.AutomaticAirBrake)
+											if (TrainManager.PlayerTrain.Handles.Brake is TrainManager.AirBrakeHandle)
 											{
 												double a = Interface.CurrentControls[i].AnalogState;
 												if (Interface.CurrentControls[i].Command ==
-													Interface.Command.BrakeFullAxis)
+													Translations.Command.BrakeFullAxis)
 												{
 													a = 0.5*(a + 1.0);
 												}
@@ -208,25 +208,22 @@ namespace OpenBve
 													case 0:
 														TrainManager.PlayerTrain.Handles.EmergencyBrake.Driver =
 															false;
-														TrainManager.ApplyAirBrakeHandle(TrainManager.PlayerTrain,
-															TrainManager.AirBrakeHandleState.Release);
+														TrainManager.PlayerTrain.ApplyAirBrakeHandle(TrainManager.AirBrakeHandleState.Release);
 														break;
 													case 1:
 														TrainManager.PlayerTrain.Handles.EmergencyBrake.Driver =
 															false;
-														TrainManager.ApplyAirBrakeHandle(TrainManager.PlayerTrain,
-															TrainManager.AirBrakeHandleState.Lap);
+														TrainManager.PlayerTrain.ApplyAirBrakeHandle(TrainManager.AirBrakeHandleState.Lap);
 														break;
 													case 2:
 														TrainManager.PlayerTrain.Handles.EmergencyBrake.Driver =
 															false;
-														TrainManager.ApplyAirBrakeHandle(TrainManager.PlayerTrain,
-															TrainManager.AirBrakeHandleState.Service);
+														TrainManager.PlayerTrain.ApplyAirBrakeHandle(TrainManager.AirBrakeHandleState.Service);
 														break;
 													case 3:
 														if (Interface.CurrentOptions.AllowAxisEB)
 														{
-															TrainManager.ApplyEmergencyBrake(TrainManager.PlayerTrain);
+															TrainManager.PlayerTrain.ApplyEmergencyBrake();
 														}
 														break;
 												}
@@ -237,7 +234,7 @@ namespace OpenBve
 												{
 													double a = Interface.CurrentControls[i].AnalogState;
 													if (Interface.CurrentControls[i].Command ==
-														Interface.Command.BrakeFullAxis)
+														Translations.Command.BrakeFullAxis)
 													{
 														a = 0.5*(a + 1.0);
 													}
@@ -247,21 +244,21 @@ namespace OpenBve
 													if (b > 0) b--;
 													if (b <= TrainManager.PlayerTrain.Handles.Brake.MaximumNotch)
 													{
-														TrainManager.UnapplyEmergencyBrake(TrainManager.PlayerTrain);
+														TrainManager.PlayerTrain.UnapplyEmergencyBrake();
 														TrainManager.PlayerTrain.ApplyNotch(0, true, b,
 															false);
 													}
 													else
 													{
-														TrainManager.ApplyEmergencyBrake(TrainManager.PlayerTrain);
+														TrainManager.PlayerTrain.ApplyEmergencyBrake();
 													}
-													TrainManager.ApplyHoldBrake(TrainManager.PlayerTrain, q);
+													TrainManager.PlayerTrain.ApplyHoldBrake(q);
 												}
 												else
 												{
 													double a = Interface.CurrentControls[i].AnalogState;
 													if (Interface.CurrentControls[i].Command ==
-														Interface.Command.BrakeFullAxis)
+														Translations.Command.BrakeFullAxis)
 													{
 														a = 0.5*(a + 1.0);
 													}
@@ -269,7 +266,7 @@ namespace OpenBve
 													int b = (int) Math.Round(a);
 													if (b <= TrainManager.PlayerTrain.Handles.Brake.MaximumNotch)
 													{
-														TrainManager.UnapplyEmergencyBrake(TrainManager.PlayerTrain);
+														TrainManager.PlayerTrain.UnapplyEmergencyBrake();
 														TrainManager.PlayerTrain.ApplyNotch(0, true, b,
 															false);
 													}
@@ -277,14 +274,14 @@ namespace OpenBve
 													{
 														if (Interface.CurrentOptions.AllowAxisEB)
 														{
-															TrainManager.ApplyEmergencyBrake(TrainManager.PlayerTrain);
+															TrainManager.PlayerTrain.ApplyEmergencyBrake();
 														}
 													}
 												}
 											}
 										}
 										break;
-									case Interface.Command.SingleFullAxis:
+									case Translations.Command.SingleFullAxis:
 										// single full axis
 										if (TrainManager.PlayerTrain.Handles.SingleHandle)
 										{
@@ -299,26 +296,26 @@ namespace OpenBve
 												int b =
 													(int)
 														Math.Round(-a*
-																   (double)
+																   ((double)
 																	   TrainManager.PlayerTrain.Handles.Brake.MaximumNotch +
-																   2);
+																   2));
 												if (p < 0) p = 0;
 												if (b < 0) b = 0;
 												bool q = b == 1;
 												if (b > 0) b--;
 												if (b <= TrainManager.PlayerTrain.Handles.Brake.MaximumNotch)
 												{
-													TrainManager.UnapplyEmergencyBrake(TrainManager.PlayerTrain);
+													TrainManager.PlayerTrain.UnapplyEmergencyBrake();
 													TrainManager.PlayerTrain.ApplyNotch(p, false, b, false);
 												}
 												else
 												{
 													if (Interface.CurrentOptions.AllowAxisEB)
 													{
-														TrainManager.ApplyEmergencyBrake(TrainManager.PlayerTrain);
+														TrainManager.PlayerTrain.ApplyEmergencyBrake();
 													}
 												}
-												TrainManager.ApplyHoldBrake(TrainManager.PlayerTrain, q);
+												TrainManager.PlayerTrain.ApplyHoldBrake(q);
 											}
 											else
 											{
@@ -338,35 +335,35 @@ namespace OpenBve
 												if (b < 0) b = 0;
 												if (b <= TrainManager.PlayerTrain.Handles.Brake.MaximumNotch)
 												{
-													TrainManager.UnapplyEmergencyBrake(TrainManager.PlayerTrain);
+													TrainManager.PlayerTrain.UnapplyEmergencyBrake();
 													TrainManager.PlayerTrain.ApplyNotch(p, false, b, false);
 												}
 												else
 												{
 													if (Interface.CurrentOptions.AllowAxisEB)
 													{
-														TrainManager.ApplyEmergencyBrake(TrainManager.PlayerTrain);
+														TrainManager.PlayerTrain.ApplyEmergencyBrake();
 													}
 												}
 											}
 										}
 										break;
-									case Interface.Command.ReverserFullAxis:
+									case Translations.Command.ReverserFullAxis:
 										// reverser full axis
 									{
 										double a = Interface.CurrentControls[i].AnalogState;
 										int r = (int) Math.Round(a);
-										TrainManager.ApplyReverser(TrainManager.PlayerTrain, r, false);
+										TrainManager.PlayerTrain.ApplyReverser(r, false);
 									}
 										break;
-									case Interface.Command.CameraMoveForward:
+									case Translations.Command.CameraMoveForward:
 										// camera move forward
-										if (World.CameraMode == World.CameraViewMode.Interior |
-											World.CameraMode == World.CameraViewMode.InteriorLookAhead |
-											World.CameraMode == World.CameraViewMode.Exterior)
+										if (World.CameraMode == CameraViewMode.Interior |
+											World.CameraMode == CameraViewMode.InteriorLookAhead |
+											World.CameraMode == CameraViewMode.Exterior)
 										{
-											double s = World.CameraMode == World.CameraViewMode.Interior |
-													   World.CameraMode == World.CameraViewMode.InteriorLookAhead
+											double s = World.CameraMode == CameraViewMode.Interior |
+													   World.CameraMode == CameraViewMode.InteriorLookAhead
 												? World.CameraInteriorTopSpeed
 												: World.CameraExteriorTopSpeed;
 											World.CameraAlignmentDirection.Position.Z = s*
@@ -375,19 +372,24 @@ namespace OpenBve
 										}
 										else
 										{
+											if (World.CameraAtWorldEnd)
+											{
+												//Don't let the camera run off the end of the worldspace
+												break;
+											}
 											World.CameraAlignmentDirection.TrackPosition = World.CameraExteriorTopSpeed*
 																						   Interface.CurrentControls[i]
 																							   .AnalogState;
 										}
 										break;
-									case Interface.Command.CameraMoveBackward:
+									case Translations.Command.CameraMoveBackward:
 										// camera move backward
-										if (World.CameraMode == World.CameraViewMode.Interior |
-											World.CameraMode == World.CameraViewMode.InteriorLookAhead |
-											World.CameraMode == World.CameraViewMode.Exterior)
+										if (World.CameraMode == CameraViewMode.Interior |
+											World.CameraMode == CameraViewMode.InteriorLookAhead |
+											World.CameraMode == CameraViewMode.Exterior)
 										{
-											double s = World.CameraMode == World.CameraViewMode.Interior |
-													   World.CameraMode == World.CameraViewMode.InteriorLookAhead
+											double s = World.CameraMode == CameraViewMode.Interior |
+													   World.CameraMode == CameraViewMode.InteriorLookAhead
 												? World.CameraInteriorTopSpeed
 												: World.CameraExteriorTopSpeed;
 											World.CameraAlignmentDirection.Position.Z = -s*
@@ -400,11 +402,11 @@ namespace OpenBve
 												-World.CameraExteriorTopSpeed*Interface.CurrentControls[i].AnalogState;
 										}
 										break;
-									case Interface.Command.CameraMoveLeft:
+									case Translations.Command.CameraMoveLeft:
 										// camera move left
 									{
-										double s = World.CameraMode == World.CameraViewMode.Interior |
-												   World.CameraMode == World.CameraViewMode.InteriorLookAhead
+										double s = World.CameraMode == CameraViewMode.Interior |
+												   World.CameraMode == CameraViewMode.InteriorLookAhead
 											? World.CameraInteriorTopSpeed
 											: World.CameraExteriorTopSpeed;
 										World.CameraAlignmentDirection.Position.X = -s*
@@ -412,11 +414,11 @@ namespace OpenBve
 																						.AnalogState;
 									}
 										break;
-									case Interface.Command.CameraMoveRight:
+									case Translations.Command.CameraMoveRight:
 										// camera move right
 									{
-										double s = World.CameraMode == World.CameraViewMode.Interior |
-												   World.CameraMode == World.CameraViewMode.InteriorLookAhead
+										double s = World.CameraMode == CameraViewMode.Interior |
+												   World.CameraMode == CameraViewMode.InteriorLookAhead
 											? World.CameraInteriorTopSpeed
 											: World.CameraExteriorTopSpeed;
 										World.CameraAlignmentDirection.Position.X = s*
@@ -424,11 +426,11 @@ namespace OpenBve
 																						.AnalogState;
 									}
 										break;
-									case Interface.Command.CameraMoveUp:
+									case Translations.Command.CameraMoveUp:
 										// camera move up
 									{
-										double s = World.CameraMode == World.CameraViewMode.Interior |
-												   World.CameraMode == World.CameraViewMode.InteriorLookAhead
+										double s = World.CameraMode == CameraViewMode.Interior |
+												   World.CameraMode == CameraViewMode.InteriorLookAhead
 											? World.CameraInteriorTopSpeed
 											: World.CameraExteriorTopSpeed;
 										World.CameraAlignmentDirection.Position.Y = s*
@@ -436,11 +438,11 @@ namespace OpenBve
 																						.AnalogState;
 									}
 										break;
-									case Interface.Command.CameraMoveDown:
+									case Translations.Command.CameraMoveDown:
 										// camera move down
 									{
-										double s = World.CameraMode == World.CameraViewMode.Interior |
-												   World.CameraMode == World.CameraViewMode.InteriorLookAhead
+										double s = World.CameraMode == CameraViewMode.Interior |
+												   World.CameraMode == CameraViewMode.InteriorLookAhead
 											? World.CameraInteriorTopSpeed
 											: World.CameraExteriorTopSpeed;
 										World.CameraAlignmentDirection.Position.Y = -s*
@@ -448,56 +450,56 @@ namespace OpenBve
 																						.AnalogState;
 									}
 										break;
-									case Interface.Command.CameraRotateLeft:
+									case Translations.Command.CameraRotateLeft:
 										// camera rotate left
 									{
-										double s = World.CameraMode == World.CameraViewMode.Interior |
-												   World.CameraMode == World.CameraViewMode.InteriorLookAhead
+										double s = World.CameraMode == CameraViewMode.Interior |
+												   World.CameraMode == CameraViewMode.InteriorLookAhead
 											? World.CameraInteriorTopAngularSpeed
 											: World.CameraExteriorTopAngularSpeed;
 										World.CameraAlignmentDirection.Yaw = -s*Interface.CurrentControls[i].AnalogState;
 									}
 										break;
-									case Interface.Command.CameraRotateRight:
+									case Translations.Command.CameraRotateRight:
 										// camera rotate right
 									{
-										double s = World.CameraMode == World.CameraViewMode.Interior |
-												   World.CameraMode == World.CameraViewMode.InteriorLookAhead
+										double s = World.CameraMode == CameraViewMode.Interior |
+												   World.CameraMode == CameraViewMode.InteriorLookAhead
 											? World.CameraInteriorTopAngularSpeed
 											: World.CameraExteriorTopAngularSpeed;
 										World.CameraAlignmentDirection.Yaw = s*Interface.CurrentControls[i].AnalogState;
 									}
 										break;
-									case Interface.Command.CameraRotateUp:
+									case Translations.Command.CameraRotateUp:
 										// camera rotate up
 									{
-										double s = World.CameraMode == World.CameraViewMode.Interior |
-												   World.CameraMode == World.CameraViewMode.InteriorLookAhead
+										double s = World.CameraMode == CameraViewMode.Interior |
+												   World.CameraMode == CameraViewMode.InteriorLookAhead
 											? World.CameraInteriorTopAngularSpeed
 											: World.CameraExteriorTopAngularSpeed;
 										World.CameraAlignmentDirection.Pitch = s*
 																			   Interface.CurrentControls[i].AnalogState;
 									}
 										break;
-									case Interface.Command.CameraRotateDown:
+									case Translations.Command.CameraRotateDown:
 										// camera rotate down
 									{
-										double s = World.CameraMode == World.CameraViewMode.Interior |
-												   World.CameraMode == World.CameraViewMode.InteriorLookAhead
+										double s = World.CameraMode == CameraViewMode.Interior |
+												   World.CameraMode == CameraViewMode.InteriorLookAhead
 											? World.CameraInteriorTopAngularSpeed
 											: World.CameraExteriorTopAngularSpeed;
 										World.CameraAlignmentDirection.Pitch = -s*
 																			   Interface.CurrentControls[i].AnalogState;
 									}
 										break;
-									case Interface.Command.CameraRotateCCW:
+									case Translations.Command.CameraRotateCCW:
 										// camera rotate ccw
-										if ((World.CameraMode != World.CameraViewMode.Interior &
-											 World.CameraMode != World.CameraViewMode.InteriorLookAhead) |
-											World.CameraRestriction != World.CameraRestrictionMode.On)
+										if ((World.CameraMode != CameraViewMode.Interior &
+											 World.CameraMode != CameraViewMode.InteriorLookAhead) |
+											World.CameraRestriction != Camera.RestrictionMode.On)
 										{
-											double s = World.CameraMode == World.CameraViewMode.Interior |
-													   World.CameraMode == World.CameraViewMode.InteriorLookAhead
+											double s = World.CameraMode == CameraViewMode.Interior |
+													   World.CameraMode == CameraViewMode.InteriorLookAhead
 												? World.CameraInteriorTopAngularSpeed
 												: World.CameraExteriorTopAngularSpeed;
 											World.CameraAlignmentDirection.Roll = -s*
@@ -505,14 +507,14 @@ namespace OpenBve
 																					  .AnalogState;
 										}
 										break;
-									case Interface.Command.CameraRotateCW:
+									case Translations.Command.CameraRotateCW:
 										// camera rotate cw
-										if ((World.CameraMode != World.CameraViewMode.Interior &
-											 World.CameraMode != World.CameraViewMode.InteriorLookAhead) |
-											World.CameraRestriction != World.CameraRestrictionMode.On)
+										if ((World.CameraMode != CameraViewMode.Interior &
+											 World.CameraMode != CameraViewMode.InteriorLookAhead) |
+											World.CameraRestriction != Camera.RestrictionMode.On)
 										{
-											double s = World.CameraMode == World.CameraViewMode.Interior |
-													   World.CameraMode == World.CameraViewMode.InteriorLookAhead
+											double s = World.CameraMode == CameraViewMode.Interior |
+													   World.CameraMode == CameraViewMode.InteriorLookAhead
 												? World.CameraInteriorTopAngularSpeed
 												: World.CameraExteriorTopAngularSpeed;
 											World.CameraAlignmentDirection.Roll = s*
@@ -520,7 +522,7 @@ namespace OpenBve
 																					  .AnalogState;
 										}
 										break;
-									case Interface.Command.CameraZoomIn:
+									case Translations.Command.CameraZoomIn:
 										// camera zoom in
 										if (TimeElapsed > 0.0)
 										{
@@ -529,7 +531,7 @@ namespace OpenBve
 																					  .AnalogState;
 										}
 										break;
-									case Interface.Command.CameraZoomOut:
+									case Translations.Command.CameraZoomOut:
 										// camera zoom out
 										if (TimeElapsed > 0.0)
 										{
@@ -538,7 +540,7 @@ namespace OpenBve
 																					  .AnalogState;
 										}
 										break;
-									case Interface.Command.TimetableUp:
+									case Translations.Command.TimetableUp:
 										// timetable up
 										if (TimeElapsed > 0.0)
 										{
@@ -561,7 +563,7 @@ namespace OpenBve
 											}
 										}
 										break;
-									case Interface.Command.TimetableDown:
+									case Translations.Command.TimetableDown:
 										// timetable down
 										if (TimeElapsed > 0.0)
 										{
@@ -575,7 +577,7 @@ namespace OpenBve
 												if (Timetable.DefaultTimetableTexture != null)
 												{
 													Textures.LoadTexture(Timetable.DefaultTimetableTexture,
-														Textures.OpenGlTextureWrapMode.ClampClamp);
+														OpenGlTextureWrapMode.ClampClamp);
 													max =
 														Math.Min(
 															Screen.Height - Timetable.DefaultTimetableTexture.Height,
@@ -593,7 +595,7 @@ namespace OpenBve
 												Timetable.CustomTimetablePosition -= scrollSpeed*
 																					 Interface.CurrentControls[i]
 																						 .AnalogState*TimeElapsed;
-												Textures.Texture texture =
+												Texture texture =
 													Timetable.CurrentCustomTimetableDaytimeTexture;
 												if (texture == null)
 												{
@@ -603,7 +605,7 @@ namespace OpenBve
 												if (texture != null)
 												{
 													Textures.LoadTexture(texture,
-														Textures.OpenGlTextureWrapMode.ClampClamp);
+														OpenGlTextureWrapMode.ClampClamp);
 													max = Math.Min(Screen.Height - texture.Height, 0.0);
 												}
 												else
@@ -618,7 +620,7 @@ namespace OpenBve
 								}
 							}
 						}
-						else if (Interface.CurrentControls[i].InheritedType == Interface.CommandType.Digital)
+						else if (Interface.CurrentControls[i].InheritedType == Translations.CommandType.Digital)
 						{
 							// digital control
 							if (Interface.CurrentControls[i].DigitalState == Interface.DigitalControlState.Pressed)
@@ -628,28 +630,28 @@ namespace OpenBve
 									Interface.DigitalControlState.PressedAcknowledged;
 								switch (Interface.CurrentControls[i].Command)
 								{
-									case Interface.Command.MiscQuit:
+									case Translations.Command.MiscQuit:
 										// quit
 										Game.Menu.PushMenu(Menu.MenuType.Quit);
 										break;
-									case Interface.Command.CameraInterior:
+									case Translations.Command.CameraInterior:
 										// camera: interior
 										MainLoop.SaveCameraSettings();
 										bool lookahead = false;
-										if (World.CameraMode != World.CameraViewMode.InteriorLookAhead & World.CameraRestriction == World.CameraRestrictionMode.NotAvailable)
+										if (World.CameraMode != CameraViewMode.InteriorLookAhead & World.CameraRestriction == Camera.RestrictionMode.NotAvailable)
 										{
-											Game.AddMessage(Interface.GetInterfaceString("notification_interior_lookahead"),
+											Game.AddMessage(Translations.GetInterfaceString("notification_interior_lookahead"),
 												MessageManager.MessageDependency.CameraView, Interface.GameMode.Expert,
 												MessageColor.White, Game.SecondsSinceMidnight + 2.0, null);
 											lookahead = true;
 										}
 										else
 										{
-											Game.AddMessage(Interface.GetInterfaceString("notification_interior"),
+											Game.AddMessage(Translations.GetInterfaceString("notification_interior"),
 												MessageManager.MessageDependency.CameraView, Interface.GameMode.Expert,
 												MessageColor.White, Game.SecondsSinceMidnight + 2.0, null);
 										}
-										World.CameraMode = World.CameraViewMode.Interior;
+										World.CameraMode = CameraViewMode.Interior;
 										MainLoop.RestoreCameraSettings();
 										bool returnToCab = false;
 										for (int j = 0; j < TrainManager.PlayerTrain.Cars.Length; j++)
@@ -687,10 +689,10 @@ namespace OpenBve
 										}
 										World.CameraAlignmentDirection = new World.CameraAlignment();
 										World.CameraAlignmentSpeed = new World.CameraAlignment();
-										UpdateViewport(MainLoop.ViewPortChangeMode.NoChange);
+										Renderer.UpdateViewport(Renderer.ViewPortChangeMode.NoChange);
 										World.UpdateAbsoluteCamera(TimeElapsed);
 										World.UpdateViewingDistances();
-										if (World.CameraRestriction != World.CameraRestrictionMode.NotAvailable)
+										if (World.CameraRestriction != Camera.RestrictionMode.NotAvailable)
 										{
 											if (!World.PerformCameraRestrictionTest())
 											{
@@ -699,15 +701,15 @@ namespace OpenBve
 										}
 										if (lookahead)
 										{
-											World.CameraMode = World.CameraViewMode.InteriorLookAhead;
+											World.CameraMode = CameraViewMode.InteriorLookAhead;
 										}
 										break;
-									case Interface.Command.CameraExterior:
+									case Translations.Command.CameraExterior:
 										// camera: exterior
-										Game.AddMessage(Interface.GetInterfaceString("notification_exterior") + " " + (World.CameraCar + 1), MessageManager.MessageDependency.CameraView, Interface.GameMode.Expert,
+										Game.AddMessage(Translations.GetInterfaceString("notification_exterior") + " " + (World.CameraCar + 1), MessageManager.MessageDependency.CameraView, Interface.GameMode.Expert,
 												MessageColor.White, Game.SecondsSinceMidnight + 2.0, null);
 										SaveCameraSettings();
-										World.CameraMode = World.CameraViewMode.Exterior;
+										World.CameraMode = CameraViewMode.Exterior;
 										RestoreCameraSettings();
 										for (int j = 0; j < TrainManager.PlayerTrain.Cars.Length; j++)
 										{
@@ -721,37 +723,37 @@ namespace OpenBve
 										}
 										World.CameraAlignmentDirection = new World.CameraAlignment();
 										World.CameraAlignmentSpeed = new World.CameraAlignment();
-										UpdateViewport(MainLoop.ViewPortChangeMode.NoChange);
+										Renderer.UpdateViewport(Renderer.ViewPortChangeMode.NoChange);
 										World.UpdateAbsoluteCamera(TimeElapsed);
 										World.UpdateViewingDistances();
 										break;
-									case Interface.Command.CameraTrack:
-									case Interface.Command.CameraFlyBy:
+									case Translations.Command.CameraTrack:
+									case Translations.Command.CameraFlyBy:
 										// camera: track / fly-by
 									{
 										SaveCameraSettings();
-										if (Interface.CurrentControls[i].Command == Interface.Command.CameraTrack)
+										if (Interface.CurrentControls[i].Command == Translations.Command.CameraTrack)
 										{
-											World.CameraMode = World.CameraViewMode.Track;
-											Game.AddMessage(Interface.GetInterfaceString("notification_track"),
+											World.CameraMode = CameraViewMode.Track;
+											Game.AddMessage(Translations.GetInterfaceString("notification_track"),
 												MessageManager.MessageDependency.CameraView, Interface.GameMode.Expert,
 												MessageColor.White, Game.SecondsSinceMidnight + 2.0, null);
 										}
 										else
 										{
-											if (World.CameraMode == World.CameraViewMode.FlyBy)
+											if (World.CameraMode == CameraViewMode.FlyBy)
 											{
-												World.CameraMode = World.CameraViewMode.FlyByZooming;
+												World.CameraMode = CameraViewMode.FlyByZooming;
 												Game.AddMessage(
-													Interface.GetInterfaceString("notification_flybyzooming"),
+													Translations.GetInterfaceString("notification_flybyzooming"),
 													MessageManager.MessageDependency.CameraView, Interface.GameMode.Expert,
 													MessageColor.White, Game.SecondsSinceMidnight + 2.0, null);
 											}
 											else
 											{
-												World.CameraMode = World.CameraViewMode.FlyBy;
+												World.CameraMode = CameraViewMode.FlyBy;
 												Game.AddMessage(
-													Interface.GetInterfaceString("notification_flybynormal"),
+													Translations.GetInterfaceString("notification_flybynormal"),
 													MessageManager.MessageDependency.CameraView, Interface.GameMode.Expert,
 													MessageColor.White, Game.SecondsSinceMidnight + 2.0, null);
 											}
@@ -769,19 +771,19 @@ namespace OpenBve
 										}
 										World.CameraAlignmentDirection = new World.CameraAlignment();
 										World.CameraAlignmentSpeed = new World.CameraAlignment();
-										UpdateViewport(ViewPortChangeMode.NoChange);
+										Renderer.UpdateViewport(Renderer.ViewPortChangeMode.NoChange);
 										World.UpdateAbsoluteCamera(TimeElapsed);
 										World.UpdateViewingDistances();
 									}
 										break;
-									case Interface.Command.CameraPreviousPOI:
+									case Translations.Command.CameraPreviousPOI:
 										//If we are in the exterior train view, shift down one car until we hit the last car
-										if (World.CameraMode == World.CameraViewMode.Exterior)
+										if (World.CameraMode == CameraViewMode.Exterior)
 										{
 											if (World.CameraCar < TrainManager.PlayerTrain.Cars.Length - 1)
 											{
 												World.CameraCar++;
-												Game.AddMessage(Interface.GetInterfaceString("notification_exterior") + " " + (World.CameraCar + 1), MessageManager.MessageDependency.CameraView, Interface.GameMode.Expert,
+												Game.AddMessage(Translations.GetInterfaceString("notification_exterior") + " " + (World.CameraCar + 1), MessageManager.MessageDependency.CameraView, Interface.GameMode.Expert,
 												MessageColor.White, Game.SecondsSinceMidnight + 2.0, null);
 											}
 											return;
@@ -789,12 +791,12 @@ namespace OpenBve
 										//Otherwise, check if we can move down to the previous POI
 										if (Game.ApplyPointOfInterest(-1, true))
 										{
-											if (World.CameraMode != World.CameraViewMode.Track &
-												World.CameraMode != World.CameraViewMode.FlyBy &
-												World.CameraMode != World.CameraViewMode.FlyByZooming)
+											if (World.CameraMode != CameraViewMode.Track &
+												World.CameraMode != CameraViewMode.FlyBy &
+												World.CameraMode != CameraViewMode.FlyByZooming)
 											{
-												World.CameraMode = World.CameraViewMode.Track;
-												Game.AddMessage(Interface.GetInterfaceString("notification_track"),
+												World.CameraMode = CameraViewMode.Track;
+												Game.AddMessage(Translations.GetInterfaceString("notification_track"),
 													MessageManager.MessageDependency.CameraView, Interface.GameMode.Expert,
 													MessageColor.White, Game.SecondsSinceMidnight + 2.0, null);
 											}
@@ -818,19 +820,19 @@ namespace OpenBve
 											World.CameraTrackFollower.Update(World.CameraTrackFollower.TrackPosition + z, true, false);
 											World.CameraCurrentAlignment.TrackPosition = World.CameraTrackFollower.TrackPosition;
 											World.VerticalViewingAngle = World.OriginalVerticalViewingAngle;
-											UpdateViewport(ViewPortChangeMode.NoChange);
+											Renderer.UpdateViewport(Renderer.ViewPortChangeMode.NoChange);
 											World.UpdateAbsoluteCamera(TimeElapsed);
 											World.UpdateViewingDistances();
 										}
 										break;
-									case Interface.Command.CameraNextPOI:
+									case Translations.Command.CameraNextPOI:
 										//If we are in the exterior train view, shift up one car until we hit index 0
-										if (World.CameraMode == World.CameraViewMode.Exterior)
+										if (World.CameraMode == CameraViewMode.Exterior)
 										{
 											if (World.CameraCar > 0)
 											{
 												World.CameraCar--;
-												Game.AddMessage(Interface.GetInterfaceString("notification_exterior") + " " + (World.CameraCar + 1), MessageManager.MessageDependency.CameraView, Interface.GameMode.Expert,
+												Game.AddMessage(Translations.GetInterfaceString("notification_exterior") + " " + (World.CameraCar + 1), MessageManager.MessageDependency.CameraView, Interface.GameMode.Expert,
 												MessageColor.White, Game.SecondsSinceMidnight + 2.0, null);
 											}
 											return;
@@ -838,12 +840,12 @@ namespace OpenBve
 										//Otherwise, check if we can move up to the next POI
 										if (Game.ApplyPointOfInterest(1, true))
 										{
-											if (World.CameraMode != World.CameraViewMode.Track &
-												World.CameraMode != World.CameraViewMode.FlyBy &
-												World.CameraMode != World.CameraViewMode.FlyByZooming)
+											if (World.CameraMode != CameraViewMode.Track &
+												World.CameraMode != CameraViewMode.FlyBy &
+												World.CameraMode != CameraViewMode.FlyByZooming)
 											{
-												World.CameraMode = World.CameraViewMode.Track;
-												Game.AddMessage(Interface.GetInterfaceString("notification_track"),
+												World.CameraMode = CameraViewMode.Track;
+												Game.AddMessage(Translations.GetInterfaceString("notification_track"),
 													MessageManager.MessageDependency.CameraView, Interface.GameMode.Expert,
 													MessageColor.White, Game.SecondsSinceMidnight + 2.0, null);
 											}
@@ -867,15 +869,15 @@ namespace OpenBve
 											World.CameraCurrentAlignment.TrackPosition =
 												World.CameraTrackFollower.TrackPosition;
 											World.VerticalViewingAngle = World.OriginalVerticalViewingAngle;
-											UpdateViewport(ViewPortChangeMode.NoChange);
+											Renderer.UpdateViewport(Renderer.ViewPortChangeMode.NoChange);
 											World.UpdateAbsoluteCamera(TimeElapsed);
 											World.UpdateViewingDistances();
 										}
 										break;
-									case Interface.Command.CameraReset:
+									case Translations.Command.CameraReset:
 										// camera: reset
-										if (World.CameraMode == World.CameraViewMode.Interior |
-											World.CameraMode == World.CameraViewMode.InteriorLookAhead)
+										if (World.CameraMode == CameraViewMode.Interior |
+											World.CameraMode == CameraViewMode.InteriorLookAhead)
 										{
 											World.CameraCurrentAlignment.Position = new OpenBveApi.Math.Vector3(0.0, 0.0,
 												0.0);
@@ -883,14 +885,14 @@ namespace OpenBve
 										World.CameraCurrentAlignment.Yaw = 0.0;
 										World.CameraCurrentAlignment.Pitch = 0.0;
 										World.CameraCurrentAlignment.Roll = 0.0;
-										if (World.CameraMode == World.CameraViewMode.Track)
+										if (World.CameraMode == CameraViewMode.Track)
 										{
 											World.CameraTrackFollower.Update(
 												TrainManager.PlayerTrain.Cars[0].FrontAxle.Follower.TrackPosition, true,
 												false);
 										}
-										else if (World.CameraMode == World.CameraViewMode.FlyBy |
-												 World.CameraMode == World.CameraViewMode.FlyByZooming)
+										else if (World.CameraMode == CameraViewMode.FlyBy |
+												 World.CameraMode == CameraViewMode.FlyByZooming)
 										{
 											if (TrainManager.PlayerTrain.Specs.CurrentAverageSpeed >= 0.0)
 											{
@@ -916,12 +918,12 @@ namespace OpenBve
 										World.VerticalViewingAngle = World.OriginalVerticalViewingAngle;
 										World.CameraAlignmentDirection = new World.CameraAlignment();
 										World.CameraAlignmentSpeed = new World.CameraAlignment();
-										UpdateViewport(ViewPortChangeMode.NoChange);
+										Renderer.UpdateViewport(Renderer.ViewPortChangeMode.NoChange);
 										World.UpdateAbsoluteCamera(TimeElapsed);
 										World.UpdateViewingDistances();
-										if ((World.CameraMode == World.CameraViewMode.Interior |
-											 World.CameraMode == World.CameraViewMode.InteriorLookAhead) &
-											World.CameraRestriction == World.CameraRestrictionMode.On)
+										if ((World.CameraMode == CameraViewMode.Interior |
+											 World.CameraMode == CameraViewMode.InteriorLookAhead) &
+											World.CameraRestriction == Camera.RestrictionMode.On)
 										{
 											if (!World.PerformCameraRestrictionTest())
 											{
@@ -929,52 +931,52 @@ namespace OpenBve
 											}
 										}
 										break;
-									case Interface.Command.CameraRestriction:
+									case Translations.Command.CameraRestriction:
 										// camera: restriction
-										if (World.CameraRestriction != World.CameraRestrictionMode.NotAvailable)
+										if (World.CameraRestriction != Camera.RestrictionMode.NotAvailable)
 										{
-											if (World.CameraRestriction == World.CameraRestrictionMode.Off)
+											if (World.CameraRestriction == Camera.RestrictionMode.Off)
 											{
-												World.CameraRestriction = World.CameraRestrictionMode.On;
+												World.CameraRestriction = Camera.RestrictionMode.On;
 											}
 											else
 											{
-												World.CameraRestriction = World.CameraRestrictionMode.Off;
+												World.CameraRestriction = Camera.RestrictionMode.Off;
 											}
 											World.InitializeCameraRestriction();
-											if (World.CameraRestriction == World.CameraRestrictionMode.Off)
+											if (World.CameraRestriction == Camera.RestrictionMode.Off)
 											{
 												Game.AddMessage(
-													Interface.GetInterfaceString("notification_camerarestriction_off"),
+													Translations.GetInterfaceString("notification_camerarestriction_off"),
 													MessageManager.MessageDependency.CameraView, Interface.GameMode.Expert,
 													MessageColor.White, Game.SecondsSinceMidnight + 2.0, null);
 											}
 											else
 											{
 												Game.AddMessage(
-													Interface.GetInterfaceString("notification_camerarestriction_on"),
+													Translations.GetInterfaceString("notification_camerarestriction_on"),
 													MessageManager.MessageDependency.CameraView, Interface.GameMode.Expert,
 													MessageColor.White, Game.SecondsSinceMidnight + 2.0, null);
 											}
 										}
 										break;
-									case Interface.Command.SinglePower:
+									case Translations.Command.SinglePower:
 										// single power
 										if (TrainManager.PlayerTrain.Handles.SingleHandle)
 										{
 											int b = TrainManager.PlayerTrain.Handles.Brake.Driver;
 											if (TrainManager.PlayerTrain.Handles.EmergencyBrake.Driver)
 											{
-												TrainManager.UnapplyEmergencyBrake(TrainManager.PlayerTrain);
+												TrainManager.PlayerTrain.UnapplyEmergencyBrake();
 											}
 											else if (b == 1 & TrainManager.PlayerTrain.Handles.HasHoldBrake)
 											{
 												TrainManager.PlayerTrain.ApplyNotch(0, true, 0, false);
-												TrainManager.ApplyHoldBrake(TrainManager.PlayerTrain, true);
+												TrainManager.PlayerTrain.ApplyHoldBrake(true);
 											}
 											else if (TrainManager.PlayerTrain.Handles.HoldBrake.Driver)
 											{
-												TrainManager.ApplyHoldBrake(TrainManager.PlayerTrain, false);
+												TrainManager.PlayerTrain.ApplyHoldBrake(false);
 											}
 											else if (b > 0)
 											{
@@ -990,7 +992,7 @@ namespace OpenBve
 											}
 										}
 										break;
-									case Interface.Command.SingleNeutral:
+									case Translations.Command.SingleNeutral:
 										// single neutral
 										if (TrainManager.PlayerTrain.Handles.SingleHandle)
 										{
@@ -1004,16 +1006,16 @@ namespace OpenBve
 												int b = TrainManager.PlayerTrain.Handles.Brake.Driver;
 												if (TrainManager.PlayerTrain.Handles.EmergencyBrake.Driver)
 												{
-													TrainManager.UnapplyEmergencyBrake(TrainManager.PlayerTrain);
+													TrainManager.PlayerTrain.UnapplyEmergencyBrake();
 												}
 												else if (b == 1 & TrainManager.PlayerTrain.Handles.HasHoldBrake)
 												{
 													TrainManager.PlayerTrain.ApplyNotch(0, true, 0, false);
-													TrainManager.ApplyHoldBrake(TrainManager.PlayerTrain, true);
+													TrainManager.PlayerTrain.ApplyHoldBrake(true);
 												}
 												else if (TrainManager.PlayerTrain.Handles.HoldBrake.Driver)
 												{
-													TrainManager.ApplyHoldBrake(TrainManager.PlayerTrain, false);
+													TrainManager.PlayerTrain.ApplyHoldBrake(false);
 												}
 												else if (b > 0)
 												{
@@ -1022,7 +1024,7 @@ namespace OpenBve
 											}
 										}
 										break;
-									case Interface.Command.SingleBrake:
+									case Translations.Command.SingleBrake:
 										// single brake
 										if (TrainManager.PlayerTrain.Handles.SingleHandle)
 										{
@@ -1037,24 +1039,24 @@ namespace OpenBve
 												if (TrainManager.PlayerTrain.Handles.HasHoldBrake & b == 0 &
 													!TrainManager.PlayerTrain.Handles.HoldBrake.Driver)
 												{
-													TrainManager.ApplyHoldBrake(TrainManager.PlayerTrain, true);
+													TrainManager.PlayerTrain.ApplyHoldBrake(true);
 												}
 												else if (b < TrainManager.PlayerTrain.Handles.Brake.MaximumNotch)
 												{
 													TrainManager.PlayerTrain.ApplyNotch(0, true, 1, true);
-													TrainManager.ApplyHoldBrake(TrainManager.PlayerTrain, false);
+													TrainManager.PlayerTrain.ApplyHoldBrake(false);
 												}
 											}
 										}
 										break;
-									case Interface.Command.SingleEmergency:
+									case Translations.Command.SingleEmergency:
 										// single emergency
 										if (TrainManager.PlayerTrain.Handles.SingleHandle)
 										{
-											TrainManager.ApplyEmergencyBrake(TrainManager.PlayerTrain);
+											TrainManager.PlayerTrain.ApplyEmergencyBrake();
 										}
 										break;
-									case Interface.Command.PowerIncrease:
+									case Translations.Command.PowerIncrease:
 										// power increase
 										if (!TrainManager.PlayerTrain.Handles.SingleHandle)
 										{
@@ -1065,7 +1067,7 @@ namespace OpenBve
 											}
 										}
 										break;
-									case Interface.Command.PowerDecrease:
+									case Translations.Command.PowerDecrease:
 										// power decrease
 										if (!TrainManager.PlayerTrain.Handles.SingleHandle)
 										{
@@ -1076,38 +1078,33 @@ namespace OpenBve
 											}
 										}
 										break;
-									case Interface.Command.BrakeIncrease:
+									case Translations.Command.BrakeIncrease:
 										// brake increase
 										if (!TrainManager.PlayerTrain.Handles.SingleHandle)
 										{
-											int d = TrainManager.PlayerTrain.DriverCar;
-											if (TrainManager.PlayerTrain.Cars[d].Specs.BrakeType ==
-												TrainManager.CarBrakeType.AutomaticAirBrake)
+											if (TrainManager.PlayerTrain.Handles.Brake is TrainManager.AirBrakeHandle)
 											{
 												if (TrainManager.PlayerTrain.Handles.HasHoldBrake &
-													TrainManager.PlayerTrain.Handles.AirBrake.Handle.Driver ==
-													TrainManager.AirBrakeHandleState.Release &
+													TrainManager.PlayerTrain.Handles.Brake.Driver ==
+													(int)TrainManager.AirBrakeHandleState.Release &
 													!TrainManager.PlayerTrain.Handles.HoldBrake.Driver)
 												{
-													TrainManager.ApplyHoldBrake(TrainManager.PlayerTrain, true);
+													TrainManager.PlayerTrain.ApplyHoldBrake(true);
 												}
 												else if (TrainManager.PlayerTrain.Handles.HoldBrake.Driver)
 												{
-													TrainManager.ApplyAirBrakeHandle(TrainManager.PlayerTrain,
-														TrainManager.AirBrakeHandleState.Lap);
-													TrainManager.ApplyHoldBrake(TrainManager.PlayerTrain, false);
+													TrainManager.PlayerTrain.ApplyAirBrakeHandle(TrainManager.AirBrakeHandleState.Lap);
+													TrainManager.PlayerTrain.ApplyHoldBrake(false);
 												}
-												else if (TrainManager.PlayerTrain.Handles.AirBrake.Handle.Driver ==
-														 TrainManager.AirBrakeHandleState.Lap)
+												else if (TrainManager.PlayerTrain.Handles.Brake.Driver ==
+												         (int)TrainManager.AirBrakeHandleState.Lap)
 												{
-													TrainManager.ApplyAirBrakeHandle(TrainManager.PlayerTrain,
-														TrainManager.AirBrakeHandleState.Service);
+													TrainManager.PlayerTrain.ApplyAirBrakeHandle(TrainManager.AirBrakeHandleState.Service);
 												}
-												else if (TrainManager.PlayerTrain.Handles.AirBrake.Handle.Driver ==
-														 TrainManager.AirBrakeHandleState.Release)
+												else if (TrainManager.PlayerTrain.Handles.Brake.Driver ==
+												         (int)TrainManager.AirBrakeHandleState.Release)
 												{
-													TrainManager.ApplyAirBrakeHandle(TrainManager.PlayerTrain,
-														TrainManager.AirBrakeHandleState.Lap);
+													TrainManager.PlayerTrain.ApplyAirBrakeHandle(TrainManager.AirBrakeHandleState.Lap);
 												}
 											}
 											else
@@ -1116,53 +1113,47 @@ namespace OpenBve
 												if (TrainManager.PlayerTrain.Handles.HasHoldBrake & b == 0 &
 													!TrainManager.PlayerTrain.Handles.HoldBrake.Driver)
 												{
-													TrainManager.ApplyHoldBrake(TrainManager.PlayerTrain, true);
+													TrainManager.PlayerTrain.ApplyHoldBrake(true);
 												}
 												else if (b < TrainManager.PlayerTrain.Handles.Brake.MaximumNotch)
 												{
 													TrainManager.PlayerTrain.ApplyNotch(0, true, 1, true);
-													TrainManager.ApplyHoldBrake(TrainManager.PlayerTrain, false);
+													TrainManager.PlayerTrain.ApplyHoldBrake(false);
 												}
 											}
 										}
 										break;
-									case Interface.Command.BrakeDecrease:
+									case Translations.Command.BrakeDecrease:
 										// brake decrease
 										if (!TrainManager.PlayerTrain.Handles.SingleHandle)
 										{
-											int d = TrainManager.PlayerTrain.DriverCar;
-											if (TrainManager.PlayerTrain.Cars[d].Specs.BrakeType ==
-												TrainManager.CarBrakeType.AutomaticAirBrake)
+											if (TrainManager.PlayerTrain.Handles.Brake is TrainManager.AirBrakeHandle)
 											{
 												if (TrainManager.PlayerTrain.Handles.EmergencyBrake.Driver)
 												{
-													TrainManager.UnapplyEmergencyBrake(TrainManager.PlayerTrain);
+													TrainManager.PlayerTrain.UnapplyEmergencyBrake();
 												}
 												else if (TrainManager.PlayerTrain.Handles.HasHoldBrake &
-														 TrainManager.PlayerTrain.Handles.AirBrake.Handle.Driver ==
-														 TrainManager.AirBrakeHandleState.Lap &
+														 TrainManager.PlayerTrain.Handles.Brake.Driver ==
+														 (int)TrainManager.AirBrakeHandleState.Lap &
 														 !TrainManager.PlayerTrain.Handles.HoldBrake.Driver)
 												{
-													TrainManager.ApplyHoldBrake(TrainManager.PlayerTrain, true);
+													TrainManager.PlayerTrain.ApplyHoldBrake(true);
 												}
 												else if (TrainManager.PlayerTrain.Handles.HoldBrake.Driver)
 												{
-													TrainManager.ApplyAirBrakeHandle(TrainManager.PlayerTrain,
-														TrainManager.AirBrakeHandleState.Release);
-													TrainManager.ApplyHoldBrake(TrainManager.PlayerTrain, false);
+													TrainManager.PlayerTrain.ApplyAirBrakeHandle(TrainManager.AirBrakeHandleState.Release);
+													TrainManager.PlayerTrain.ApplyHoldBrake(false);
 												}
-												else if (TrainManager.PlayerTrain.Handles.AirBrake.Handle.Driver ==
-														 TrainManager.AirBrakeHandleState.Lap)
+												else if (TrainManager.PlayerTrain.Handles.Brake.Driver ==
+												         (int)TrainManager.AirBrakeHandleState.Lap)
 												{
-													TrainManager.ApplyAirBrakeHandle(TrainManager.PlayerTrain,
-														TrainManager.AirBrakeHandleState.Release);
+													TrainManager.PlayerTrain.ApplyAirBrakeHandle(TrainManager.AirBrakeHandleState.Release);
 												}
-												else if (TrainManager.PlayerTrain.Handles.AirBrake.Handle.Driver ==
-														 TrainManager.AirBrakeHandleState.Service)
+												else if (TrainManager.PlayerTrain.Handles.Brake.Driver ==
+												         (int)TrainManager.AirBrakeHandleState.Service)
 												{
-													TrainManager.ApplyAirBrakeHandle(
-														TrainManager.PlayerTrain,
-														TrainManager.AirBrakeHandleState.Lap);
+													TrainManager.PlayerTrain.ApplyAirBrakeHandle(TrainManager.AirBrakeHandleState.Lap);
 												}
 											}
 											else
@@ -1170,16 +1161,16 @@ namespace OpenBve
 												int b = TrainManager.PlayerTrain.Handles.Brake.Driver;
 												if (TrainManager.PlayerTrain.Handles.EmergencyBrake.Driver)
 												{
-													TrainManager.UnapplyEmergencyBrake(TrainManager.PlayerTrain);
+													TrainManager.PlayerTrain.UnapplyEmergencyBrake();
 												}
 												else if (b == 1 & TrainManager.PlayerTrain.Handles.HasHoldBrake)
 												{
 													TrainManager.PlayerTrain.ApplyNotch(0, true, 0, false);
-													TrainManager.ApplyHoldBrake(TrainManager.PlayerTrain, true);
+													TrainManager.PlayerTrain.ApplyHoldBrake(true);
 												}
 												else if (TrainManager.PlayerTrain.Handles.HoldBrake.Driver)
 												{
-													TrainManager.ApplyHoldBrake(TrainManager.PlayerTrain, false);
+													TrainManager.PlayerTrain.ApplyHoldBrake(false);
 												}
 												else if (b > 0)
 												{
@@ -1188,17 +1179,46 @@ namespace OpenBve
 											}
 										}
 										break;
-									case Interface.Command.LocoBrakeIncrease:
-										TrainManager.PlayerTrain.ApplyLocoBrakeNotch(1, true);
+									case Translations.Command.LocoBrakeIncrease:
+										if (TrainManager.PlayerTrain.Handles.LocoBrake is TrainManager.LocoAirBrakeHandle)
+										{
+											if (TrainManager.PlayerTrain.Handles.LocoBrake.Driver == (int)TrainManager.AirBrakeHandleState.Lap)
+											{
+												TrainManager.PlayerTrain.ApplyLocoAirBrakeHandle(TrainManager.AirBrakeHandleState.Service);
+											}
+											else if (TrainManager.PlayerTrain.Handles.LocoBrake.Driver == (int)TrainManager.AirBrakeHandleState.Release)
+											{
+												TrainManager.PlayerTrain.ApplyLocoAirBrakeHandle(TrainManager.AirBrakeHandleState.Lap);
+											}
+										}
+										else
+										{
+											TrainManager.PlayerTrain.ApplyLocoBrakeNotch(1, true);
+										}
+										
 										break;
-									case Interface.Command.LocoBrakeDecrease:
-										TrainManager.PlayerTrain.ApplyLocoBrakeNotch(-1, true);
+									case Translations.Command.LocoBrakeDecrease:
+										if (TrainManager.PlayerTrain.Handles.LocoBrake is TrainManager.LocoAirBrakeHandle)
+										{
+											if (TrainManager.PlayerTrain.Handles.LocoBrake.Driver == (int)TrainManager.AirBrakeHandleState.Lap)
+											{
+												TrainManager.PlayerTrain.ApplyLocoAirBrakeHandle(TrainManager.AirBrakeHandleState.Release);
+											}
+											else if (TrainManager.PlayerTrain.Handles.LocoBrake.Driver == (int)TrainManager.AirBrakeHandleState.Service)
+											{
+												TrainManager.PlayerTrain.ApplyLocoAirBrakeHandle(TrainManager.AirBrakeHandleState.Lap);
+											}
+										}
+										else
+										{
+											TrainManager.PlayerTrain.ApplyLocoBrakeNotch(-1, true);
+										}
 										break;
-									case Interface.Command.BrakeEmergency:
+									case Translations.Command.BrakeEmergency:
 										// brake emergency
-										TrainManager.ApplyEmergencyBrake(TrainManager.PlayerTrain);
+										TrainManager.PlayerTrain.ApplyEmergencyBrake();
 										break;
-									case Interface.Command.DeviceConstSpeed:
+									case Translations.Command.DeviceConstSpeed:
 										// const speed
 										if (TrainManager.PlayerTrain.Specs.HasConstSpeed)
 										{
@@ -1206,27 +1226,74 @@ namespace OpenBve
 												!TrainManager.PlayerTrain.Specs.CurrentConstSpeed;
 										}
 										break;
-									case Interface.Command.ReverserForward:
+									case Translations.Command.PowerAnyNotch:
+										if (TrainManager.PlayerTrain.Handles.SingleHandle && TrainManager.PlayerTrain.Handles.EmergencyBrake.Driver)
+										{
+											TrainManager.PlayerTrain.UnapplyEmergencyBrake();
+										}
+										TrainManager.PlayerTrain.ApplyNotch(Interface.CurrentControls[i].Option, false, 0, !TrainManager.PlayerTrain.Handles.SingleHandle);
+										break;
+									case Translations.Command.BrakeAnyNotch:
+										if (TrainManager.PlayerTrain.Handles.Brake is TrainManager.AirBrakeHandle)
+										{
+											if (TrainManager.PlayerTrain.Handles.EmergencyBrake.Driver)
+											{
+												TrainManager.PlayerTrain.UnapplyEmergencyBrake();
+											}
+											TrainManager.PlayerTrain.ApplyHoldBrake(false);
+											if (Interface.CurrentControls[i].Option <= (int)TrainManager.AirBrakeHandleState.Release)
+											{
+												TrainManager.PlayerTrain.ApplyAirBrakeHandle(TrainManager.AirBrakeHandleState.Release);
+											}
+											else if (Interface.CurrentControls[i].Option == (int)TrainManager.AirBrakeHandleState.Lap)
+											{
+												TrainManager.PlayerTrain.ApplyAirBrakeHandle(TrainManager.AirBrakeHandleState.Lap);
+											}
+											else
+											{
+												TrainManager.PlayerTrain.ApplyAirBrakeHandle(TrainManager.AirBrakeHandleState.Service);
+											}
+										}
+										else
+										{
+											if (TrainManager.PlayerTrain.Handles.EmergencyBrake.Driver)
+											{
+												TrainManager.PlayerTrain.UnapplyEmergencyBrake();
+											}
+											TrainManager.PlayerTrain.ApplyHoldBrake(false);
+											TrainManager.PlayerTrain.ApplyNotch(0, !TrainManager.PlayerTrain.Handles.SingleHandle, Interface.CurrentControls[i].Option, false);
+										}
+										break;
+									case Translations.Command.ReverserAnyPostion:
+										TrainManager.PlayerTrain.ApplyReverser(Interface.CurrentControls[i].Option, false);
+										break;
+									case Translations.Command.HoldBrake:
+										if (TrainManager.PlayerTrain.Handles.HasHoldBrake && (TrainManager.PlayerTrain.Handles.Brake.Driver == 0 || TrainManager.PlayerTrain.Handles.Brake.Driver == 1) && !TrainManager.PlayerTrain.Handles.HoldBrake.Driver)
+										{
+											TrainManager.PlayerTrain.ApplyHoldBrake(true);
+										}
+										break;
+									case Translations.Command.ReverserForward:
 										// reverser forward
 										if (TrainManager.PlayerTrain.Handles.Reverser.Driver < TrainManager.ReverserPosition.Forwards)
 										{
-											TrainManager.ApplyReverser(TrainManager.PlayerTrain, 1, true);
+											TrainManager.PlayerTrain.ApplyReverser(1, true);
 										}
 										break;
-									case Interface.Command.ReverserBackward:
+									case Translations.Command.ReverserBackward:
 										// reverser backward
 										if (TrainManager.PlayerTrain.Handles.Reverser.Driver > TrainManager.ReverserPosition.Reverse)
 										{
-											TrainManager.ApplyReverser(TrainManager.PlayerTrain, -1, true);
+											TrainManager.PlayerTrain.ApplyReverser(-1, true);
 										}
 										break;
-									case Interface.Command.HornPrimary:
-									case Interface.Command.HornSecondary:
-									case Interface.Command.HornMusic:
+									case Translations.Command.HornPrimary:
+									case Translations.Command.HornSecondary:
+									case Translations.Command.HornMusic:
 										// horn
 										{
-										int j = Interface.CurrentControls[i].Command == Interface.Command.HornPrimary
-											? 0 : Interface.CurrentControls[i].Command == Interface.Command.HornSecondary ? 1 : 2;
+										int j = Interface.CurrentControls[i].Command == Translations.Command.HornPrimary
+											? 0 : Interface.CurrentControls[i].Command == Translations.Command.HornSecondary ? 1 : 2;
 										int d = TrainManager.PlayerTrain.DriverCar;
 											if (TrainManager.PlayerTrain.Cars[d].Horns.Length > j)
 											{
@@ -1242,7 +1309,7 @@ namespace OpenBve
 											}
 										}
 										break;
-									case Interface.Command.DoorsLeft:
+									case Translations.Command.DoorsLeft:
 										// doors: left
 										if (TrainManager.PlayerTrain.Cars[TrainManager.PlayerTrain.DriverCar].Doors[0].ButtonPressed)
 										{
@@ -1251,7 +1318,7 @@ namespace OpenBve
 										if ((TrainManager.GetDoorsState(TrainManager.PlayerTrain, true, false) &
 											 TrainManager.TrainDoorState.Opened) == 0)
 										{
-											if (TrainManager.PlayerTrain.Specs.DoorOpenMode != TrainManager.DoorMode.Automatic 
+											if (TrainManager.PlayerTrain.Specs.DoorOpenMode != TrainManager.DoorMode.Automatic
 												& (TrainManager.PlayerTrain.Specs.DoorInterlockState == TrainManager.DoorInterlockStates.Unlocked
 												   | TrainManager.PlayerTrain.Specs.DoorInterlockState == TrainManager.DoorInterlockStates.Left))
 											{
@@ -1274,7 +1341,7 @@ namespace OpenBve
 										//Set door button to pressed in the driver's car
 										TrainManager.PlayerTrain.Cars[TrainManager.PlayerTrain.DriverCar].Doors[0].ButtonPressed = true;
 										break;
-									case Interface.Command.DoorsRight:
+									case Translations.Command.DoorsRight:
 										// doors: right
 										if (TrainManager.PlayerTrain.Cars[TrainManager.PlayerTrain.DriverCar].Doors[1].ButtonPressed)
 										{
@@ -1307,52 +1374,52 @@ namespace OpenBve
 										break;
 //We only want to mark these as obsolete for new users of the API
 #pragma warning disable 618
-									case Interface.Command.SecurityS:
-									case Interface.Command.SecurityA1:
-									case Interface.Command.SecurityA2:
-									case Interface.Command.SecurityB1:
-									case Interface.Command.SecurityB2:
-									case Interface.Command.SecurityC1:
-									case Interface.Command.SecurityC2:
-									case Interface.Command.SecurityD:
-									case Interface.Command.SecurityE:
-									case Interface.Command.SecurityF:
-									case Interface.Command.SecurityG:
-									case Interface.Command.SecurityH:
-									case Interface.Command.SecurityI:
-									case Interface.Command.SecurityJ:
-									case Interface.Command.SecurityK:
-									case Interface.Command.SecurityL:
-									case Interface.Command.SecurityM:
-									case Interface.Command.SecurityN:
-									case Interface.Command.SecurityO:
-									case Interface.Command.SecurityP:
+									case Translations.Command.SecurityS:
+									case Translations.Command.SecurityA1:
+									case Translations.Command.SecurityA2:
+									case Translations.Command.SecurityB1:
+									case Translations.Command.SecurityB2:
+									case Translations.Command.SecurityC1:
+									case Translations.Command.SecurityC2:
+									case Translations.Command.SecurityD:
+									case Translations.Command.SecurityE:
+									case Translations.Command.SecurityF:
+									case Translations.Command.SecurityG:
+									case Translations.Command.SecurityH:
+									case Translations.Command.SecurityI:
+									case Translations.Command.SecurityJ:
+									case Translations.Command.SecurityK:
+									case Translations.Command.SecurityL:
+									case Translations.Command.SecurityM:
+									case Translations.Command.SecurityN:
+									case Translations.Command.SecurityO:
+									case Translations.Command.SecurityP:
 #pragma warning restore 618
-									case Interface.Command.WiperSpeedUp:
-									case Interface.Command.WiperSpeedDown:
-									case Interface.Command.FillFuel:
-									case Interface.Command.LiveSteamInjector:
-									case Interface.Command.ExhaustSteamInjector:
-									case Interface.Command.IncreaseCutoff:
-									case Interface.Command.DecreaseCutoff:
-									case Interface.Command.Blowers:
-									case Interface.Command.EngineStart:
-									case Interface.Command.EngineStop:
-									case Interface.Command.GearUp:
-									case Interface.Command.GearDown:
-									case Interface.Command.RaisePantograph:
-									case Interface.Command.LowerPantograph:
-									case Interface.Command.MainBreaker:
+									case Translations.Command.WiperSpeedUp:
+									case Translations.Command.WiperSpeedDown:
+									case Translations.Command.FillFuel:
+									case Translations.Command.LiveSteamInjector:
+									case Translations.Command.ExhaustSteamInjector:
+									case Translations.Command.IncreaseCutoff:
+									case Translations.Command.DecreaseCutoff:
+									case Translations.Command.Blowers:
+									case Translations.Command.EngineStart:
+									case Translations.Command.EngineStop:
+									case Translations.Command.GearUp:
+									case Translations.Command.GearDown:
+									case Translations.Command.RaisePantograph:
+									case Translations.Command.LowerPantograph:
+									case Translations.Command.MainBreaker:
 										if (TrainManager.PlayerTrain.Plugin != null)
 										{
 											TrainManager.PlayerTrain.Plugin.KeyDown(
-												Interface.SecurityToVirtualKey(Interface.CurrentControls[i].Command));
+												Translations.SecurityToVirtualKey(Interface.CurrentControls[i].Command));
 										}
 										break;
 
 
 
-									case Interface.Command.TimetableToggle:
+									case Translations.Command.TimetableToggle:
 										// option: timetable
 										if (Interface.CurrentOptions.TimeTableStyle == Interface.TimeTableMode.None)
 										{
@@ -1400,7 +1467,7 @@ namespace OpenBve
 												break;
 										}
 										break;
-									case Interface.Command.DebugWireframe:
+									case Translations.Command.DebugWireframe:
 										// option: wireframe
 										Renderer.OptionWireframe = !Renderer.OptionWireframe;
 										if (Renderer.OptionWireframe)
@@ -1413,20 +1480,20 @@ namespace OpenBve
 										}
 										Renderer.StaticOpaqueForceUpdate = true;
 										break;
-									case Interface.Command.DebugNormals:
+									case Translations.Command.DebugNormals:
 										// option: normals
 										Renderer.OptionNormals = !Renderer.OptionNormals;
 										Renderer.StaticOpaqueForceUpdate = true;
 										break;
-									case Interface.Command.ShowEvents:
+									case Translations.Command.ShowEvents:
 										Interface.CurrentOptions.ShowEvents = !Interface.CurrentOptions.ShowEvents;
 										break;
-									case Interface.Command.MiscAI:
+									case Translations.Command.MiscAI:
 										// option: AI
 										if (Interface.CurrentOptions.GameMode == Interface.GameMode.Expert)
 										{
 											Game.AddMessage(
-												Interface.GetInterfaceString("notification_notavailableexpert"),
+												Translations.GetInterfaceString("notification_notavailableexpert"),
 												MessageManager.MessageDependency.None, Interface.GameMode.Expert,
 												MessageColor.White, Game.SecondsSinceMidnight + 5.0, null);
 										}
@@ -1440,7 +1507,7 @@ namespace OpenBve
 													!TrainManager.PlayerTrain.Plugin.SupportsAI)
 												{
 													Game.AddMessage(
-														Interface.GetInterfaceString("notification_aiunable"),
+														Translations.GetInterfaceString("notification_aiunable"),
 														MessageManager.MessageDependency.None, Interface.GameMode.Expert,
 														MessageColor.White, Game.SecondsSinceMidnight + 10.0, null);
 												}
@@ -1451,7 +1518,7 @@ namespace OpenBve
 											}
 										}
 										break;
-									case Interface.Command.MiscInterfaceMode:
+									case Translations.Command.MiscInterfaceMode:
 										// option: debug
 										switch (Renderer.CurrentOutputMode)
 										{
@@ -1473,7 +1540,7 @@ namespace OpenBve
 										}
 										Renderer.PreviousOutputMode = Renderer.CurrentOutputMode;
 										break;
-									case Interface.Command.DebugATS:
+									case Translations.Command.DebugATS:
 										if (Renderer.CurrentOutputMode == Renderer.OutputMode.DebugATS)
 										{
 											Renderer.CurrentOutputMode = Renderer.PreviousOutputMode;
@@ -1484,33 +1551,33 @@ namespace OpenBve
 											Renderer.CurrentOutputMode = Renderer.OutputMode.DebugATS;
 										}
 										break;
-									case Interface.Command.MiscBackfaceCulling:
+									case Translations.Command.MiscBackfaceCulling:
 										// option: backface culling
 										Renderer.OptionBackfaceCulling = !Renderer.OptionBackfaceCulling;
 										Renderer.StaticOpaqueForceUpdate = true;
 										Game.AddMessage(
-											Interface.GetInterfaceString(Renderer.OptionBackfaceCulling
+											Translations.GetInterfaceString(Renderer.OptionBackfaceCulling
 												? "notification_backfaceculling_on"
 												: "notification_backfaceculling_off"), MessageManager.MessageDependency.None,
 											Interface.GameMode.Expert, MessageColor.White,
 											Game.SecondsSinceMidnight + 2.0, null);
 										break;
-									case Interface.Command.MiscCPUMode:
+									case Translations.Command.MiscCPUMode:
 										// option: limit frame rate
 										LimitFramerate = !LimitFramerate;
 										Game.AddMessage(
-											Interface.GetInterfaceString(LimitFramerate
+											Translations.GetInterfaceString(LimitFramerate
 												? "notification_cpu_low"
 												: "notification_cpu_normal"), MessageManager.MessageDependency.None,
 											Interface.GameMode.Expert, MessageColor.White,
 											Game.SecondsSinceMidnight + 2.0, null);
 										break;
-									case Interface.Command.DebugBrakeSystems:
+									case Translations.Command.DebugBrakeSystems:
 										// option: brake systems
 										if (Interface.CurrentOptions.GameMode == Interface.GameMode.Expert)
 										{
 											Game.AddMessage(
-												Interface.GetInterfaceString("notification_notavailableexpert"),
+												Translations.GetInterfaceString("notification_notavailableexpert"),
 												MessageManager.MessageDependency.None, Interface.GameMode.Expert,
 												MessageColor.White, Game.SecondsSinceMidnight + 5.0, null);
 										}
@@ -1519,26 +1586,26 @@ namespace OpenBve
 											Renderer.OptionBrakeSystems = !Renderer.OptionBrakeSystems;
 										}
 										break;
-									case Interface.Command.MenuActivate:
+									case Translations.Command.MenuActivate:
 										// menu
 										Game.Menu.PushMenu(Menu.MenuType.Top);
 										break;
-									case Interface.Command.MiscPause:
+									case Translations.Command.MiscPause:
 										// pause
 										Game.CurrentInterface = Game.InterfaceType.Pause;
 										break;
-									case Interface.Command.MiscClock:
+									case Translations.Command.MiscClock:
 										// clock
 										Renderer.OptionClock = !Renderer.OptionClock;
 										break;
-									case Interface.Command.MiscTimeFactor:
+									case Translations.Command.MiscTimeFactor:
 										// time factor
 										if (!PluginManager.Plugin.DisableTimeAcceleration)
 										{
 											if (Interface.CurrentOptions.GameMode == Interface.GameMode.Expert)
 											{
 												Game.AddMessage(
-													Interface.GetInterfaceString("notification_notavailableexpert"),
+													Translations.GetInterfaceString("notification_notavailableexpert"),
 													MessageManager.MessageDependency.None, Interface.GameMode.Expert,
 													MessageColor.White,
 													Game.SecondsSinceMidnight + 5.0, null);
@@ -1557,12 +1624,12 @@ namespace OpenBve
 											}
 										}
 										break;
-									case Interface.Command.MiscSpeed:
+									case Translations.Command.MiscSpeed:
 										// speed
 										if (Interface.CurrentOptions.GameMode == Interface.GameMode.Expert)
 										{
 											Game.AddMessage(
-												Interface.GetInterfaceString("notification_notavailableexpert"),
+												Translations.GetInterfaceString("notification_notavailableexpert"),
 												MessageManager.MessageDependency.None, Interface.GameMode.Expert,
 												MessageColor.White, Game.SecondsSinceMidnight + 5.0, null);
 										}
@@ -1572,35 +1639,49 @@ namespace OpenBve
 											if ((int) Renderer.OptionSpeed >= 3) Renderer.OptionSpeed = 0;
 										}
 										break;
-									case Interface.Command.MiscGradient:
+									case Translations.Command.MiscGradient:
 										// gradient
 										if (Interface.CurrentOptions.GameMode == Interface.GameMode.Expert)
 										{
 											Game.AddMessage(
-												Interface.GetInterfaceString("notification_notavailableexpert"),
+												Translations.GetInterfaceString("notification_notavailableexpert"),
 												MessageManager.MessageDependency.None, Interface.GameMode.Expert,
 												MessageColor.White, Game.SecondsSinceMidnight + 5.0, null);
 										}
 										else
 										{
 											Renderer.OptionGradient++;
-											if ((int)Renderer.OptionGradient >= 3) Renderer.OptionGradient = 0;
+											if ((int)Renderer.OptionGradient >= 4) Renderer.OptionGradient = 0;
 										}
 										break;
-									case Interface.Command.MiscFps:
+									case Translations.Command.MiscDistanceToNextStation:
+										if (Interface.CurrentOptions.GameMode == Interface.GameMode.Expert)
+										{
+											Game.AddMessage(
+												Translations.GetInterfaceString("notification_notavailableexpert"),
+												MessageManager.MessageDependency.None, Interface.GameMode.Expert,
+												MessageColor.White, Game.SecondsSinceMidnight + 5.0, null);
+										}
+										else
+										{
+											Renderer.OptionDistanceToNextStation++;
+											if ((int)Renderer.OptionDistanceToNextStation >= 3) Renderer.OptionDistanceToNextStation = 0;
+										}
+										break;
+									case Translations.Command.MiscFps:
 										// fps
 										Renderer.OptionFrameRates = !Renderer.OptionFrameRates;
 										break;
-									case Interface.Command.MiscFullscreen:
+									case Translations.Command.MiscFullscreen:
 										// toggle fullscreen
 										Screen.ToggleFullscreen();
 										break;
-									case Interface.Command.MiscMute:
+									case Translations.Command.MiscMute:
 										// mute
 										Sounds.GlobalMute = !Sounds.GlobalMute;
 										Sounds.Update(TimeElapsed, Interface.CurrentOptions.SoundModel);
 										break;
-								case Interface.Command.RouteInformation:
+								case Translations.Command.RouteInformation:
 // Replaced by RouteInfoOverlay, but not deleted for future reference
 //									if (RouteInfoThread == null)
 //									{
@@ -1639,7 +1720,7 @@ namespace OpenBve
 //											});
 //										}
 //									}
-									Game.routeInfoOverlay.ProcessCommand(Interface.Command.RouteInformation);
+									Game.routeInfoOverlay.ProcessCommand(Translations.Command.RouteInformation);
 									break;
 								}
 							}
@@ -1652,56 +1733,56 @@ namespace OpenBve
 								{
 //We only want to mark these as obsolete for new users of the API
 #pragma warning disable 618
-									case Interface.Command.SecurityS:
-									case Interface.Command.SecurityA1:
-									case Interface.Command.SecurityA2:
-									case Interface.Command.SecurityB1:
-									case Interface.Command.SecurityB2:
-									case Interface.Command.SecurityC1:
-									case Interface.Command.SecurityC2:
-									case Interface.Command.SecurityD:
-									case Interface.Command.SecurityE:
-									case Interface.Command.SecurityF:
-									case Interface.Command.SecurityG:
-									case Interface.Command.SecurityH:
-									case Interface.Command.SecurityI:
-									case Interface.Command.SecurityJ:
-									case Interface.Command.SecurityK:
-									case Interface.Command.SecurityL:
-									case Interface.Command.SecurityM:
-									case Interface.Command.SecurityN:
-									case Interface.Command.SecurityO:
-									case Interface.Command.SecurityP:
+									case Translations.Command.SecurityS:
+									case Translations.Command.SecurityA1:
+									case Translations.Command.SecurityA2:
+									case Translations.Command.SecurityB1:
+									case Translations.Command.SecurityB2:
+									case Translations.Command.SecurityC1:
+									case Translations.Command.SecurityC2:
+									case Translations.Command.SecurityD:
+									case Translations.Command.SecurityE:
+									case Translations.Command.SecurityF:
+									case Translations.Command.SecurityG:
+									case Translations.Command.SecurityH:
+									case Translations.Command.SecurityI:
+									case Translations.Command.SecurityJ:
+									case Translations.Command.SecurityK:
+									case Translations.Command.SecurityL:
+									case Translations.Command.SecurityM:
+									case Translations.Command.SecurityN:
+									case Translations.Command.SecurityO:
+									case Translations.Command.SecurityP:
 #pragma warning restore 618
-									case Interface.Command.WiperSpeedUp:
-									case Interface.Command.WiperSpeedDown:
-									case Interface.Command.FillFuel:
-									case Interface.Command.LiveSteamInjector:
-									case Interface.Command.ExhaustSteamInjector:
-									case Interface.Command.IncreaseCutoff:
-									case Interface.Command.DecreaseCutoff:
-									case Interface.Command.Blowers:
-									case Interface.Command.EngineStart:
-									case Interface.Command.EngineStop:
-									case Interface.Command.GearUp:
-									case Interface.Command.GearDown:
-									case Interface.Command.RaisePantograph:
-									case Interface.Command.LowerPantograph:
-									case Interface.Command.MainBreaker:
+									case Translations.Command.WiperSpeedUp:
+									case Translations.Command.WiperSpeedDown:
+									case Translations.Command.FillFuel:
+									case Translations.Command.LiveSteamInjector:
+									case Translations.Command.ExhaustSteamInjector:
+									case Translations.Command.IncreaseCutoff:
+									case Translations.Command.DecreaseCutoff:
+									case Translations.Command.Blowers:
+									case Translations.Command.EngineStart:
+									case Translations.Command.EngineStop:
+									case Translations.Command.GearUp:
+									case Translations.Command.GearDown:
+									case Translations.Command.RaisePantograph:
+									case Translations.Command.LowerPantograph:
+									case Translations.Command.MainBreaker:
 										if (TrainManager.PlayerTrain.Plugin != null)
 										{
 											TrainManager.PlayerTrain.Plugin.KeyUp(
-												Interface.SecurityToVirtualKey(Interface.CurrentControls[i].Command));
+												Translations.SecurityToVirtualKey(Interface.CurrentControls[i].Command));
 										}
 										break;
 
-									case Interface.Command.HornPrimary:
-									case Interface.Command.HornSecondary:
-									case Interface.Command.HornMusic:
+									case Translations.Command.HornPrimary:
+									case Translations.Command.HornSecondary:
+									case Translations.Command.HornMusic:
 										// horn
-										int j = Interface.CurrentControls[i].Command == Interface.Command.HornPrimary
+										int j = Interface.CurrentControls[i].Command == Translations.Command.HornPrimary
 											? 0
-											: Interface.CurrentControls[i].Command == Interface.Command.HornSecondary ? 1 : 2;
+											: Interface.CurrentControls[i].Command == Translations.Command.HornSecondary ? 1 : 2;
 										int d = TrainManager.PlayerTrain.DriverCar;
 										if (TrainManager.PlayerTrain.Cars[d].Horns.Length > j)
 										{
@@ -1709,14 +1790,14 @@ namespace OpenBve
 											TrainManager.PlayerTrain.Cars[d].Horns[j].Stop();
 										}
 										break;
-									case Interface.Command.DoorsLeft:
+									case Translations.Command.DoorsLeft:
 										TrainManager.PlayerTrain.Cars[TrainManager.PlayerTrain.DriverCar].Doors[0].ButtonPressed = false;
 										if (TrainManager.PlayerTrain.Plugin != null)
 										{
 											TrainManager.PlayerTrain.Plugin.KeyUp(VirtualKeys.LeftDoors);
 										}
 										break;
-									case Interface.Command.DoorsRight:
+									case Translations.Command.DoorsRight:
 										TrainManager.PlayerTrain.Cars[TrainManager.PlayerTrain.DriverCar].Doors[1].ButtonPressed = false;
 										if (TrainManager.PlayerTrain.Plugin != null)
 										{

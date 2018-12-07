@@ -1,4 +1,7 @@
-﻿using OpenBveApi.Math;
+﻿using System;
+using OpenBveApi.Math;
+using OpenBveApi.Objects;
+using OpenBveApi.Textures;
 
 namespace OpenBve
 {
@@ -9,20 +12,6 @@ namespace OpenBve
 		/// </summary>
 		internal enum LoadTextureImmediatelyMode { NotYet, Yes, NoLonger }
 		
-
-		/// <summary>
-		/// Defines the behaviour of the renderer for transparent textures
-		/// </summary>
-		internal enum TransparencyMode
-		{
-			/// <summary>Textures using color-key transparency are considered opaque, producing good performance but crisp outlines. Partially transparent faces are rendered in a single pass with z-buffer writes disabled, producing good performance but more depth-sorting issues.</summary>
-			Performance = 0,
-			/// <summary>Textures using color-key transparency are considered opaque, producing good performance but crisp outlines. Partially transparent faces are rendered in two passes, the first rendering only opaque pixels with z-buffer writes enabled, and the second rendering only partially transparent pixels with z-buffer writes disabled, producing best quality but worse performance.</summary>
-			Intermediate = 1,
-			/// <summary>Textures using color-key transparency are considered partially transparent. All partially transparent faces are rendered in two passes, the first rendering only opaque pixels with z-buffer writes enabled, and the second rendering only partially transparent pixels with z-buffer writes disabled, producing best quality but worse performance.</summary>
-			Quality = 2
-		}
-
 		// output mode
 		internal enum OutputMode
 		{
@@ -62,18 +51,6 @@ namespace OpenBve
 			/// <summary>The face is partly transparent and originates from an object that is part of the cab.</summary>
 			OverlayAlpha = 5
 		}
-		/// <summary>
-		/// The type of object
-		/// </summary>
-		internal enum ObjectType : byte
-		{
-			/// <summary>The object is part of the static scenery. The matching ObjectListType is StaticOpaque for fully opaque faces, and DynamicAlpha for all other faces.</summary>
-			Static = 1,
-			/// <summary>The object is part of the animated scenery or of a train exterior. The matching ObjectListType is DynamicOpaque for fully opaque faces, and DynamicAlpha for all other faces.</summary>
-			Dynamic = 2,
-			/// <summary>The object is part of the cab. The matching ObjectListType is OverlayOpaque for fully opaque faces, and OverlayAlpha for all other faces.</summary>
-			Overlay = 3
-		}
 
 		private struct ObjectListReference
 		{
@@ -99,7 +76,7 @@ namespace OpenBve
 			internal int ObjectIndex;
 			internal int FaceIndex;
 			internal double Distance;
-			internal Textures.OpenGlTextureWrapMode Wrap;
+			internal OpenGlTextureWrapMode Wrap;
 		}
 		private class ObjectList
 		{
@@ -111,6 +88,63 @@ namespace OpenBve
 				this.Faces = new ObjectFace[256];
 				this.FaceCount = 0;
 				this.BoundingBoxes = new BoundingBox[256];
+			}
+
+			/// <summary>Sorts the polgons contained within this ObjectList, near to far</summary>
+			internal void SortPolygons()
+			{
+				// calculate distance
+				double cx = World.AbsoluteCameraPosition.X;
+				double cy = World.AbsoluteCameraPosition.Y;
+				double cz = World.AbsoluteCameraPosition.Z;
+				for (int i = 0; i < FaceCount; i++)
+				{
+					int o = Faces[i].ObjectIndex;
+					int f = Faces[i].FaceIndex;
+					if (ObjectManager.Objects[o].Mesh.Faces[f].Vertices.Length >= 3)
+					{
+						int v0 = ObjectManager.Objects[o].Mesh.Faces[f].Vertices[0].Index;
+						int v1 = ObjectManager.Objects[o].Mesh.Faces[f].Vertices[1].Index;
+						int v2 = ObjectManager.Objects[o].Mesh.Faces[f].Vertices[2].Index;
+						double v0x = ObjectManager.Objects[o].Mesh.Vertices[v0].Coordinates.X;
+						double v0y = ObjectManager.Objects[o].Mesh.Vertices[v0].Coordinates.Y;
+						double v0z = ObjectManager.Objects[o].Mesh.Vertices[v0].Coordinates.Z;
+						double v1x = ObjectManager.Objects[o].Mesh.Vertices[v1].Coordinates.X;
+						double v1y = ObjectManager.Objects[o].Mesh.Vertices[v1].Coordinates.Y;
+						double v1z = ObjectManager.Objects[o].Mesh.Vertices[v1].Coordinates.Z;
+						double v2x = ObjectManager.Objects[o].Mesh.Vertices[v2].Coordinates.X;
+						double v2y = ObjectManager.Objects[o].Mesh.Vertices[v2].Coordinates.Y;
+						double v2z = ObjectManager.Objects[o].Mesh.Vertices[v2].Coordinates.Z;
+						double w1x = v1x - v0x, w1y = v1y - v0y, w1z = v1z - v0z;
+						double w2x = v2x - v0x, w2y = v2y - v0y, w2z = v2z - v0z;
+						double dx = -w1z * w2y + w1y * w2z;
+						double dy = w1z * w2x - w1x * w2z;
+						double dz = -w1y * w2x + w1x * w2y;
+						double t = dx * dx + dy * dy + dz * dz;
+						if (t == 0.0) continue;
+						t = 1.0 / Math.Sqrt(t);
+						dx *= t;
+						dy *= t;
+						dz *= t;
+						double w0x = v0x - cx, w0y = v0y - cy, w0z = v0z - cz;
+						t = dx * w0x + dy * w0y + dz * w0z;
+						Faces[i].Distance = -t * t;
+					}
+				}
+
+				// sort
+				double[] distances = new double[FaceCount];
+				for (int i = 0; i < FaceCount; i++)
+				{
+					distances[i] = Faces[i].Distance;
+				}
+
+				Array.Sort<double, ObjectFace>(distances, Faces, 0, FaceCount);
+				// update objects
+				for (int i = 0; i < FaceCount; i++)
+				{
+					Objects[Faces[i].ObjectListIndex].FaceListReferences[Faces[i].FaceIndex].Index = i;
+				}
 			}
 		}
 		private class ObjectGroup
@@ -125,7 +159,7 @@ namespace OpenBve
 				this.List = new ObjectList();
 				this.OpenGlDisplayList = 0;
 				this.OpenGlDisplayListAvailable = false;
-				this.WorldPosition = new Vector3(0.0, 0.0, 0.0);
+				this.WorldPosition = Vector3.Zero;
 				this.Update = true;
 			}
 		}

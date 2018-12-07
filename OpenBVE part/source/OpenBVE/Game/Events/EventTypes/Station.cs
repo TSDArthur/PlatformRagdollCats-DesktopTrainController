@@ -1,4 +1,5 @@
 ﻿using OpenBveApi.Colors;
+using OpenBveApi.Interface;
 
 namespace OpenBve
 {
@@ -73,7 +74,10 @@ namespace OpenBve
 						}
 						Train.Station = StationIndex;
 						Train.StationFrontCar = true;
-						Train.StationState = TrainManager.TrainStopState.Pending;
+						if (Train.StationState != TrainManager.TrainStopState.Jumping)
+						{
+							Train.StationState = TrainManager.TrainStopState.Pending;
+						}
 						Train.LastStation = this.StationIndex;
 					}
 				}
@@ -140,20 +144,24 @@ namespace OpenBve
 							{
 								if (Game.PlayerStopsAtStation(StationIndex) & TrainManager.PlayerTrain.StationState == TrainManager.TrainStopState.Pending)
 								{
-									string s = Interface.GetInterfaceString("message_station_passed");
+									string s = Translations.GetInterfaceString("message_station_passed");
 									s = s.Replace("[name]", Game.Stations[StationIndex].Name);
 									Game.AddMessage(s, MessageManager.MessageDependency.None, Interface.GameMode.Normal, MessageColor.Orange, Game.SecondsSinceMidnight + 10.0, null);
 								}
 								else if (Game.PlayerStopsAtStation(StationIndex) & TrainManager.PlayerTrain.StationState == TrainManager.TrainStopState.Boarding)
 								{
-									string s = Interface.GetInterfaceString("message_station_passed_boarding");
+									string s = Translations.GetInterfaceString("message_station_passed_boarding");
 									s = s.Replace("[name]", Game.Stations[StationIndex].Name);
 									Game.AddMessage(s, MessageManager.MessageDependency.None, Interface.GameMode.Normal, MessageColor.Red, Game.SecondsSinceMidnight + 10.0, null);
 								}
 							}
 							Train.Station = -1;
 							Train.StationRearCar = false;
-							Train.StationState = TrainManager.TrainStopState.Pending;
+							if (Train.StationState != TrainManager.TrainStopState.Jumping)
+							{
+								Train.StationState = TrainManager.TrainStopState.Pending;
+							}
+							
 							int d = Train.DriverCar;
 							Sounds.StopSound(Train.Cars[d].Sounds.Halt.Source);
 						}

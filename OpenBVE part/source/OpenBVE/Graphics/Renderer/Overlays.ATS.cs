@@ -1,5 +1,7 @@
 ﻿using System;
 using OpenBveApi.Colors;
+using OpenBveApi.Graphics;
+using OpenBveApi.Textures;
 using OpenTK.Graphics.OpenGL;
 
 namespace OpenBve
@@ -9,7 +11,7 @@ namespace OpenBve
 		/// <summary>Renders the ATS lamp overlay</summary>
 		/// <param name="Element">The HUD element these are to be rendererd onto</param>
 		/// <param name="TimeElapsed">The time elapsed</param>
-		private static void RenderATSLamps(Interface.HudElement Element, double TimeElapsed)
+		private static void RenderATSLamps(HUD.Element Element, double TimeElapsed)
 		{
 			// ats lamps
 			if (CurrentLampCollection.Lamps == null)
@@ -53,9 +55,9 @@ namespace OpenBve
 					{
 						o = 0;
 					}
-					Interface.HudImage Left = o < 0 ? Element.TopLeft : o == 0 ? Element.CenterLeft : Element.BottomLeft;
-					Interface.HudImage Middle = o < 0 ? Element.TopMiddle : o == 0 ? Element.CenterMiddle : Element.BottomMiddle;
-					Interface.HudImage Right = o < 0 ? Element.TopRight : o == 0 ? Element.CenterRight : Element.BottomRight;
+					HUD.Image Left = o < 0 ? Element.TopLeft : o == 0 ? Element.CenterLeft : Element.BottomLeft;
+					HUD.Image Middle = o < 0 ? Element.TopMiddle : o == 0 ? Element.CenterMiddle : Element.BottomMiddle;
+					HUD.Image Right = o < 0 ? Element.TopRight : o == 0 ? Element.CenterRight : Element.BottomRight;
 					MessageColor sc = MessageColor.Gray;
 					if (TrainManager.PlayerTrain.Plugin.Panel.Length >= 272)
 					{
@@ -143,7 +145,7 @@ namespace OpenBve
 					// left background
 					if (Left.BackgroundTexture != null)
 					{
-						if (Textures.LoadTexture(Left.BackgroundTexture, Textures.OpenGlTextureWrapMode.ClampClamp))
+						if (Textures.LoadTexture(Left.BackgroundTexture, OpenGlTextureWrapMode.ClampClamp))
 						{
 							double u = (double)Left.BackgroundTexture.Width;
 							double v = (double)Left.BackgroundTexture.Height;
@@ -154,7 +156,7 @@ namespace OpenBve
 					// right background
 					if (Right.BackgroundTexture != null)
 					{
-						if (Textures.LoadTexture(Right.BackgroundTexture, Textures.OpenGlTextureWrapMode.ClampClamp))
+						if (Textures.LoadTexture(Right.BackgroundTexture, OpenGlTextureWrapMode.ClampClamp))
 						{
 							double u = (double)Right.BackgroundTexture.Width;
 							double v = (double)Right.BackgroundTexture.Height;
@@ -165,7 +167,7 @@ namespace OpenBve
 					// middle background
 					if (Middle.BackgroundTexture != null)
 					{
-						if (Textures.LoadTexture(Middle.BackgroundTexture, Textures.OpenGlTextureWrapMode.ClampClamp))
+						if (Textures.LoadTexture(Middle.BackgroundTexture, OpenGlTextureWrapMode.ClampClamp))
 						{
 							double v = (double)Middle.BackgroundTexture.Height;
 							GL.Color4(br, bg, bb, ba);
@@ -185,7 +187,7 @@ namespace OpenBve
 					// left overlay
 					if (Left.OverlayTexture != null)
 					{
-						if (Textures.LoadTexture(Left.OverlayTexture, Textures.OpenGlTextureWrapMode.ClampClamp))
+						if (Textures.LoadTexture(Left.OverlayTexture, OpenGlTextureWrapMode.ClampClamp))
 						{
 							double u = (double)Left.OverlayTexture.Width;
 							double v = (double)Left.OverlayTexture.Height;
@@ -196,7 +198,7 @@ namespace OpenBve
 					// right overlay
 					if (Right.OverlayTexture != null)
 					{
-						if (Textures.LoadTexture(Right.OverlayTexture, Textures.OpenGlTextureWrapMode.ClampClamp))
+						if (Textures.LoadTexture(Right.OverlayTexture, OpenGlTextureWrapMode.ClampClamp))
 						{
 							double u = (double)Right.OverlayTexture.Width;
 							double v = (double)Right.OverlayTexture.Height;
@@ -207,7 +209,7 @@ namespace OpenBve
 					// middle overlay
 					if (Middle.OverlayTexture != null)
 					{
-						if (Textures.LoadTexture(Middle.OverlayTexture, Textures.OpenGlTextureWrapMode.ClampClamp))
+						if (Textures.LoadTexture(Middle.OverlayTexture, OpenGlTextureWrapMode.ClampClamp))
 						{
 							double v = (double)Middle.OverlayTexture.Height;
 							GL.Color4(or, og, ob, oa);

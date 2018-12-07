@@ -285,6 +285,7 @@ namespace OpenBve {
         // track element
 		internal struct TrackElement {
 			internal double StartingTrackPosition;
+			internal double Pitch;
 			internal double CurveRadius;
 			internal double CurveCant;
 			internal double CurveCantTangent;
@@ -297,15 +298,16 @@ namespace OpenBve {
 			internal GeneralEvent[] Events;
 			internal TrackElement(double StartingTrackPosition) {
 				this.StartingTrackPosition = StartingTrackPosition;
+				this.Pitch = 0.0;
 				this.CurveRadius = 0.0;
 				this.CurveCant = 0.0;
 				this.CurveCantTangent = 0.0;
 				this.AdhesionMultiplier = 1.0;
 				this.CsvRwAccuracyLevel = 2.0;
-				this.WorldPosition = new Vector3(0.0, 0.0, 0.0);
-				this.WorldDirection = new Vector3(0.0, 0.0, 1.0);
-				this.WorldUp = new Vector3(0.0, 1.0, 0.0);
-				this.WorldSide = new Vector3(1.0, 0.0, 0.0);
+				this.WorldPosition = Vector3.Zero;
+				this.WorldDirection = Vector3.Forward;
+				this.WorldUp = Vector3.Down;
+				this.WorldSide = Vector3.Right;
 				this.Events = new GeneralEvent[] { };
 			}
 		}
@@ -326,6 +328,7 @@ namespace OpenBve {
 			internal Vector3 WorldSide;
 			internal double CurveRadius;
 			internal double CurveCant;
+			internal double Pitch;
 			internal double CantDueToInaccuracy;
 			internal double AdhesionMultiplier;
 			internal EventTriggerType TriggerType;
@@ -368,22 +371,22 @@ namespace OpenBve {
 						double c = (double)Math.Sign(db) * Math.Sqrt(f >= 0.0 ? f : 0.0);
 						double a = 0.5 * (double)Math.Sign(r) * b;
 						Vector3 D = new Vector3(CurrentTrack.Elements[i].WorldDirection.X, 0.0, CurrentTrack.Elements[i].WorldDirection.Z);
-						World.Normalize(ref D.X, ref D.Y, ref D.Z);
+						D.Normalize();
 						double cosa = Math.Cos(a);
 						double sina = Math.Sin(a);
-						World.Rotate(ref D.X, ref D.Y, ref D.Z, 0.0, 1.0, 0.0, cosa, sina);
+						D.Rotate(Vector3.Down, cosa, sina);
 						Follower.WorldPosition.X = CurrentTrack.Elements[i].WorldPosition.X + c * D.X;
 						Follower.WorldPosition.Y = CurrentTrack.Elements[i].WorldPosition.Y + h;
 						Follower.WorldPosition.Z = CurrentTrack.Elements[i].WorldPosition.Z + c * D.Z;
-						World.Rotate(ref D.X, ref D.Y, ref D.Z, 0.0, 1.0, 0.0, cosa, sina);
+						D.Rotate(Vector3.Down, cosa, sina);
 						Follower.WorldDirection.X = D.X;
 						Follower.WorldDirection.Y = p;
 						Follower.WorldDirection.Z = D.Z;
-						World.Normalize(ref Follower.WorldDirection.X, ref Follower.WorldDirection.Y, ref Follower.WorldDirection.Z);
+						Follower.WorldDirection.Normalize();
 						double cos2a = Math.Cos(2.0 * a);
 						double sin2a = Math.Sin(2.0 * a);
 						Follower.WorldSide = CurrentTrack.Elements[i].WorldSide;
-						World.Rotate(ref Follower.WorldSide.X, ref Follower.WorldSide.Y, ref Follower.WorldSide.Z, 0.0, 1.0, 0.0, cos2a, sin2a);
+						Follower.WorldSide.Rotate(Vector3.Down, cos2a, sin2a);
 						Follower.WorldUp = Vector3.Cross(Follower.WorldDirection, Follower.WorldSide);
 						Follower.CurveRadius = CurrentTrack.Elements[i].CurveRadius;
 					} else {
@@ -452,6 +455,7 @@ namespace OpenBve {
 				}
 			}
 			Follower.AdhesionMultiplier = CurrentTrack.Elements[i].AdhesionMultiplier;
+			Follower.Pitch = CurrentTrack.Elements[i].Pitch * 1000;
 			// inaccuracy
 			if (AddTrackInaccurary) {
 				double x, y, c;

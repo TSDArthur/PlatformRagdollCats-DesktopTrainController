@@ -1,5 +1,7 @@
 ﻿using System;
 using OpenBveApi.Colors;
+using OpenBveApi.Graphics;
+using OpenBveApi.Textures;
 using OpenTK.Graphics.OpenGL;
 
 namespace OpenBve
@@ -9,7 +11,7 @@ namespace OpenBve
 		/// <summary>Renders the list of score messages</summary>
 		/// <param name="Element">The HUD element these are to be rendererd onto</param>
 		/// <param name="TimeElapsed">The time elapsed</param>
-		private static void RenderScoreMessages(Interface.HudElement Element, double TimeElapsed)
+		private static void RenderScoreMessages(HUD.Element Element, double TimeElapsed)
 		{
 			// score messages
 			int n = Game.ScoreMessages.Length;
@@ -46,7 +48,7 @@ namespace OpenBve
 				CreateBackColor(Element.OverlayColor, Game.ScoreMessages[j].Color, out or, out og, out ob, out oa);
 				double tx, ty;
 				bool preserve = false;
-				if ((Element.Transition & Interface.HudTransition.Move) != 0)
+				if ((Element.Transition & HUD.Transition.Move) != 0)
 				{
 					if (Game.SecondsSinceMidnight < Game.ScoreMessages[j].Timeout)
 					{
@@ -60,7 +62,7 @@ namespace OpenBve
 						ty = y + m * Element.Value2;
 						preserve = true;
 					}
-					else if (Element.Transition == Interface.HudTransition.MoveAndFade)
+					else if (Element.Transition == HUD.Transition.MoveAndFade)
 					{
 						tx = x;
 						ty = y + m * Element.Value2;
@@ -107,7 +109,7 @@ namespace OpenBve
 						Game.ScoreMessages[j].RendererPosition.Y += Math.Sign(ty - Game.ScoreMessages[j].RendererPosition.Y) * dy;
 					}
 				}
-				if ((Element.Transition & Interface.HudTransition.Fade) != 0)
+				if ((Element.Transition & HUD.Transition.Fade) != 0)
 				{
 					if (Game.SecondsSinceMidnight >= Game.ScoreMessages[j].Timeout)
 					{
@@ -133,13 +135,13 @@ namespace OpenBve
 				double py = Game.ScoreMessages[j].RendererPosition.Y;
 				float alpha = (float)(Game.ScoreMessages[j].RendererAlpha * Game.ScoreMessages[j].RendererAlpha);
 				// graphics
-				Interface.HudImage Left = j == 0 ? Element.TopLeft : j < n - 1 ? Element.CenterLeft : Element.BottomLeft;
-				Interface.HudImage Middle = j == 0 ? Element.TopMiddle : j < n - 1 ? Element.CenterMiddle : Element.BottomMiddle;
-				Interface.HudImage Right = j == 0 ? Element.TopRight : j < n - 1 ? Element.CenterRight : Element.BottomRight;
+				HUD.Image Left = j == 0 ? Element.TopLeft : j < n - 1 ? Element.CenterLeft : Element.BottomLeft;
+				HUD.Image Middle = j == 0 ? Element.TopMiddle : j < n - 1 ? Element.CenterMiddle : Element.BottomMiddle;
+				HUD.Image Right = j == 0 ? Element.TopRight : j < n - 1 ? Element.CenterRight : Element.BottomRight;
 				// left background
 				if (Left.BackgroundTexture != null)
 				{
-					if (Textures.LoadTexture(Left.BackgroundTexture, Textures.OpenGlTextureWrapMode.ClampClamp))
+					if (Textures.LoadTexture(Left.BackgroundTexture, OpenGlTextureWrapMode.ClampClamp))
 					{
 						double u = (double)Left.BackgroundTexture.Width;
 						double v = (double)Left.BackgroundTexture.Height;
@@ -150,7 +152,7 @@ namespace OpenBve
 				// right background
 				if (Right.BackgroundTexture != null)
 				{
-					if (Textures.LoadTexture(Right.BackgroundTexture, Textures.OpenGlTextureWrapMode.ClampClamp))
+					if (Textures.LoadTexture(Right.BackgroundTexture, OpenGlTextureWrapMode.ClampClamp))
 					{
 						double u = (double)Right.BackgroundTexture.Width;
 						double v = (double)Right.BackgroundTexture.Height;
@@ -161,7 +163,7 @@ namespace OpenBve
 				// middle background
 				if (Middle.BackgroundTexture != null)
 				{
-					if (Textures.LoadTexture(Middle.BackgroundTexture, Textures.OpenGlTextureWrapMode.ClampClamp))
+					if (Textures.LoadTexture(Middle.BackgroundTexture, OpenGlTextureWrapMode.ClampClamp))
 					{
 						double v = (double)Middle.BackgroundTexture.Height;
 						GL.Color4(br, bg, bb, ba * alpha);
@@ -181,7 +183,7 @@ namespace OpenBve
 				// left overlay
 				if (Left.OverlayTexture != null)
 				{
-					if (Textures.LoadTexture(Left.OverlayTexture, Textures.OpenGlTextureWrapMode.ClampClamp))
+					if (Textures.LoadTexture(Left.OverlayTexture, OpenGlTextureWrapMode.ClampClamp))
 					{
 						double u = (double)Left.OverlayTexture.Width;
 						double v = (double)Left.OverlayTexture.Height;
@@ -192,7 +194,7 @@ namespace OpenBve
 				// right overlay
 				if (Right.OverlayTexture != null)
 				{
-					if (Textures.LoadTexture(Right.OverlayTexture, Textures.OpenGlTextureWrapMode.ClampClamp))
+					if (Textures.LoadTexture(Right.OverlayTexture, OpenGlTextureWrapMode.ClampClamp))
 					{
 						double u = (double)Right.OverlayTexture.Width;
 						double v = (double)Right.OverlayTexture.Height;
@@ -203,7 +205,7 @@ namespace OpenBve
 				// middle overlay
 				if (Middle.OverlayTexture != null)
 				{
-					if (Textures.LoadTexture(Middle.OverlayTexture, Textures.OpenGlTextureWrapMode.ClampClamp))
+					if (Textures.LoadTexture(Middle.OverlayTexture, OpenGlTextureWrapMode.ClampClamp))
 					{
 						double v = (double)Middle.OverlayTexture.Height;
 						GL.Color4(or, og, ob, oa * alpha);

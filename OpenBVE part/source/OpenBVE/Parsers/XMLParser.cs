@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Text;
 using System.Xml;
+using OpenBveApi.Interface;
 using OpenBveApi.Math;
+using OpenBveApi.Objects;
 
 namespace OpenBve
 {
@@ -11,7 +13,7 @@ namespace OpenBve
         //properties than are currently available with the CSV and B3D formats, whilst
         //not requiring backwards incompatible changes
 
-        public static ObjectManager.UnifiedObject ReadObject(string fileName, Encoding encoding,ObjectManager.ObjectLoadMode LoadMode,bool ForceTextureRepeatX,bool ForceTextureRepeatY)
+        public static ObjectManager.UnifiedObject ReadObject(string fileName, Encoding encoding,ObjectLoadMode LoadMode,bool ForceTextureRepeatX,bool ForceTextureRepeatY)
         {
             //The current XML file to load
             XmlDocument currentXML = new XmlDocument();
@@ -36,7 +38,7 @@ namespace OpenBve
                         }
                         catch (Exception)
                         {
-                            Interface.AddMessage(Interface.MessageType.Error, false,
+                            Interface.AddMessage(MessageType.Error, false,
                                 "The XML does not contain a valid object path: " + fileName);
                             return null;
                         }
@@ -50,8 +52,7 @@ namespace OpenBve
                                         ForceTextureRepeatX, ForceTextureRepeatY);
                                     break;
                                 case ".x":
-                                    Object = XObjectParser.ReadObject(objectPath, encoding, LoadMode, ForceTextureRepeatX,
-                                        ForceTextureRepeatY);
+                                    Object = XObjectParser.ReadObject(objectPath, encoding, LoadMode);
                                     break;
                                 case ".animated":
                                     //Not currently working.
@@ -84,7 +85,7 @@ namespace OpenBve
                             }
                             catch (Exception)
                             {
-                                Interface.AddMessage(Interface.MessageType.Error, false,
+                                Interface.AddMessage(MessageType.Error, false,
                                 "The XML contained an invalid bounding box entry: " + fileName);
                             }
                             var selectSingleNode = node.SelectSingleNode("author");
@@ -101,7 +102,7 @@ namespace OpenBve
                             }
                             return Object;
                         }
-                        Interface.AddMessage(Interface.MessageType.Error, false,
+                        Interface.AddMessage(MessageType.Error, false,
                                         "The file extension is not supported: " + objectPath);
                         return null;
 

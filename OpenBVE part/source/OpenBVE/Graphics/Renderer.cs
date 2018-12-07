@@ -1,5 +1,6 @@
-﻿using System;
-using OpenBveApi.Colors;
+﻿using OpenBveApi.Colors;
+using OpenBveApi.Graphics;
+using OpenBveApi.Textures;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using Vector3 = OpenBveApi.Math.Vector3;
@@ -9,6 +10,7 @@ namespace OpenBve
 {
 	internal static partial class Renderer
 	{
+		private static ViewPortMode CurrentViewPortMode = ViewPortMode.Scenery;
 		internal static OutputMode CurrentOutputMode = OutputMode.Default;
 		internal static OutputMode PreviousOutputMode = OutputMode.Default;
 		//Set LoadTextureImmediatelyMode to NotYet for the first frame
@@ -56,7 +58,7 @@ namespace OpenBve
 
 		internal enum GradientDisplayMode
 		{
-			Percentage, UnitOfChange, None
+			Percentage, UnitOfChange, Permil, None
 		}
 		/// <summary>Whether the gradient overlay is currently displayed</summary>
 		internal static GradientDisplayMode OptionGradient = GradientDisplayMode.None;
@@ -65,22 +67,22 @@ namespace OpenBve
 			None, Kmph, Mph
 		}
 		internal static SpeedDisplayMode OptionSpeed = SpeedDisplayMode.None;
+		internal enum DistanceToNextStationDisplayMode
+		{
+			None, Km, Mile
+		}
+		internal static DistanceToNextStationDisplayMode OptionDistanceToNextStation = DistanceToNextStationDisplayMode.None;
 		internal static bool OptionFrameRates = false;
 		internal static bool OptionBrakeSystems = false;
 
 		// fade to black
 		private static double FadeToBlackDueToChangeEnds = 0.0;
 
-		// textures
-		//		internal static Textures.Texture	TextureLoadingBkg	= null;
-		//        internal static Textures.Texture	TextureLogo			= null;
-
 		// constants
 		private const float inv255 = 1.0f / 255.0f;
 
 		// render scene
-		internal static byte[] PixelBuffer = null;
-		internal static int PixelBufferOpenGlTextureIndex = 0;
+		
 		internal static void RenderScene(double TimeElapsed)
 		{
 			// initialize
@@ -109,7 +111,7 @@ namespace OpenBve
 				GL.Clear(ClearBufferMask.DepthBufferBit);
 			}
 			GL.PushMatrix();
-			MainLoop.UpdateViewport(MainLoop.ViewPortChangeMode.ChangeToScenery);
+			UpdateViewport(ViewPortChangeMode.ChangeToScenery);
 			if (LoadTexturesImmediately == LoadTextureImmediatelyMode.NotYet)
 			{
 				LoadTexturesImmediately = LoadTextureImmediatelyMode.Yes;
@@ -182,7 +184,7 @@ namespace OpenBve
 				{
 					GL.Enable(EnableCap.Lighting); LightingEnabled = true;
 				}
-				if (World.CameraRestriction == World.CameraRestrictionMode.NotAvailable)
+				if (World.CameraRestriction == Camera.RestrictionMode.NotAvailable)
 				{
 					GL.Light(LightName.Light0, LightParameter.Ambient, new float[] { inv255 * (float)OptionAmbientColor.R, inv255 * (float)OptionAmbientColor.G, inv255 * (float)OptionAmbientColor.B, 1.0f });
 					GL.Light(LightName.Light0, LightParameter.Diffuse, new float[] { inv255 * (float)OptionDiffuseColor.R, inv255 * (float)OptionDiffuseColor.G, inv255 * (float)OptionDiffuseColor.B, 1.0f });
@@ -277,7 +279,7 @@ namespace OpenBve
 			}
 			// dynamic alpha
 			ResetOpenGlState();
-			SortPolygons(DynamicAlpha);
+			DynamicAlpha.SortPolygons();
 			if (Interface.CurrentOptions.TransparencyMode == TransparencyMode.Performance)
 			{
 				GL.Enable(EnableCap.Blend); BlendEnabled = true;
@@ -350,11 +352,11 @@ namespace OpenBve
 				GL.Disable(EnableCap.Fog); FogEnabled = false;
 			}
 			GL.LoadIdentity();
-			MainLoop.UpdateViewport(MainLoop.ViewPortChangeMode.ChangeToCab);
+			UpdateViewport(ViewPortChangeMode.ChangeToCab);
 			lookat = Matrix4d.LookAt(0.0, 0.0, 0.0, dx, dy, dz, ux, uy, uz);
 			GL.MatrixMode(MatrixMode.Modelview);
 			GL.LoadMatrix(ref lookat);
-			if (World.CameraRestriction == World.CameraRestrictionMode.NotAvailable)
+			if (World.CameraRestriction == Camera.RestrictionMode.NotAvailable)
 			{
 				// 3d cab
 				ResetOpenGlState(); // TODO: inserted
@@ -375,7 +377,7 @@ namespace OpenBve
 					RenderFace(ref OverlayOpaque.Faces[i], cx, cy, cz);
 				}
 				// overlay alpha
-				SortPolygons(OverlayAlpha);
+				OverlayAlpha.SortPolygons();
 				if (Interface.CurrentOptions.TransparencyMode == TransparencyMode.Performance)
 				{
 					GL.Enable(EnableCap.Blend); BlendEnabled = true;
@@ -448,7 +450,7 @@ namespace OpenBve
 				GL.DepthMask(false);
 				GL.Disable(EnableCap.DepthTest);
 				UnsetAlphaFunc();
-				SortPolygons(OverlayAlpha);
+				OverlayAlpha.SortPolygons();
 				for (int i = 0; i < OverlayAlpha.FaceCount; i++)
 				{
 					RenderFace(ref OverlayAlpha.Faces[i], cx, cy, cz);
@@ -480,7 +482,7 @@ namespace OpenBve
 		// set alpha func
 
 		/// <summary> Stores the last bound OpenGL texture</summary>
-		internal static Textures.OpenGlTexture LastBoundTexture = null;
+		internal static OpenGlTexture LastBoundTexture = null;
 
 		private static void RenderFace(ref ObjectFace Face, double CameraX, double CameraY, double CameraZ)
 		{
@@ -503,7 +505,7 @@ namespace OpenBve
 			int r = (int)ObjectManager.Objects[Face.ObjectIndex].Mesh.Faces[Face.FaceIndex].Material;
 			RenderFace(ref ObjectManager.Objects[Face.ObjectIndex].Mesh.Materials[r], ObjectManager.Objects[Face.ObjectIndex].Mesh.Vertices, Face.Wrap, ref ObjectManager.Objects[Face.ObjectIndex].Mesh.Faces[Face.FaceIndex], CameraX, CameraY, CameraZ);
 		}
-		private static void RenderFace(ref World.MeshMaterial Material, VertexTemplate[] Vertices, Textures.OpenGlTextureWrapMode wrap, ref World.MeshFace Face, double CameraX, double CameraY, double CameraZ)
+		private static void RenderFace(ref World.MeshMaterial Material, VertexTemplate[] Vertices, OpenGlTextureWrapMode wrap, ref World.MeshFace Face, double CameraX, double CameraY, double CameraZ)
 		{
 			// texture
 			if (Material.DaytimeTexture != null)
@@ -601,11 +603,26 @@ namespace OpenBve
 			if (Material.GlowAttenuationData != 0)
 			{
 				float alphafactor = (float)GetDistanceFactor(Vertices, ref Face, Material.GlowAttenuationData, CameraX, CameraY, CameraZ);
-				GL.Color4(inv255 * (float)Material.Color.R * factor, inv255 * Material.Color.G * factor, inv255 * (float)Material.Color.B * factor, inv255 * (float)Material.Color.A * alphafactor);
+				if (OptionWireframe)
+				{
+					GL.Color4(inv255 * (float)Material.Color.R * factor, inv255 * Material.Color.G * factor, inv255 * (float)Material.Color.B * factor, 1.0f);
+				}
+				else
+				{
+					GL.Color4(inv255 * (float)Material.Color.R * factor, inv255 * Material.Color.G * factor, inv255 * (float)Material.Color.B * factor, inv255 * (float)Material.Color.A * alphafactor);
+				}
 			}
 			else
 			{
-				GL.Color4(inv255 * (float)Material.Color.R * factor, inv255 * Material.Color.G * factor, inv255 * (float)Material.Color.B * factor, inv255 * (float)Material.Color.A);
+				if (OptionWireframe)
+				{
+					GL.Color4(inv255 * (float)Material.Color.R * factor, inv255 * Material.Color.G * factor, inv255 * (float)Material.Color.B * factor, 1.0f);
+				}
+				else
+				{
+					GL.Color4(inv255 * (float)Material.Color.R * factor, inv255 * Material.Color.G * factor, inv255 * (float)Material.Color.B * factor, inv255 * (float)Material.Color.A);
+				}
+				
 			}
 			if ((Material.Flags & World.MeshMaterial.EmissiveColorMask) != 0)
 			{
@@ -721,7 +738,15 @@ namespace OpenBve
 					alphafactor = inv255 * (float)Material.DaytimeNighttimeBlend + 1.0f - OptionLightingResultingAmount;
 					if (alphafactor > 1.0f) alphafactor = 1.0f;
 				}
-				GL.Color4(inv255 * (float)Material.Color.R * factor, inv255 * Material.Color.G * factor, inv255 * (float)Material.Color.B * factor, inv255 * (float)Material.Color.A * alphafactor);
+				if (OptionWireframe)
+				{
+					GL.Color4(inv255 * (float)Material.Color.R * factor, inv255 * Material.Color.G * factor, inv255 * (float)Material.Color.B * factor, 1.0f);
+				}
+				else
+				{
+					GL.Color4(inv255 * (float)Material.Color.R * factor, inv255 * Material.Color.G * factor, inv255 * (float)Material.Color.B * factor, inv255 * (float)Material.Color.A * alphafactor);
+				}
+				
 				if ((Material.Flags & World.MeshMaterial.EmissiveColorMask) != 0)
 				{
 					GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Emission, new float[] { inv255 * (float)Material.EmissiveColor.R, inv255 * (float)Material.EmissiveColor.G, inv255 * (float)Material.EmissiveColor.B, 1.0f });
@@ -775,58 +800,6 @@ namespace OpenBve
 				}
 			}
 		}
-
-		// sort polygons
-		private static void SortPolygons(ObjectList List)
-		{
-			// calculate distance
-			double cx = World.AbsoluteCameraPosition.X;
-			double cy = World.AbsoluteCameraPosition.Y;
-			double cz = World.AbsoluteCameraPosition.Z;
-			for (int i = 0; i < List.FaceCount; i++)
-			{
-				int o = List.Faces[i].ObjectIndex;
-				int f = List.Faces[i].FaceIndex;
-				if (ObjectManager.Objects[o].Mesh.Faces[f].Vertices.Length >= 3)
-				{
-					int v0 = ObjectManager.Objects[o].Mesh.Faces[f].Vertices[0].Index;
-					int v1 = ObjectManager.Objects[o].Mesh.Faces[f].Vertices[1].Index;
-					int v2 = ObjectManager.Objects[o].Mesh.Faces[f].Vertices[2].Index;
-					double v0x = ObjectManager.Objects[o].Mesh.Vertices[v0].Coordinates.X;
-					double v0y = ObjectManager.Objects[o].Mesh.Vertices[v0].Coordinates.Y;
-					double v0z = ObjectManager.Objects[o].Mesh.Vertices[v0].Coordinates.Z;
-					double v1x = ObjectManager.Objects[o].Mesh.Vertices[v1].Coordinates.X;
-					double v1y = ObjectManager.Objects[o].Mesh.Vertices[v1].Coordinates.Y;
-					double v1z = ObjectManager.Objects[o].Mesh.Vertices[v1].Coordinates.Z;
-					double v2x = ObjectManager.Objects[o].Mesh.Vertices[v2].Coordinates.X;
-					double v2y = ObjectManager.Objects[o].Mesh.Vertices[v2].Coordinates.Y;
-					double v2z = ObjectManager.Objects[o].Mesh.Vertices[v2].Coordinates.Z;
-					double w1x = v1x - v0x, w1y = v1y - v0y, w1z = v1z - v0z;
-					double w2x = v2x - v0x, w2y = v2y - v0y, w2z = v2z - v0z;
-					double dx = -w1z * w2y + w1y * w2z;
-					double dy = w1z * w2x - w1x * w2z;
-					double dz = -w1y * w2x + w1x * w2y;
-					double t = dx * dx + dy * dy + dz * dz;
-					if (t == 0.0) continue;
-					t = 1.0 / Math.Sqrt(t);
-					dx *= t; dy *= t; dz *= t;
-					double w0x = v0x - cx, w0y = v0y - cy, w0z = v0z - cz;
-					t = dx * w0x + dy * w0y + dz * w0z;
-					List.Faces[i].Distance = -t * t;
-				}
-			}
-			// sort
-			double[] distances = new double[List.FaceCount];
-			for (int i = 0; i < List.FaceCount; i++)
-			{
-				distances[i] = List.Faces[i].Distance;
-			}
-			Array.Sort<double, ObjectFace>(distances, List.Faces, 0, List.FaceCount);
-			// update objects
-			for (int i = 0; i < List.FaceCount; i++)
-			{
-				Objects[List.Faces[i].ObjectListIndex].FaceListReferences[List.Faces[i].FaceIndex].Index = i;
-			}
-		}
+		
 	}
 }

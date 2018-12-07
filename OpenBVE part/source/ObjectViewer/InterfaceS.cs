@@ -6,6 +6,9 @@
 // ╚══════════════════════════════════════════════════════════════╝
 
 using System;
+using OpenBveApi;
+using OpenBveApi.Graphics;
+using OpenBveApi.Interface;
 using OpenBveApi.Math;
 
 namespace OpenBve {
@@ -82,6 +85,7 @@ namespace OpenBve {
 			internal Vector3 WorldSide;
             internal double CurveRadius;
             internal double CurveCant;
+			internal double Pitch;
             internal double CantDueToInaccuracy;
 		}
 		internal static void UpdateTrackFollower(ref TrackFollower Follower, double NewTrackPosition, bool UpdateWorldCoordinates, bool AddTrackInaccurary) { }
@@ -90,52 +94,32 @@ namespace OpenBve {
 	// --- Interface.cs ---
 	internal static class Interface {
 
-		// messages
-		internal enum MessageType {
-			Information = 1,
-			Warning = 2,
-			Error = 3,
-			Critical = 4
-		}
-		internal struct Message {
-			internal MessageType Type;
-			internal string Text;
-		}
-		internal static Message[] Messages = new Message[] { };
+		internal static LogMessage[] LogMessages = new LogMessage[] { };
 		internal static int MessageCount = 0;
 		internal static void AddMessage(MessageType Type, bool FileNotFound, string Text) {
 			if (MessageCount == 0) {
-				Messages = new Message[16];
-			} else if (MessageCount >= Messages.Length) {
-				Array.Resize<Message>(ref Messages, Messages.Length << 1);
+				LogMessages = new LogMessage[16];
+			} else if (MessageCount >= LogMessages.Length) {
+				Array.Resize<LogMessage>(ref LogMessages, LogMessages.Length << 1);
 			}
-			Messages[MessageCount].Type = Type;
-			Messages[MessageCount].Text = Text;
+			LogMessages[MessageCount] = new LogMessage(Type, FileNotFound, Text);
 			MessageCount++;
 		}
 		internal static void ClearMessages() {
-			Messages = new Message[] { };
+			LogMessages = new LogMessage[] { };
 			MessageCount = 0;
 		}
 
 		// ================================
-		internal enum InterpolationMode
-		{
-			NearestNeighbor,
-			Bilinear,
-			NearestNeighborMipmapped,
-			BilinearMipmapped,
-			TrilinearMipmapped,
-			AnisotropicFiltering
-		}
 		internal struct Options {
 			internal InterpolationMode Interpolation;
-            internal Renderer.TransparencyMode TransparencyMode;
+            internal TransparencyMode TransparencyMode;
 			internal int AnisotropicFilteringLevel;
 			internal int AnisotropicFilteringMaximum;
 		    internal int AntialiasingLevel;
 			internal int ObjectOptimizationBasicThreshold;
 			internal int ObjectOptimizationFullThreshold;
+			internal int UseNewXParser;
 		}
 		internal static Options CurrentOptions;
 
@@ -145,8 +129,9 @@ namespace OpenBve {
 
 		
 		// try parse time
-		internal static bool TryParseTime(string Expression, out double Value) {
-			Expression = TrimInside(Expression);
+		internal static bool TryParseTime(string Expression, out double Value)
+		{
+			Expression = Expression.TrimInside();
 			if (Expression.Length != 0) {
 				System.Globalization.CultureInfo Culture = System.Globalization.CultureInfo.InvariantCulture;
 				int i = Expression.IndexOf('.');
@@ -178,49 +163,12 @@ namespace OpenBve {
 			return false;
 		}
 
-		// trim inside
-		private static string TrimInside(string Expression) {
-			System.Text.StringBuilder Builder = new System.Text.StringBuilder(Expression.Length);
-			for (int i = 0; i < Expression.Length; i++) {
-				char c = Expression[i];
-				if (!char.IsWhiteSpace(c)) {
-					Builder.Append(c);
-				}
-			} return Builder.ToString();
-		}
-
-		// ================================
-
 		// round to power of two
 		internal static int RoundToPowerOfTwo(int Value) {
 			Value -= 1;
 			for (int i = 1; i < sizeof(int) * 8; i *= 2) {
 				Value = Value | Value >> i;
 			} return Value + 1;
-		}
-
-		// convert newlines to crlf
-		internal static string ConvertNewlinesToCrLf(string Text) {
-			System.Text.StringBuilder Builder = new System.Text.StringBuilder();
-			for (int i = 0; i < Text.Length; i++) {
-				int a = char.ConvertToUtf32(Text, i);
-				if (a == 0xD & i < Text.Length - 1) {
-					int b = char.ConvertToUtf32(Text, i + 1);
-					if (b == 0xA) {
-						Builder.Append("\r\n");
-						i++;
-					} else {
-						Builder.Append("\r\n");
-					}
-				} else if (a == 0xA | a == 0xC | a == 0xD | a == 0x85 | a == 0x2028 | a == 0x2029) {
-					Builder.Append("\r\n");
-				} else if (a < 0x10000) {
-					Builder.Append(Text[i]);
-				} else {
-					Builder.Append(Text.Substring(i, 2));
-					i++;
-				}
-			} return Builder.ToString();
 		}
 	}
 }

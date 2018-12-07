@@ -1,4 +1,5 @@
-﻿using OpenBveApi.Math;
+﻿using OpenBve.BrakeSystems;
+using OpenBveApi.Math;
 
 namespace OpenBve
 {
@@ -11,7 +12,7 @@ namespace OpenBve
 		{
 			// set sound positions and radii
 			Vector3 front = new Vector3(0.0, 0.0, 0.5 * train.Cars[train.DriverCar].Length);
-			Vector3 center = new Vector3(0.0, 0.0, 0.0);
+			Vector3 center = Vector3.Zero;
 			Vector3 left = new Vector3(-1.3, 0.0, 0.0);
 			Vector3 right = new Vector3(1.3, 0.0, 0.0);
 			Vector3 cab = new Vector3(-train.Cars[train.DriverCar].Driver.X, train.Cars[train.DriverCar].Driver.Y, train.Cars[train.DriverCar].Driver.Z - 0.5);
@@ -43,7 +44,7 @@ namespace OpenBve
 				train.Cars[i].Sounds.Air = new TrainManager.CarSound(OpenBveApi.Path.CombineFile(trainFolder, "Air.wav"), center, SoundCfgParser.smallRadius);
 				train.Cars[i].Sounds.AirHigh = new TrainManager.CarSound(OpenBveApi.Path.CombineFile(trainFolder, "AirHigh.wav"), center, SoundCfgParser.smallRadius);
 				train.Cars[i].Sounds.AirZero = new TrainManager.CarSound(OpenBveApi.Path.CombineFile(trainFolder, "AirZero.wav"), center, SoundCfgParser.smallRadius);
-				if (train.Cars[i].Specs.AirBrake.Type == TrainManager.AirBrakeType.Main)
+				if (train.Cars[i].CarBrake.brakeType == BrakeType.Main)
 				{
 					train.Cars[i].Sounds.CpEnd = new TrainManager.CarSound(OpenBveApi.Path.CombineFile(trainFolder, "CpEnd.wav"), center, SoundCfgParser.mediumRadius);
 					train.Cars[i].Sounds.CpLoop = new TrainManager.CarSound(OpenBveApi.Path.CombineFile(trainFolder, "CpLoop.wav"), center, SoundCfgParser.mediumRadius);

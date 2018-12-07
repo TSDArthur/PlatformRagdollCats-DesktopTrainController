@@ -4,11 +4,10 @@ using System.Diagnostics;
 using System.IO;
 using System.Reflection;
 using System.Runtime.InteropServices;
-using System.Threading;
 using System.Windows.Forms;
 using OpenTK;
-using System.Threading;
-using System.Threading.Tasks;
+using OpenBveApi.FileSystem;
+using OpenBveApi.Interface;
 
 namespace OpenBve {
 	/// <summary>Provides methods for starting the program, including the Main procedure.</summary>
@@ -16,9 +15,10 @@ namespace OpenBve {
 
 		/// <summary>Gets the UID of the current user if running on a Unix based system</summary>
 		/// <returns>The UID</returns>
+		/// <remarks>Used for checking if we are running as ROOT (don't!)</remarks>
 		[DllImport("libc")]
 #pragma warning disable IDE1006 // Suppress the VS2017 naming style rule, as this is an external syscall
-		public static extern uint getuid();
+		private static extern uint getuid();
 #pragma warning restore IDE1006
 
 		// --- members ---
@@ -57,17 +57,15 @@ namespace OpenBve {
 		/// <param name="args">The command-line arguments.</param>
 		[STAThread]
 		private static void Main(string[] args) {
-
-#if !DEBUG            
 			// Add handler for UI thread exceptions
-			Application.ThreadException += new ThreadExceptionEventHandler(CrashHandler.UIThreadException);
+			Application.ThreadException += (CrashHandler.UIThreadException);
 
 			// Force all WinForms errors to go through handler
 			Application.SetUnhandledExceptionMode(UnhandledExceptionMode.CatchException);
 
 			// This handler is for catching non-UI thread exceptions
-			AppDomain.CurrentDomain.UnhandledException += new UnhandledExceptionEventHandler(CrashHandler.CurrentDomain_UnhandledException);
-#endif
+			AppDomain.CurrentDomain.UnhandledException += (CrashHandler.CurrentDomain_UnhandledException);
+
 
 			//Determine the current CPU architecture-
 			//ARM will generally only support OpenGL-ES
@@ -87,7 +85,7 @@ namespace OpenBve {
 				FileSystem = FileSystem.FromCommandLineArgs(args);
 				FileSystem.CreateFileSystem();
 			} catch (Exception ex) {
-				MessageBox.Show(Interface.GetInterfaceString("errors_filesystem_invalid") + Environment.NewLine + Environment.NewLine + ex.Message, Interface.GetInterfaceString("program_title"), MessageBoxButtons.OK, MessageBoxIcon.Hand);
+				MessageBox.Show(Translations.GetInterfaceString("errors_filesystem_invalid") + Environment.NewLine + Environment.NewLine + ex.Message, Translations.GetInterfaceString("program_title"), MessageBoxButtons.OK, MessageBoxIcon.Hand);
 				return;
 			}
 
@@ -99,7 +97,7 @@ namespace OpenBve {
 				{
 					MessageBox.Show(
 						"You are currently running as the root user." + System.Environment.NewLine +
-						"This is a bad idea, please dont!", Interface.GetInterfaceString("program_title"), MessageBoxButtons.OK, MessageBoxIcon.Hand);
+						"This is a bad idea, please dont!", Translations.GetInterfaceString("program_title"), MessageBoxButtons.OK, MessageBoxIcon.Hand);
 				}
 			}
 			else
@@ -109,7 +107,7 @@ namespace OpenBve {
 					
 					MessageBox.Show(
 						"OpenAL was not found on your system, and will now be installed." + System.Environment.NewLine + System.Environment.NewLine +
-						"Please follow the install prompts.", Interface.GetInterfaceString("program_title"), MessageBoxButtons.OK, MessageBoxIcon.Hand);
+						"Please follow the install prompts.", Translations.GetInterfaceString("program_title"), MessageBoxButtons.OK, MessageBoxIcon.Hand);
 
 					ProcessStartInfo info = new ProcessStartInfo(Path.Combine(FileSystem.DataFolder, "Dependencies\\Win32\\oalinst.exe"));
 					info.UseShellExecute = true;
@@ -134,7 +132,7 @@ namespace OpenBve {
 					catch (Win32Exception)
 					{
 						MessageBox.Show(
-						"An error occured during OpenAL installation....", Interface.GetInterfaceString("program_title"), MessageBoxButtons.OK, MessageBoxIcon.Hand);
+						"An error occured during OpenAL installation....", Translations.GetInterfaceString("program_title"), MessageBoxButtons.OK, MessageBoxIcon.Hand);
 					}
 					
 				}
@@ -144,7 +142,7 @@ namespace OpenBve {
 			// --- load options and controls ---
 			Interface.LoadOptions();
 			//Switch between SDL2 and native backends; use native backend by default
-			var options = new ToolkitOptions();	
+			var options = new ToolkitOptions();
 			if (Interface.CurrentOptions.PreferNativeBackend)
 			{
 				options.Backend = PlatformBackend.PreferNative;
@@ -153,19 +151,7 @@ namespace OpenBve {
 			// --- load language ---
 			{
 				string folder = Program.FileSystem.GetDataFolder("Languages");
-				try
-				{
-					string[] LanguageFiles = Directory.GetFiles(folder, "*.cfg");
-					foreach (var File in LanguageFiles)
-					{
-						Interface.AddLanguage(File);
-					}
-				}
-				catch
-				{
-					MessageBox.Show(@"An error occured whilst attempting to load the default language files.");
-					//Environment.Exit(0);
-				}
+				Translations.LoadLanguageFiles(folder);
 			}
 			Interface.LoadControls(null, out Interface.CurrentControls);
 			{
@@ -175,6 +161,7 @@ namespace OpenBve {
 				Interface.LoadControls(file, out controls);
 				Interface.AddControls(ref Interface.CurrentControls, controls);
 			}
+			InputDevicePlugin.LoadPlugins(Program.FileSystem);
 			
 			// --- check the command-line arguments for route and train ---
 			formMain.MainDialogResult result = new formMain.MainDialogResult();
@@ -235,7 +222,7 @@ namespace OpenBve {
 			} else {
 				result.Start = true;
 				//Apply translations
-				Interface.SetInGameLanguage(Interface.CurrentLanguageCode);
+				Translations.SetInGameLanguage(Translations.CurrentLanguageCode);
 			}
 			// --- start the actual program ---
 			if (result.Start) {
@@ -262,20 +249,20 @@ namespace OpenBve {
 						{
 							if (ex is System.DllNotFoundException)
 							{
-								Interface.AddMessage(Interface.MessageType.Critical, false, "The required system library " + ex.Message + " was not found on the system.");
+								Interface.AddMessage(MessageType.Critical, false, "The required system library " + ex.Message + " was not found on the system.");
 								switch (ex.Message)
 								{
 									case "libopenal.so.1":
-										MessageBox.Show("openAL was not found on this system. \n Please install libopenal1 via your distribtion's package management system.", Interface.GetInterfaceString("program_title"), MessageBoxButtons.OK, MessageBoxIcon.Hand);
+										MessageBox.Show("openAL was not found on this system. \n Please install libopenal1 via your distribtion's package management system.", Translations.GetInterfaceString("program_title"), MessageBoxButtons.OK, MessageBoxIcon.Hand);
 										break;
 									default:
-										MessageBox.Show("The required system library " + ex.Message + " was not found on this system.", Interface.GetInterfaceString("program_title"), MessageBoxButtons.OK, MessageBoxIcon.Hand);
+										MessageBox.Show("The required system library " + ex.Message + " was not found on this system.", Translations.GetInterfaceString("program_title"), MessageBoxButtons.OK, MessageBoxIcon.Hand);
 										break;
 								}
 							}
 							else
 							{
-								Interface.AddMessage(Interface.MessageType.Critical, false, "The route and train loader encountered the following critical error: " + ex.Message);
+								Interface.AddMessage(MessageType.Critical, false, "The route and train loader encountered the following critical error: " + ex.Message);
 								CrashHandler.LoadingCrash(ex + Environment.StackTrace, false);
 							}
 							RestartArguments = "";
@@ -299,7 +286,6 @@ namespace OpenBve {
 					MessageBox.Show(ex.Message + "\n\nProcess = " + FileSystem.RestartProcess + "\nArguments = " + arguments, Application.ProductName, MessageBoxButtons.OK, MessageBoxIcon.Error);
 				}
 			}
-
 		}
 
 		
@@ -323,7 +309,7 @@ namespace OpenBve {
 			World.BackwardViewingDistance = 0.0;
 			World.BackgroundImageDistance = (double)Interface.CurrentOptions.ViewingDistance;
 			// end HACK //
-			ClearLogFile();
+			FileSystem.ClearLogFile();
 			return true;
 		}
 		
@@ -335,23 +321,6 @@ namespace OpenBve {
 			{
 				currentGameWindow.Dispose();
 			}
-		}
-				
-		/// <summary>Clears the log file.</summary>
-		internal static void ClearLogFile() {
-			try {
-				string file = System.IO.Path.Combine(Program.FileSystem.SettingsFolder, "log.txt");
-				System.IO.File.WriteAllText(file, @"openBVE Log: " + DateTime.Now + Environment.NewLine + Environment.NewLine, new System.Text.UTF8Encoding(true));
-			} catch { }
-		}
-		
-		/// <summary>Appends the specified text to the log file.</summary>
-		/// <param name="text">The text.</param>
-		internal static void AppendToLogFile(string text) {
-			try {
-				string file = System.IO.Path.Combine(Program.FileSystem.SettingsFolder, "log.txt");
-				System.IO.File.AppendAllText(file, DateTime.Now.ToString("HH:mm:ss") + @"  " + text + Environment.NewLine, new System.Text.UTF8Encoding(false));
-			} catch { }
 		}
 
 	}

@@ -6,17 +6,18 @@ using OpenBveApi.Math;
 using OpenBveApi.Colors;
 using OpenBveApi.Objects;
 using OpenBve.Formats.MsTs;
+using OpenBveApi.Interface;
 using SharpCompress.Compressors;
 using SharpCompress.Compressors.Deflate;
 
 // Stop ReSharper complaining about unused stuff:
 // We need to load this sequentially anyway, and
-// hopefully this will be used un a later build
+// hopefully this will be used in a later build
 
 // ReSharper disable NotAccessedField.Local
 // ReSharper disable RedundantAssignment
 // ReSharper disable UnusedVariable
-#pragma warning disable 2019
+#pragma warning disable 0219
 namespace OpenBve
 {
 	class MsTsShapeParser
@@ -82,29 +83,6 @@ namespace OpenBve
 			{
 				this.Coordinates = new Vector3(c.X, c.Y, c.Z);
 				this.Normal = new Vector3(n.X, n.Y, n.Z);
-			}
-		}
-
-		private class Material
-		{
-			internal Color32 Color;
-			internal Color24 EmissiveColor;
-			internal bool EmissiveColorUsed;
-			internal string DaytimeTexture;
-			internal World.MeshMaterialBlendMode BlendMode;
-			internal Textures.OpenGlTextureWrapMode? WrapMode;
-			internal ushort GlowAttenuationData;
-
-			internal Material(string texture)
-			{
-				this.Color = new Color32(255, 255, 255, 255);
-				this.EmissiveColor = new Color24(0, 0, 0);
-				this.EmissiveColorUsed = false;
-				this.DaytimeTexture = null;
-				this.BlendMode = World.MeshMaterialBlendMode.Normal;
-				this.GlowAttenuationData = 0;
-				this.WrapMode = null;
-				this.DaytimeTexture = texture;
 			}
 		}
 
@@ -290,11 +268,11 @@ namespace OpenBve
 					{
 						Object.Mesh.Materials[mm + i].Flags = 0;
 						Object.Mesh.Materials[mm + i].Color = materials[i].Color;
-						Object.Mesh.Materials[mm + i].TransparentColor = new Color24(0,0,0);
+						Object.Mesh.Materials[mm + i].TransparentColor = Color24.Black;
 						Object.Mesh.Materials[mm + i].BlendMode = World.MeshMaterialBlendMode.Normal;
 						if (materials[i].DaytimeTexture != null)
 						{
-							Textures.Texture tday;
+							OpenBveApi.Textures.Texture tday;
 							Textures.RegisterTexture(materials[i].DaytimeTexture, out tday);
 							Object.Mesh.Materials[mm + i].DaytimeTexture = tday;
 						}
@@ -630,7 +608,7 @@ namespace OpenBve
 
 					break;
 				case KujuTokenID.texture:
-					int imageIDX = (int) block.ReadUInt32();
+					int imageIDX = block.ReadInt32();
 					int filterMode = (int) block.ReadUInt32();
 					float mipmapLODBias = block.ReadSingle();
 					uint borderColor = 0xff000000U;
@@ -895,13 +873,13 @@ namespace OpenBve
 									txF = OpenBveApi.Path.CombineFile(currentFolder, shape.textures[shape.prim_states[shape.currentPrimitiveState].Textures[0]].fileName);
 									if (!File.Exists(txF))
 									{
-										Interface.AddMessage(Interface.MessageType.Warning, true, "Texture file " + shape.textures[shape.prim_states[shape.currentPrimitiveState].Textures[0]].fileName + " was not found.");
+										Interface.AddMessage(MessageType.Warning, true, "Texture file " + shape.textures[shape.prim_states[shape.currentPrimitiveState].Textures[0]].fileName + " was not found.");
 										txF = null;
 									}
 								}
 								catch
 								{
-									Interface.AddMessage(Interface.MessageType.Warning, true, "Texture file path " + shape.textures[shape.prim_states[shape.currentPrimitiveState].Textures[0]].fileName + " was invalid.");
+									Interface.AddMessage(MessageType.Warning, true, "Texture file path " + shape.textures[shape.prim_states[shape.currentPrimitiveState].Textures[0]].fileName + " was invalid.");
 								}
 								currentLOD.subObjects[currentLOD.subObjects.Count - 1].materials.Add(new Material(txF));
 								break;
@@ -1077,4 +1055,4 @@ namespace OpenBve
 		}
 	}
 }
-#pragma warning restore 2019
+#pragma warning restore 0219

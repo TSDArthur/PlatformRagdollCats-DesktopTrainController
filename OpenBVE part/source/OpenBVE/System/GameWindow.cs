@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Windows.Forms;
 using OpenBveApi.Colors;
 using OpenBveApi.Runtime;
+using OpenBveApi.Interface;
 using OpenTK;
 using OpenTK.Graphics;
 using GL = OpenTK.Graphics.OpenGL.GL;
@@ -25,7 +27,7 @@ namespace OpenBve
 		private double RenderTimeElapsed;
 		private double RenderRealTimeElapsed;
 		//We need to explicitly specify the default constructor
-		public OpenBVEGame(int width, int height, GraphicsMode currentGraphicsMode, GameWindowFlags @default): base(width, height, currentGraphicsMode, Interface.GetInterfaceString("program_title"), @default)
+		public OpenBVEGame(int width, int height, GraphicsMode currentGraphicsMode, GameWindowFlags @default): base(width, height, currentGraphicsMode, Translations.GetInterfaceString("program_title"), @default)
 		{
 			try
 			{
@@ -64,9 +66,13 @@ namespace OpenBve
 				//Renderer.UpdateLighting();
 				Renderer.RenderScene(TimeElapsed);
 				Program.currentGameWindow.SwapBuffers();
-				if (MainLoop.Quit)
+				if (MainLoop.Quit != MainLoop.QuitMode.ContinueGame)
 				{
 					Close();
+					if (Program.CurrentlyRunningOnMono && MainLoop.Quit == MainLoop.QuitMode.QuitProgram)
+					{
+						Environment.Exit(0);
+					}
 				}
 				//If the menu state has not changed, don't update the rendered simulation
 				return;
@@ -94,19 +100,19 @@ namespace OpenBve
 			//We need to update the camera position in the render sequence
 			//Not doing this means that the camera doesn't move
 			// update in one piece
-			if (World.CameraMode == World.CameraViewMode.Interior | World.CameraMode == World.CameraViewMode.InteriorLookAhead)
+			if (World.CameraMode == CameraViewMode.Interior | World.CameraMode == CameraViewMode.InteriorLookAhead)
 			{
 				//Update the in-car camera based upon the current driver car (Cabview or passenger view)
 				TrainManager.PlayerTrain.Cars[World.CameraCar].UpdateCamera();
 			}
-			else if (World.CameraMode == World.CameraViewMode.Exterior)
+			else if (World.CameraMode == CameraViewMode.Exterior)
 			{
 				//Update the camera position based upon the relative car position
 				TrainManager.PlayerTrain.Cars[World.CameraCar].UpdateCamera();
 			}
-			if (World.CameraRestriction == World.CameraRestrictionMode.NotAvailable)
+			if (World.CameraRestriction == Camera.RestrictionMode.NotAvailable)
 			{
-				World.UpdateDriverBody(TimeElapsed);
+				World.CurrentDriverBody.Update(TimeElapsed);
 			}
 			//Check if we are running at an accelerated time factor-
 			//Camera motion speed should be the same whatever the game speed is
@@ -119,7 +125,7 @@ namespace OpenBve
 				World.UpdateAbsoluteCamera(TimeElapsed);
 			}
 			TrainManager.UpdateTrainObjects(TimeElapsed, false);
-			if (World.CameraMode == World.CameraViewMode.Interior | World.CameraMode == World.CameraViewMode.InteriorLookAhead | World.CameraMode == World.CameraViewMode.Exterior)
+			if (World.CameraMode == CameraViewMode.Interior | World.CameraMode == CameraViewMode.InteriorLookAhead | World.CameraMode == CameraViewMode.Exterior)
 			{
 				ObjectManager.UpdateVisibility(World.CameraTrackFollower.TrackPosition + World.CameraCurrentAlignment.Position.Z);
 				int d = TrainManager.PlayerTrain.DriverCar;
@@ -131,9 +137,13 @@ namespace OpenBve
 			}
 
 			World.CameraAlignmentDirection = new World.CameraAlignment();
-			if (MainLoop.Quit)
+			if (MainLoop.Quit != MainLoop.QuitMode.ContinueGame)
 			{
 				Program.currentGameWindow.Exit();
+				if (Program.CurrentlyRunningOnMono && MainLoop.Quit == MainLoop.QuitMode.QuitProgram)
+				{
+					Environment.Exit(0);
+				}				
 			}
 			Renderer.UpdateLighting();
 			Renderer.RenderScene(TimeElapsed);
@@ -266,6 +276,14 @@ namespace OpenBve
 				Game.CurrentScore.Update(TimeElapsed);
 				Game.UpdateMessages();
 				Game.UpdateScoreMessages(TimeElapsed);
+
+				for (int i = 0; i < InputDevicePlugin.AvailablePluginInfos.Count; i++)
+				{
+					if (InputDevicePlugin.AvailablePluginInfos[i].Status == InputDevicePlugin.PluginInfo.PluginStatus.Enable)
+					{
+						InputDevicePlugin.AvailablePlugins[i].OnUpdateFrame();
+					}
+				}
 			}
 			RenderTimeElapsed += TimeElapsed;
 			RenderRealTimeElapsed += RealTimeElapsed;
@@ -273,6 +291,19 @@ namespace OpenBve
 
 		protected override void OnResize(EventArgs e)
 		{
+			if(Width == 0 && Height == 0)
+			{
+				/*
+				 * HACK: Don't resize if minimized
+				 * 
+				 * Unsure if this is an openTK bug, Windows or what
+				 * but setting our width / height to zero breaks 
+				 * stuff.....
+				 */
+				Screen.Minimized = true;
+				return;
+			}
+			Screen.Minimized = false;
 			Screen.WindowResize(Width,Height);
 		}
 
@@ -283,7 +314,7 @@ namespace OpenBve
 			jobs = new Queue<ThreadStart>(10);
 			locks = new Queue<object>(10);
 			Renderer.Initialize();
-			MainLoop.UpdateViewport(MainLoop.ViewPortChangeMode.NoChange);
+			Renderer.UpdateViewport(Renderer.ViewPortChangeMode.NoChange);
 			Renderer.InitializeMotionBlur();
 			Loading.LoadAsynchronously(MainLoop.currentResult.RouteFile, MainLoop.currentResult.RouteEncoding, MainLoop.currentResult.TrainFolder, MainLoop.currentResult.TrainEncoding);
 			LoadingScreenLoop();
@@ -294,6 +325,34 @@ namespace OpenBve
 			MouseDown	+= MainLoop.mouseDownEvent;
 			MouseMove	+= MainLoop.mouseMoveEvent;
 			MouseWheel  += MainLoop.mouseWheelEvent;
+
+			for (int i = 0; i < InputDevicePlugin.AvailablePluginInfos.Count; i++)
+			{
+				if (InputDevicePlugin.AvailablePluginInfos[i].Status == InputDevicePlugin.PluginInfo.PluginStatus.Enable)
+				{
+					int AddControlsLength = InputDevicePlugin.AvailablePlugins[i].Controls.Length;
+					Interface.Control[] AddControls = new Interface.Control[AddControlsLength];
+					for (int j = 0; j < AddControlsLength; j++)
+					{
+						AddControls[j].Command = InputDevicePlugin.AvailablePlugins[i].Controls[j].Command;
+						AddControls[j].Method = Interface.ControlMethod.InputDevicePlugin;
+						AddControls[j].Option = InputDevicePlugin.AvailablePlugins[i].Controls[j].Option;
+					}
+					Interface.CurrentControls = Interface.CurrentControls.Concat(AddControls).ToArray();
+					foreach (var Train in TrainManager.Trains)
+					{
+						if (Train.State != TrainManager.TrainState.Bogus)
+						{
+							if (Train == TrainManager.PlayerTrain)
+							{
+								InputDevicePlugin.AvailablePlugins[i].SetMaxNotch(Train.Handles.Power.MaximumDriverNotch, Train.Handles.Brake.MaximumDriverNotch);
+							}
+						}
+					}
+					InputDevicePlugin.AvailablePlugins[i].KeyDown += MainLoop.InputDevicePluginKeyDown;
+					InputDevicePlugin.AvailablePlugins[i].KeyUp += MainLoop.InputDevicePluginKeyUp;
+				}
+			}
 		}
 		protected override void OnClosing(CancelEventArgs e)
 		{
@@ -309,6 +368,24 @@ namespace OpenBve
 				e.Cancel = true;
 				Loading.Cancel = true;
 			}
+			for (int i = 0; i < TrainManager.Trains.Length; i++)
+			{
+				if (TrainManager.Trains[i].State != TrainManager.TrainState.Bogus)
+				{
+					PluginManager.UnloadPlugin(TrainManager.Trains[i]);
+				}
+			}
+			Textures.UnloadAllTextures();
+			for (int i = 0; i < InputDevicePlugin.AvailablePluginInfos.Count; i++)
+			{
+				InputDevicePlugin.CallPluginUnload(i);
+			}
+			if (MainLoop.Quit == MainLoop.QuitMode.ContinueGame && Program.CurrentlyRunningOnMono)
+			{
+				//More forcefully close under Mono, stuff *still* hanging around....
+				Environment.Exit(0);
+			}
+			base.OnClosing(e);
 		}
 		/// <summary>This method is called once the route and train data have been preprocessed, in order to physically setup the simulation</summary>
 		private void SetupSimulation()
@@ -321,9 +398,9 @@ namespace OpenBve
 			//Check if any critical errors have occured during the route or train loading
 			for (int i = 0; i < Interface.MessageCount; i++)
 			{
-				if (Interface.Messages[i].Type == Interface.MessageType.Critical)
+				if (Interface.LogMessages[i].Type == MessageType.Critical)
 				{
-					MessageBox.Show("A critical error has occured:\n\n" + Interface.Messages[i].Text + "\n\nPlease inspect the error log file for further information.", "Load", MessageBoxButtons.OK, MessageBoxIcon.Hand);
+					MessageBox.Show("A critical error has occured:\n\n" + Interface.LogMessages[i].Text + "\n\nPlease inspect the error log file for further information.", "Load", MessageBoxButtons.OK, MessageBoxIcon.Hand);
 					Close();
 				}
 			}
@@ -342,6 +419,7 @@ namespace OpenBve
 			}
 			// camera
 			ObjectManager.InitializeVisibility();
+			World.CurrentDriverBody = new World.DriverBody();
 			World.CameraTrackFollower.Update(0.0, true, false);
 			World.CameraTrackFollower.Update(-0.1, true, false);
 			World.CameraTrackFollower.Update(0.1, true, false);
@@ -572,9 +650,9 @@ namespace OpenBve
 			}
 
 			// initialize camera
-			if (World.CameraRestriction == World.CameraRestrictionMode.NotAvailable)
+			if (World.CameraRestriction == Camera.RestrictionMode.NotAvailable)
 			{
-				World.CameraMode = World.CameraViewMode.InteriorLookAhead;
+				World.CameraMode = CameraViewMode.InteriorLookAhead;
 			}
 			//Place the initial camera in the driver car
 			TrainManager.PlayerTrain.Cars[TrainManager.PlayerTrain.DriverCar].UpdateCamera();
@@ -640,7 +718,7 @@ namespace OpenBve
 				TrainManager.PlayerTrain.AI = new Game.SimpleHumanDriverAI(TrainManager.PlayerTrain);
 				if (TrainManager.PlayerTrain.Plugin != null && !TrainManager.PlayerTrain.Plugin.SupportsAI)
 				{
-					Game.AddMessage(Interface.GetInterfaceString("notification_aiunable"),MessageManager.MessageDependency.None, Interface.GameMode.Expert,
+					Game.AddMessage(Translations.GetInterfaceString("notification_aiunable"),MessageManager.MessageDependency.None, Interface.GameMode.Expert,
 						OpenBveApi.Colors.MessageColor.White, Game.SecondsSinceMidnight + 10.0, null);
 				}
 			}
@@ -653,15 +731,15 @@ namespace OpenBve
 				int warnings = 0;
 				for (int i = 0; i < Interface.MessageCount; i++)
 				{
-					if (Interface.Messages[i].FileNotFound)
+					if (Interface.LogMessages[i].FileNotFound)
 					{
 						filesNotFound++;
 					}
-					else if (Interface.Messages[i].Type == Interface.MessageType.Error)
+					else if (Interface.LogMessages[i].Type == MessageType.Error)
 					{
 						errors++;
 					}
-					else if (Interface.Messages[i].Type == Interface.MessageType.Warning)
+					else if (Interface.LogMessages[i].Type == MessageType.Warning)
 					{
 						warnings++;
 					}
@@ -696,7 +774,7 @@ namespace OpenBve
 				if (Loading.PluginError != null)
 				{
 					Game.AddMessage(Loading.PluginError, MessageManager.MessageDependency.None, Interface.GameMode.Expert, OpenBveApi.Colors.MessageColor.Red, Game.SecondsSinceMidnight + 5.0, null);
-					Game.AddMessage(Interface.GetInterfaceString("errors_plugin_failure2"), MessageManager.MessageDependency.None, Interface.GameMode.Expert, OpenBveApi.Colors.MessageColor.Red, Game.SecondsSinceMidnight + 5.0, null);
+					Game.AddMessage(Translations.GetInterfaceString("errors_plugin_failure2"), MessageManager.MessageDependency.None, Interface.GameMode.Expert, OpenBveApi.Colors.MessageColor.Red, Game.SecondsSinceMidnight + 5.0, null);
 				}
 			}
 			loadComplete = true;
@@ -709,7 +787,7 @@ namespace OpenBve
 				case 1:
 					//Switch camera to exterior
 					MainLoop.SaveCameraSettings();
-					World.CameraMode = World.CameraViewMode.Exterior;
+					World.CameraMode = CameraViewMode.Exterior;
 					MainLoop.RestoreCameraSettings();
 					for (int j = 0; j < TrainManager.PlayerTrain.Cars.Length; j++)
 					{
@@ -723,14 +801,14 @@ namespace OpenBve
 					}
 					World.CameraAlignmentDirection = new World.CameraAlignment();
 					World.CameraAlignmentSpeed = new World.CameraAlignment();
-					MainLoop.UpdateViewport(MainLoop.ViewPortChangeMode.NoChange);
+					Renderer.UpdateViewport(Renderer.ViewPortChangeMode.NoChange);
 					World.UpdateAbsoluteCamera(0.0);
 					World.UpdateViewingDistances();
 					break;
 				case 2:
 					//Switch camera to track
 					MainLoop.SaveCameraSettings();
-					World.CameraMode = World.CameraViewMode.Track;
+					World.CameraMode = CameraViewMode.Track;
 					MainLoop.RestoreCameraSettings();
 					for (int j = 0; j < TrainManager.PlayerTrain.Cars.Length; j++)
 					{
@@ -745,14 +823,14 @@ namespace OpenBve
 
 					World.CameraAlignmentDirection = new World.CameraAlignment();
 					World.CameraAlignmentSpeed = new World.CameraAlignment();
-					MainLoop.UpdateViewport(MainLoop.ViewPortChangeMode.NoChange);
+					Renderer.UpdateViewport(Renderer.ViewPortChangeMode.NoChange);
 					World.UpdateAbsoluteCamera(0.0);
 					World.UpdateViewingDistances();
 					break;
 				case 3:
 					//Switch camera to flyby
 					MainLoop.SaveCameraSettings();
-					World.CameraMode = World.CameraViewMode.FlyBy;
+					World.CameraMode = CameraViewMode.FlyBy;
 					MainLoop.RestoreCameraSettings();
 					for (int j = 0; j < TrainManager.PlayerTrain.Cars.Length; j++)
 					{
@@ -767,14 +845,14 @@ namespace OpenBve
 
 					World.CameraAlignmentDirection = new World.CameraAlignment();
 					World.CameraAlignmentSpeed = new World.CameraAlignment();
-					MainLoop.UpdateViewport(MainLoop.ViewPortChangeMode.NoChange);
+					Renderer.UpdateViewport(Renderer.ViewPortChangeMode.NoChange);
 					World.UpdateAbsoluteCamera(0.0);
 					World.UpdateViewingDistances();
 					break;
 				case 4:
 					//Switch camera to flyby
 					MainLoop.SaveCameraSettings();
-					World.CameraMode = World.CameraViewMode.FlyByZooming;
+					World.CameraMode = CameraViewMode.FlyByZooming;
 					MainLoop.RestoreCameraSettings();
 					for (int j = 0; j < TrainManager.PlayerTrain.Cars.Length; j++)
 					{
@@ -789,7 +867,7 @@ namespace OpenBve
 
 					World.CameraAlignmentDirection = new World.CameraAlignment();
 					World.CameraAlignmentSpeed = new World.CameraAlignment();
-					MainLoop.UpdateViewport(MainLoop.ViewPortChangeMode.NoChange);
+					Renderer.UpdateViewport(Renderer.ViewPortChangeMode.NoChange);
 					World.UpdateAbsoluteCamera(0.0);
 					World.UpdateViewingDistances();
 					break;

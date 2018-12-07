@@ -1,5 +1,7 @@
 ﻿using System;
+using OpenBveApi.FunctionScripting;
 using OpenBveApi.Math;
+using OpenBveApi.World;
 
 namespace OpenBve
 {
@@ -22,13 +24,13 @@ namespace OpenBve
 			/// <summary>The track follower used to hold/ move the sound</summary>
 			internal TrackManager.TrackFollower Follower;
 			/// <summary>The function script controlling the sound's movement along the track, or a null reference</summary>
-			internal FunctionScripts.FunctionScript TrackFollowerFunction;
+			internal FunctionScript TrackFollowerFunction;
 			/// <summary>The function script controlling the sound's volume, or a null reference</summary>
-			internal FunctionScripts.FunctionScript VolumeFunction;
+			internal FunctionScript VolumeFunction;
 			/// <summary>The function script controlling the sound's pitch, or a null reference</summary>
-			internal FunctionScripts.FunctionScript PitchFunction;
+			internal FunctionScript PitchFunction;
 
-			internal void CreateSound(Vector3 position, World.Transformation BaseTransformation, World.Transformation AuxTransformation, int SectionIndex, double trackPosition)
+			internal void CreateSound(Vector3 position, Transformation BaseTransformation, Transformation AuxTransformation, int SectionIndex, double trackPosition)
 			{
 				int a = AnimatedWorldObjectsUsed;
 				if (a >= AnimatedWorldObjects.Length)
@@ -39,7 +41,8 @@ namespace OpenBve
 				{
 					Buffer = this.Buffer,
 					//Must clone the vector, not pass the reference
-					Position = new Vector3(position.X, position.Y, position.Z)
+					Position = new Vector3(position.X, position.Y, position.Z),
+					Follower =  new TrackManager.TrackFollower()
 				};
 				snd.currentTrackPosition = trackPosition;
 				snd.Follower.Update(trackPosition, true, true);

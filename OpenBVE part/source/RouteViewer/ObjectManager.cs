@@ -1,6 +1,9 @@
 ﻿using System;
+using OpenBveApi.FunctionScripting;
+using OpenBveApi.Interface;
 using OpenBveApi.Math;
 using OpenBveApi.Objects;
+using OpenBveApi.World;
 
 namespace OpenBve {
 	internal static class ObjectManager {
@@ -31,45 +34,7 @@ namespace OpenBve {
 		internal static double LastUpdatedTrackPosition = 0.0;
 
 		// animated objects
-		internal class Damping {
-			internal double NaturalFrequency;
-			internal double NaturalTime;
-			internal double DampingRatio;
-			internal double NaturalDampingFrequency;
-			internal double OriginalAngle;
-			internal double OriginalDerivative;
-			internal double TargetAngle;
-			internal double CurrentAngle;
-			internal double CurrentValue;
-			internal double CurrentTimeDelta;
-			internal Damping(double NaturalFrequency, double DampingRatio) {
-				if (NaturalFrequency < 0.0) {
-					throw new ArgumentException("NaturalFrequency must be non-negative in the constructor of the Damping class.");
-				} else if (DampingRatio < 0.0) {
-					throw new ArgumentException("DampingRatio must be non-negative in the constructor of the Damping class.");
-				} else {
-					this.NaturalFrequency = NaturalFrequency;
-					this.NaturalTime = NaturalFrequency != 0.0 ? 1.0 / NaturalFrequency : 0.0;
-					this.DampingRatio = DampingRatio;
-					if (DampingRatio < 1.0) {
-						this.NaturalDampingFrequency = NaturalFrequency * Math.Sqrt(1.0 - DampingRatio * DampingRatio);
-					} else if (DampingRatio == 1.0) {
-						this.NaturalDampingFrequency = NaturalFrequency;
-					} else {
-						this.NaturalDampingFrequency = NaturalFrequency * Math.Sqrt(DampingRatio * DampingRatio - 1.0);
-					}
-					this.OriginalAngle = 0.0;
-					this.OriginalDerivative = 0.0;
-					this.TargetAngle = 0.0;
-					this.CurrentAngle = 0.0;
-					this.CurrentValue = 1.0;
-					this.CurrentTimeDelta = 0.0;
-				}
-			}
-			internal Damping Clone() {
-				return (Damping)this.MemberwiseClone();
-			}
-		}
+		
 		internal struct AnimatedObjectState {
 			internal Vector3 Position;
 			internal ObjectManager.StaticObject Object;
@@ -77,33 +42,33 @@ namespace OpenBve {
 		internal class AnimatedObject {
 			// states
 			internal AnimatedObjectState[] States;
-			internal FunctionScripts.FunctionScript StateFunction;
+			internal FunctionScript StateFunction;
 			internal int CurrentState;
 			internal Vector3 TranslateXDirection;
 			internal Vector3 TranslateYDirection;
 			internal Vector3 TranslateZDirection;
-			internal FunctionScripts.FunctionScript TranslateXFunction;
-			internal FunctionScripts.FunctionScript TranslateYFunction;
-			internal FunctionScripts.FunctionScript TranslateZFunction;
+			internal FunctionScript TranslateXFunction;
+			internal FunctionScript TranslateYFunction;
+			internal FunctionScript TranslateZFunction;
 			internal Vector3 RotateXDirection;
 			internal Vector3 RotateYDirection;
 			internal Vector3 RotateZDirection;
-			internal FunctionScripts.FunctionScript RotateXFunction;
-			internal FunctionScripts.FunctionScript RotateYFunction;
-			internal FunctionScripts.FunctionScript RotateZFunction;
+			internal FunctionScript RotateXFunction;
+			internal FunctionScript RotateYFunction;
+			internal FunctionScript RotateZFunction;
 			internal Damping RotateXDamping;
 			internal Damping RotateYDamping;
 			internal Damping RotateZDamping;
 			internal Vector2 TextureShiftXDirection;
 			internal Vector2 TextureShiftYDirection;
-			internal FunctionScripts.FunctionScript TextureShiftXFunction;
-			internal FunctionScripts.FunctionScript TextureShiftYFunction;
+			internal FunctionScript TextureShiftXFunction;
+			internal FunctionScript TextureShiftYFunction;
 			internal bool LEDClockwiseWinding;
 			internal double LEDInitialAngle;
 			internal double LEDLastAngle;
 			/// <summary>If LEDFunction is used, an array of five vectors representing the bottom-left, up-left, up-right, bottom-right and center coordinates of the LED square, or a null reference otherwise.</summary>
 			internal Vector3[] LEDVectors;
-			internal FunctionScripts.FunctionScript LEDFunction;
+			internal FunctionScript LEDFunction;
 			internal double RefreshRate;
 			internal double SecondsSinceLastUpdate;
 			internal int ObjectIndex;
@@ -205,9 +170,9 @@ namespace OpenBve {
 			Object.CurrentState = StateIndex;
 			if (Show) {
 				if (Overlay) {
-					Renderer.ShowObject(i, Renderer.ObjectType.Overlay);
+					Renderer.ShowObject(i, ObjectType.Overlay);
 				} else {
-					Renderer.ShowObject(i, Renderer.ObjectType.Dynamic);
+					Renderer.ShowObject(i, ObjectType.Dynamic);
 				}
 			}
 		}
@@ -235,11 +200,10 @@ namespace OpenBve {
 				} else  {
 					x = Object.TranslateXFunction.LastResult;
 				}
-				double rx = Object.TranslateXDirection.X, ry = Object.TranslateXDirection.Y, rz = Object.TranslateXDirection.Z;
-				World.Rotate(ref rx, ref ry, ref rz, Direction.X, Direction.Y, Direction.Z, Up.X, Up.Y, Up.Z, Side.X, Side.Y, Side.Z);
-				Position.X += x * rx;
-				Position.Y += x * ry;
-				Position.Z += x * rz;
+				Vector3 translationVector = new Vector3(Object.TranslateXDirection); //Must clone
+				translationVector.Rotate(Direction, Up, Side);
+				translationVector *= x;
+				Position += translationVector;
 			}
 			if (Object.TranslateYFunction != null) {
 				double y;
@@ -248,11 +212,10 @@ namespace OpenBve {
 				} else {
 					y = Object.TranslateYFunction.LastResult;
 				}
-				double rx = Object.TranslateYDirection.X, ry = Object.TranslateYDirection.Y, rz = Object.TranslateYDirection.Z;
-				World.Rotate(ref rx, ref ry, ref rz, Direction.X, Direction.Y, Direction.Z, Up.X, Up.Y, Up.Z, Side.X, Side.Y, Side.Z);
-				Position.X += y * rx;
-				Position.Y += y * ry;
-				Position.Z += y * rz;
+				Vector3 translationVector = new Vector3(Object.TranslateYDirection); //Must clone
+				translationVector.Rotate(Direction, Up, Side);
+				translationVector *= y;
+				Position += translationVector;
 			}
 			if (Object.TranslateZFunction != null) {
 				double z;
@@ -261,11 +224,10 @@ namespace OpenBve {
 				} else {
 					z = Object.TranslateZFunction.LastResult;
 				}
-				double rx = Object.TranslateZDirection.X, ry = Object.TranslateZDirection.Y, rz = Object.TranslateZDirection.Z;
-				World.Rotate(ref rx, ref ry, ref rz, Direction.X, Direction.Y, Direction.Z, Up.X, Up.Y, Up.Z, Side.X, Side.Y, Side.Z);
-				Position.X += z * rx;
-				Position.Y += z * ry;
-				Position.Z += z * rz;
+				Vector3 translationVector = new Vector3(Object.TranslateZDirection); //Must clone
+				translationVector.Rotate(Direction, Up, Side);
+				translationVector *= z;
+				Position += translationVector;
 			}
 			// rotation
 			bool rotateX = Object.RotateXFunction != null;
@@ -279,7 +241,10 @@ namespace OpenBve {
 				} else {
 					a = Object.RotateXFunction.LastResult;
 				}
-				ObjectManager.UpdateDamping(ref Object.RotateXDamping, TimeElapsed, ref a);
+				if (Object.RotateXDamping != null)
+				{
+					Object.RotateXDamping.Update(TimeElapsed, ref a, true);
+				}
 				cosX = Math.Cos(a);
 				sinX = Math.Sin(a);
 			} else {
@@ -293,7 +258,10 @@ namespace OpenBve {
 				} else {
 					a = Object.RotateYFunction.LastResult;
 				}
-				ObjectManager.UpdateDamping(ref Object.RotateYDamping, TimeElapsed, ref a);
+				if (Object.RotateYDamping != null)
+				{
+					Object.RotateYDamping.Update(TimeElapsed, ref a, true);
+				}
 				cosY = Math.Cos(a);
 				sinY = Math.Sin(a);
 			} else {
@@ -307,7 +275,10 @@ namespace OpenBve {
 				} else {
 					a = Object.RotateZFunction.LastResult;
 				}
-				ObjectManager.UpdateDamping(ref Object.RotateZDamping, TimeElapsed, ref a);
+				if (Object.RotateZDamping != null)
+				{
+					Object.RotateZDamping.Update(TimeElapsed, ref a, true);
+				}
 				cosZ = Math.Cos(a);
 				sinZ = Math.Sin(a);
 			} else {
@@ -547,20 +518,20 @@ namespace OpenBve {
 			for (int k = 0; k < Object.States[s].Object.Mesh.Vertices.Length; k++) {
 				// rotate
 				if (rotateX) {
-					World.Rotate(ref ObjectManager.Objects[i].Mesh.Vertices[k].Coordinates.X, ref ObjectManager.Objects[i].Mesh.Vertices[k].Coordinates.Y, ref ObjectManager.Objects[i].Mesh.Vertices[k].Coordinates.Z, Object.RotateXDirection.X, Object.RotateXDirection.Y, Object.RotateXDirection.Z, cosX, sinX);
+					ObjectManager.Objects[i].Mesh.Vertices[k].Coordinates.Rotate(Object.RotateXDirection, cosX, sinX);
 				}
 				if (rotateY) {
-					World.Rotate(ref ObjectManager.Objects[i].Mesh.Vertices[k].Coordinates.X, ref ObjectManager.Objects[i].Mesh.Vertices[k].Coordinates.Y, ref ObjectManager.Objects[i].Mesh.Vertices[k].Coordinates.Z, Object.RotateYDirection.X, Object.RotateYDirection.Y, Object.RotateYDirection.Z, cosY, sinY);
+					ObjectManager.Objects[i].Mesh.Vertices[k].Coordinates.Rotate(Object.RotateYDirection, cosY, sinY);
 				}
 				if (rotateZ) {
-					World.Rotate(ref ObjectManager.Objects[i].Mesh.Vertices[k].Coordinates.X, ref ObjectManager.Objects[i].Mesh.Vertices[k].Coordinates.Y, ref ObjectManager.Objects[i].Mesh.Vertices[k].Coordinates.Z, Object.RotateZDirection.X, Object.RotateZDirection.Y, Object.RotateZDirection.Z, cosZ, sinZ);
+					ObjectManager.Objects[i].Mesh.Vertices[k].Coordinates.Rotate(Object.RotateZDirection, cosZ, sinZ);
 				}
 				// translate
 				if (Overlay & World.CameraRestriction != World.CameraRestrictionMode.NotAvailable) {
 					ObjectManager.Objects[i].Mesh.Vertices[k].Coordinates.X += Object.States[s].Position.X - Position.X;
 					ObjectManager.Objects[i].Mesh.Vertices[k].Coordinates.Y += Object.States[s].Position.Y - Position.Y;
 					ObjectManager.Objects[i].Mesh.Vertices[k].Coordinates.Z += Object.States[s].Position.Z - Position.Z;
-					World.Rotate(ref ObjectManager.Objects[i].Mesh.Vertices[k].Coordinates.X, ref ObjectManager.Objects[i].Mesh.Vertices[k].Coordinates.Y, ref ObjectManager.Objects[i].Mesh.Vertices[k].Coordinates.Z, World.AbsoluteCameraDirection.X, World.AbsoluteCameraDirection.Y, World.AbsoluteCameraDirection.Z, World.AbsoluteCameraUp.X, World.AbsoluteCameraUp.Y, World.AbsoluteCameraUp.Z, World.AbsoluteCameraSide.X, World.AbsoluteCameraSide.Y, World.AbsoluteCameraSide.Z);
+					ObjectManager.Objects[i].Mesh.Vertices[k].Coordinates.Rotate(World.AbsoluteCameraDirection, World.AbsoluteCameraUp, World.AbsoluteCameraSide);
 					double dx = -Math.Tan(World.CameraCurrentAlignment.Yaw) - World.CameraCurrentAlignment.Position.X;
 					double dy = -Math.Tan(World.CameraCurrentAlignment.Pitch) - World.CameraCurrentAlignment.Position.Y;
 					double dz = -World.CameraCurrentAlignment.Position.Z;
@@ -571,7 +542,7 @@ namespace OpenBve {
 					ObjectManager.Objects[i].Mesh.Vertices[k].Coordinates.X += Object.States[s].Position.X;
 					ObjectManager.Objects[i].Mesh.Vertices[k].Coordinates.Y += Object.States[s].Position.Y;
 					ObjectManager.Objects[i].Mesh.Vertices[k].Coordinates.Z += Object.States[s].Position.Z;
-					World.Rotate(ref ObjectManager.Objects[i].Mesh.Vertices[k].Coordinates.X, ref ObjectManager.Objects[i].Mesh.Vertices[k].Coordinates.Y, ref ObjectManager.Objects[i].Mesh.Vertices[k].Coordinates.Z, Direction.X, Direction.Y, Direction.Z, Up.X, Up.Y, Up.Z, Side.X, Side.Y, Side.Z);
+					ObjectManager.Objects[i].Mesh.Vertices[k].Coordinates.Rotate(Direction, Up, Side);
 					ObjectManager.Objects[i].Mesh.Vertices[k].Coordinates.X += Position.X;
 					ObjectManager.Objects[i].Mesh.Vertices[k].Coordinates.Y += Position.Y;
 					ObjectManager.Objects[i].Mesh.Vertices[k].Coordinates.Z += Position.Z;
@@ -585,82 +556,26 @@ namespace OpenBve {
 				for (int h = 0; h < Object.States[s].Object.Mesh.Faces[k].Vertices.Length; h++) {
 					if (!Vector3.IsZero(Object.States[s].Object.Mesh.Faces[k].Vertices[h].Normal)) {
 						if (rotateX) {
-							World.Rotate(ref ObjectManager.Objects[i].Mesh.Faces[k].Vertices[h].Normal.X, ref ObjectManager.Objects[i].Mesh.Faces[k].Vertices[h].Normal.Y, ref ObjectManager.Objects[i].Mesh.Faces[k].Vertices[h].Normal.Z, Object.RotateXDirection.X, Object.RotateXDirection.Y, Object.RotateXDirection.Z, cosX, sinX);
+							ObjectManager.Objects[i].Mesh.Faces[k].Vertices[h].Normal.Rotate(Object.RotateXDirection, cosX, sinX);
 						}
 						if (rotateY) {
-							World.Rotate(ref ObjectManager.Objects[i].Mesh.Faces[k].Vertices[h].Normal.X, ref ObjectManager.Objects[i].Mesh.Faces[k].Vertices[h].Normal.Y, ref ObjectManager.Objects[i].Mesh.Faces[k].Vertices[h].Normal.Z, Object.RotateYDirection.X, Object.RotateYDirection.Y, Object.RotateYDirection.Z, cosY, sinY);
+							ObjectManager.Objects[i].Mesh.Faces[k].Vertices[h].Normal.Rotate(Object.RotateYDirection, cosY, sinY);
 						}
 						if (rotateZ) {
-							World.Rotate(ref ObjectManager.Objects[i].Mesh.Faces[k].Vertices[h].Normal.X, ref ObjectManager.Objects[i].Mesh.Faces[k].Vertices[h].Normal.Y, ref ObjectManager.Objects[i].Mesh.Faces[k].Vertices[h].Normal.Z, Object.RotateZDirection.X, Object.RotateZDirection.Y, Object.RotateZDirection.Z, cosZ, sinZ);
+							ObjectManager.Objects[i].Mesh.Faces[k].Vertices[h].Normal.Rotate(Object.RotateZDirection, cosZ, sinZ);
 						}
-						World.Rotate(ref ObjectManager.Objects[i].Mesh.Faces[k].Vertices[h].Normal.X, ref ObjectManager.Objects[i].Mesh.Faces[k].Vertices[h].Normal.Y, ref ObjectManager.Objects[i].Mesh.Faces[k].Vertices[h].Normal.Z, Direction.X, Direction.Y, Direction.Z, Up.X, Up.Y, Up.Z, Side.X, Side.Y, Side.Z);
+						ObjectManager.Objects[i].Mesh.Faces[k].Vertices[h].Normal.Rotate(Direction, Up, Side);
 					}
 				}
 				// visibility changed
 				if (Show) {
 					if (Overlay) {
-						Renderer.ShowObject(i, Renderer.ObjectType.Overlay);
+						Renderer.ShowObject(i, ObjectType.Overlay);
 					} else {
-						Renderer.ShowObject(i, Renderer.ObjectType.Dynamic);
+						Renderer.ShowObject(i, ObjectType.Dynamic);
 					}
 				} else {
 					Renderer.HideObject(i);
-				}
-			}
-		}
-
-		// update damping
-		internal static void UpdateDamping(ref Damping Damping, double TimeElapsed, ref double Angle) {
-			if (TimeElapsed < 0.0) {
-				TimeElapsed = 0.0;
-			} else if (TimeElapsed > 1.0) {
-				TimeElapsed = 1.0;
-			}
-			if (Damping != null) {
-				if (Damping.CurrentTimeDelta > Damping.NaturalTime) {
-					// update
-					double newDerivative;
-					if (Damping.NaturalFrequency == 0.0) {
-						newDerivative = 0.0;
-					} else if (Damping.DampingRatio == 0.0) {
-						newDerivative = Damping.OriginalDerivative * Math.Cos(Damping.NaturalFrequency * Damping.CurrentTimeDelta) - Damping.NaturalFrequency * Math.Sin(Damping.NaturalFrequency * Damping.CurrentTimeDelta);
-					} else if (Damping.DampingRatio < 1.0) {
-						newDerivative = Math.Exp(-Damping.DampingRatio * Damping.NaturalFrequency * Damping.CurrentTimeDelta) * (Damping.NaturalDampingFrequency * Damping.OriginalDerivative * Math.Cos(Damping.NaturalDampingFrequency * Damping.CurrentTimeDelta) - (Damping.NaturalDampingFrequency * Damping.NaturalDampingFrequency + Damping.DampingRatio * Damping.NaturalFrequency * (Damping.DampingRatio * Damping.NaturalFrequency + Damping.OriginalDerivative)) * Math.Sin(Damping.NaturalDampingFrequency * Damping.CurrentTimeDelta)) / Damping.NaturalDampingFrequency;
-					} else if (Damping.DampingRatio == 1.0) {
-						newDerivative = Math.Exp(-Damping.NaturalFrequency * Damping.CurrentTimeDelta) * (Damping.OriginalDerivative - Damping.NaturalFrequency * (Damping.NaturalFrequency + Damping.OriginalDerivative) * Damping.CurrentTimeDelta);
-					} else {
-						newDerivative = Math.Exp(-Damping.DampingRatio * Damping.NaturalFrequency * Damping.CurrentTimeDelta) * (Damping.NaturalDampingFrequency * Damping.OriginalDerivative * Math.Cosh(Damping.NaturalDampingFrequency * Damping.CurrentTimeDelta) + (Damping.NaturalDampingFrequency * Damping.NaturalDampingFrequency - Damping.DampingRatio * Damping.NaturalFrequency * (Damping.DampingRatio * Damping.NaturalFrequency + Damping.OriginalDerivative)) * Math.Sinh(Damping.NaturalDampingFrequency * Damping.CurrentTimeDelta)) / Damping.NaturalDampingFrequency;
-					}
-					double a = Damping.TargetAngle - Damping.OriginalAngle;
-					Damping.OriginalAngle = Damping.CurrentAngle;
-					Damping.TargetAngle = Angle;
-					double b = Damping.TargetAngle - Damping.OriginalAngle;
-					double r = b == 0.0 ? 1.0 : a / b;
-					Damping.OriginalDerivative = newDerivative * r;
-					if (Damping.NaturalTime > 0.0) {
-						Damping.CurrentTimeDelta = Damping.CurrentTimeDelta % Damping.NaturalTime;
-					}
-				}
-				{
-					// perform
-					double newValue;
-					if (Damping.NaturalFrequency == 0.0) {
-						newValue = 1.0;
-					} else if (Damping.DampingRatio == 0.0) {
-						newValue = Math.Cos(Damping.NaturalFrequency * Damping.CurrentTimeDelta) + Damping.OriginalDerivative * Math.Sin(Damping.NaturalFrequency * Damping.CurrentTimeDelta) / Damping.NaturalFrequency;
-					} else if (Damping.DampingRatio < 1.0) {
-						double n = (Damping.OriginalDerivative + Damping.NaturalFrequency * Damping.DampingRatio) / Damping.NaturalDampingFrequency;
-						newValue = Math.Exp(-Damping.DampingRatio * Damping.NaturalFrequency * Damping.CurrentTimeDelta) * (Math.Cos(Damping.NaturalDampingFrequency * Damping.CurrentTimeDelta) + n * Math.Sin(Damping.NaturalDampingFrequency * Damping.CurrentTimeDelta));
-					} else if (Damping.DampingRatio == 1.0) {
-						newValue = Math.Exp(-Damping.NaturalFrequency * Damping.CurrentTimeDelta) * (1.0 + (Damping.OriginalDerivative + Damping.NaturalFrequency) * Damping.CurrentTimeDelta);
-					} else {
-						double n = (Damping.OriginalDerivative + Damping.NaturalFrequency * Damping.DampingRatio) / Damping.NaturalDampingFrequency;
-						newValue = Math.Exp(-Damping.DampingRatio * Damping.NaturalFrequency * Damping.CurrentTimeDelta) * (Math.Cosh(Damping.NaturalDampingFrequency * Damping.CurrentTimeDelta) + n * Math.Sinh(Damping.NaturalDampingFrequency * Damping.CurrentTimeDelta));
-					}
-					Damping.CurrentValue = newValue;
-					Damping.CurrentAngle = Damping.TargetAngle * (1.0 - newValue) + Damping.OriginalAngle * newValue;
-					Damping.CurrentTimeDelta += TimeElapsed;
-					Angle = Damping.CurrentAngle;
 				}
 			}
 		}
@@ -679,7 +594,7 @@ namespace OpenBve {
 		}
 		internal static AnimatedWorldObject[] AnimatedWorldObjects = new AnimatedWorldObject[4];
 		internal static int AnimatedWorldObjectsUsed = 0;
-		internal static void CreateAnimatedWorldObjects(AnimatedObject[] Prototypes, Vector3 Position, World.Transformation BaseTransformation, World.Transformation AuxTransformation, int SectionIndex, bool AccurateObjectDisposal, double StartingDistance, double EndingDistance, double BlockLength, double TrackPosition, double Brightness, bool DuplicateMaterials) {
+		internal static void CreateAnimatedWorldObjects(AnimatedObject[] Prototypes, Vector3 Position, Transformation BaseTransformation, Transformation AuxTransformation, int SectionIndex, bool AccurateObjectDisposal, double StartingDistance, double EndingDistance, double BlockLength, double TrackPosition, double Brightness, bool DuplicateMaterials) {
 			bool[] free = new bool[Prototypes.Length];
 			bool anyfree = false;
 			for (int i = 0; i < Prototypes.Length; i++) {
@@ -691,7 +606,7 @@ namespace OpenBve {
 					if (Prototypes[i].States.Length != 0) {
 						if (free[i]) {
 							Vector3 p = Position;
-							World.Transformation t = new OpenBve.World.Transformation(BaseTransformation, AuxTransformation);
+							Transformation t = new Transformation(BaseTransformation, AuxTransformation);
 							Vector3 s = t.X;
 							Vector3 u = t.Y;
 							Vector3 d = t.Z;
@@ -713,12 +628,12 @@ namespace OpenBve {
 				}
 			}
 		}
-		internal static int CreateAnimatedWorldObject(AnimatedObject Prototype, Vector3 Position, World.Transformation BaseTransformation, World.Transformation AuxTransformation, int SectionIndex, double TrackPosition, double Brightness) {
+		internal static int CreateAnimatedWorldObject(AnimatedObject Prototype, Vector3 Position, Transformation BaseTransformation, Transformation AuxTransformation, int SectionIndex, double TrackPosition, double Brightness) {
 			int a = AnimatedWorldObjectsUsed;
 			if (a >= AnimatedWorldObjects.Length) {
 				Array.Resize<AnimatedWorldObject>(ref AnimatedWorldObjects, AnimatedWorldObjects.Length << 1);
 			}
-			World.Transformation FinalTransformation = new World.Transformation(AuxTransformation, BaseTransformation);
+			Transformation FinalTransformation = new Transformation(AuxTransformation, BaseTransformation);
 			AnimatedWorldObjects[a] = new AnimatedWorldObject();
 			AnimatedWorldObjects[a].Position = Position;
 			AnimatedWorldObjects[a].Direction = FinalTransformation.Z;
@@ -794,7 +709,7 @@ namespace OpenBve {
 						AnimatedWorldObjects[i].Object.SecondsSinceLastUpdate += TimeElapsed;
 					}
 					if (!AnimatedWorldObjects[i].Visible) {
-						Renderer.ShowObject(AnimatedWorldObjects[i].Object.ObjectIndex, Renderer.ObjectType.Dynamic);
+						Renderer.ShowObject(AnimatedWorldObjects[i].Object.ObjectIndex, ObjectType.Dynamic);
 						AnimatedWorldObjects[i].Visible = true;
 					}
 				} else {
@@ -808,7 +723,6 @@ namespace OpenBve {
 		}
 
 		// load object
-		internal enum ObjectLoadMode { Normal, DontAllowUnloadOfTextures }
 		internal static UnifiedObject LoadObject(string FileName, System.Text.Encoding Encoding, ObjectLoadMode LoadMode, bool PreserveVertices, bool ForceTextureRepeatX, bool ForceTextureRepeatY) {
 			#if !DEBUG
 			try {
@@ -856,14 +770,14 @@ namespace OpenBve {
 						Result = WavefrontObjParser.ReadObject(FileName, Encoding, LoadMode, ForceTextureRepeatX, ForceTextureRepeatY);
 						break;
 				default:
-						Interface.AddMessage(Interface.MessageType.Error, false, "The file extension is not supported: " + FileName);
+						Interface.AddMessage(MessageType.Error, false, "The file extension is not supported: " + FileName);
 						return null;
 				}
 				OptimizeObject(Result, PreserveVertices);
 				return Result;
 				#if !DEBUG
 			} catch (Exception ex) {
-				Interface.AddMessage(Interface.MessageType.Error, true, "An unexpected error occured (" + ex.Message + ") while attempting to load the file " + FileName);
+				Interface.AddMessage(MessageType.Error, true, "An unexpected error occured (" + ex.Message + ") while attempting to load the file " + FileName);
 				return null;
 			}
 			#endif
@@ -903,20 +817,20 @@ namespace OpenBve {
 						Result = XObjectParser.ReadObject(FileName, Encoding, LoadMode, ForceTextureRepeatX, ForceTextureRepeatY);
 						break;
 					case ".animated":
-						Interface.AddMessage(Interface.MessageType.Error, false, "Tried to load an animated object even though only static objects are allowed: " + FileName);
+						Interface.AddMessage(MessageType.Error, false, "Tried to load an animated object even though only static objects are allowed: " + FileName);
 						return null;
 					case ".obj":
 						Result = WavefrontObjParser.ReadObject(FileName, Encoding, LoadMode, ForceTextureRepeatX, ForceTextureRepeatY);
 						break;
 				default:
-						Interface.AddMessage(Interface.MessageType.Error, false, "The file extension is not supported: " + FileName);
+						Interface.AddMessage(MessageType.Error, false, "The file extension is not supported: " + FileName);
 						return null;
 				}
 				OptimizeObject(Result, PreserveVertices);
 				return Result;
 				#if !DEBUG
 			} catch (Exception ex) {
-				Interface.AddMessage(Interface.MessageType.Error, true, "An unexpected error occured (" + ex.Message + ") while attempting to load the file " + FileName);
+				Interface.AddMessage(MessageType.Error, true, "An unexpected error occured (" + ex.Message + ") while attempting to load the file " + FileName);
 				return null;
 			}
 			#endif
@@ -1400,10 +1314,10 @@ namespace OpenBve {
 		}
 
 		// create object
-		internal static void CreateObject(UnifiedObject Prototype, Vector3 Position, World.Transformation BaseTransformation, World.Transformation AuxTransformation, bool AccurateObjectDisposal, double StartingDistance, double EndingDistance, double BlockLength, double TrackPosition) {
+		internal static void CreateObject(UnifiedObject Prototype, Vector3 Position, Transformation BaseTransformation, Transformation AuxTransformation, bool AccurateObjectDisposal, double StartingDistance, double EndingDistance, double BlockLength, double TrackPosition) {
 			CreateObject(Prototype, Position, BaseTransformation, AuxTransformation, -1, AccurateObjectDisposal, StartingDistance, EndingDistance, BlockLength, TrackPosition, 1.0, false);
 		}
-		internal static void CreateObject(UnifiedObject Prototype, Vector3 Position, World.Transformation BaseTransformation, World.Transformation AuxTransformation, int SectionIndex, bool AccurateObjectDisposal, double StartingDistance, double EndingDistance, double BlockLength, double TrackPosition, double Brightness, bool DuplicateMaterials) {
+		internal static void CreateObject(UnifiedObject Prototype, Vector3 Position, Transformation BaseTransformation, Transformation AuxTransformation, int SectionIndex, bool AccurateObjectDisposal, double StartingDistance, double EndingDistance, double BlockLength, double TrackPosition, double Brightness, bool DuplicateMaterials) {
 			if (Prototype is StaticObject) {
 				StaticObject s = (StaticObject)Prototype;
 				CreateStaticObject(s, Position, BaseTransformation, AuxTransformation, AccurateObjectDisposal, 0.0, StartingDistance, EndingDistance, BlockLength, TrackPosition, Brightness, DuplicateMaterials);
@@ -1414,10 +1328,10 @@ namespace OpenBve {
 		}
 
 		// create static object
-		internal static int CreateStaticObject(StaticObject Prototype, Vector3 Position, World.Transformation BaseTransformation, World.Transformation AuxTransformation, bool AccurateObjectDisposal, double StartingDistance, double EndingDistance, double BlockLength, double TrackPosition) {
+		internal static int CreateStaticObject(StaticObject Prototype, Vector3 Position, Transformation BaseTransformation, Transformation AuxTransformation, bool AccurateObjectDisposal, double StartingDistance, double EndingDistance, double BlockLength, double TrackPosition) {
 			return CreateStaticObject(Prototype, Position, BaseTransformation, AuxTransformation, AccurateObjectDisposal, 0.0, StartingDistance, EndingDistance, BlockLength, TrackPosition, 1.0, false);
 		}
-		internal static int CreateStaticObject(StaticObject Prototype, Vector3 Position, World.Transformation BaseTransformation, World.Transformation AuxTransformation, bool AccurateObjectDisposal, double AccurateObjectDisposalZOffset, double StartingDistance, double EndingDistance, double BlockLength, double TrackPosition, double Brightness, bool DuplicateMaterials) {
+		internal static int CreateStaticObject(StaticObject Prototype, Vector3 Position, Transformation BaseTransformation, Transformation AuxTransformation, bool AccurateObjectDisposal, double AccurateObjectDisposalZOffset, double StartingDistance, double EndingDistance, double BlockLength, double TrackPosition, double Brightness, bool DuplicateMaterials) {
 			int a = ObjectsUsed;
 			if (a >= Objects.Length) {
 				Array.Resize<StaticObject>(ref Objects, Objects.Length << 1);
@@ -1445,7 +1359,7 @@ namespace OpenBve {
 			ObjectsUsed++;
 			return a;
 		}
-		internal static void ApplyStaticObjectData(ref StaticObject Object, StaticObject Prototype, Vector3 Position, World.Transformation BaseTransformation, World.Transformation AuxTransformation, bool AccurateObjectDisposal, double AccurateObjectDisposalZOffset, double StartingDistance, double EndingDistance, double BlockLength, double TrackPosition, double Brightness, bool DuplicateMaterials) {
+		internal static void ApplyStaticObjectData(ref StaticObject Object, StaticObject Prototype, Vector3 Position, Transformation BaseTransformation, Transformation AuxTransformation, bool AccurateObjectDisposal, double AccurateObjectDisposalZOffset, double StartingDistance, double EndingDistance, double BlockLength, double TrackPosition, double Brightness, bool DuplicateMaterials) {
 			Object = new StaticObject();
 			Object.StartingDistance = float.MaxValue;
 			Object.EndingDistance = float.MinValue;
@@ -1462,7 +1376,7 @@ namespace OpenBve {
 					Object.Mesh.Vertices[j] = new Vertex((Vertex)Prototype.Mesh.Vertices[j]);
 				}
 				if (AccurateObjectDisposal) {
-					World.Rotate(ref Object.Mesh.Vertices[j].Coordinates.X, ref Object.Mesh.Vertices[j].Coordinates.Y, ref Object.Mesh.Vertices[j].Coordinates.Z, AuxTransformation);
+					Object.Mesh.Vertices[j].Coordinates.Rotate(AuxTransformation);
 					if (Object.Mesh.Vertices[j].Coordinates.Z < Object.StartingDistance) {
 						Object.StartingDistance = (float)Object.Mesh.Vertices[j].Coordinates.Z;
 					}
@@ -1471,8 +1385,8 @@ namespace OpenBve {
 					}
 					Object.Mesh.Vertices[j].Coordinates = Prototype.Mesh.Vertices[j].Coordinates;
 				}
-				World.Rotate(ref Object.Mesh.Vertices[j].Coordinates.X, ref Object.Mesh.Vertices[j].Coordinates.Y, ref Object.Mesh.Vertices[j].Coordinates.Z, AuxTransformation);
-				World.Rotate(ref Object.Mesh.Vertices[j].Coordinates.X, ref Object.Mesh.Vertices[j].Coordinates.Y, ref Object.Mesh.Vertices[j].Coordinates.Z, BaseTransformation);
+				Object.Mesh.Vertices[j].Coordinates.Rotate(AuxTransformation);
+				Object.Mesh.Vertices[j].Coordinates.Rotate(BaseTransformation);
 				Object.Mesh.Vertices[j].Coordinates.X += Position.X;
 				Object.Mesh.Vertices[j].Coordinates.Y += Position.Y;
 				Object.Mesh.Vertices[j].Coordinates.Z += Position.Z;
@@ -1493,8 +1407,8 @@ namespace OpenBve {
 					double ny = Object.Mesh.Faces[j].Vertices[k].Normal.Y;
 					double nz = Object.Mesh.Faces[j].Vertices[k].Normal.Z;
 					if (nx * nx + ny * ny + nz * nz != 0.0) {
-						World.Rotate(ref Object.Mesh.Faces[j].Vertices[k].Normal.X, ref Object.Mesh.Faces[j].Vertices[k].Normal.Y, ref Object.Mesh.Faces[j].Vertices[k].Normal.Z, AuxTransformation);
-						World.Rotate(ref Object.Mesh.Faces[j].Vertices[k].Normal.X, ref Object.Mesh.Faces[j].Vertices[k].Normal.Y, ref Object.Mesh.Faces[j].Vertices[k].Normal.Z, BaseTransformation);
+						Object.Mesh.Faces[j].Vertices[k].Normal.Rotate(AuxTransformation);
+						Object.Mesh.Faces[j].Vertices[k].Normal.Rotate(BaseTransformation);
 					}
 				}
 			}
@@ -1632,7 +1546,7 @@ namespace OpenBve {
 			for (int i = 0; i < ObjectsUsed; i++) {
 				if (!Objects[i].Dynamic) {
 					if (Objects[i].StartingDistance <= p + World.ForwardViewingDistance & Objects[i].EndingDistance >= p - World.BackwardViewingDistance) {
-						Renderer.ShowObject(i, Renderer.ObjectType.Static);
+						Renderer.ShowObject(i, ObjectType.Static);
 					}
 				}
 			}
@@ -1671,7 +1585,7 @@ namespace OpenBve {
 					int o = ObjectsSortedByEnd[ObjectsSortedByEndPointer];
 					if (Objects[o].EndingDistance >= p - World.BackwardViewingDistance) {
 						if (Objects[o].StartingDistance <= p + World.ForwardViewingDistance) {
-							Renderer.ShowObject(o, Renderer.ObjectType.Static);
+							Renderer.ShowObject(o, ObjectType.Static);
 						}
 						ObjectsSortedByEndPointer--;
 					} else {
@@ -1696,7 +1610,7 @@ namespace OpenBve {
 					int o = ObjectsSortedByStart[ObjectsSortedByStartPointer];
 					if (Objects[o].StartingDistance <= p + World.ForwardViewingDistance) {
 						if (Objects[o].EndingDistance >= p - World.BackwardViewingDistance) {
-							Renderer.ShowObject(o, Renderer.ObjectType.Static);
+							Renderer.ShowObject(o, ObjectType.Static);
 						}
 						ObjectsSortedByStartPointer++;
 					} else {

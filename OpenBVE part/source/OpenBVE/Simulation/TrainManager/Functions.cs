@@ -101,7 +101,7 @@ namespace OpenBve
 				else
 				{
 					train.ApplyNotch(0, false, train.Handles.Brake.MaximumNotch, false);
-					TrainManager.ApplyAirBrakeHandle(train, TrainManager.AirBrakeHandleState.Service);
+					train.ApplyAirBrakeHandle(TrainManager.AirBrakeHandleState.Service);
 				}
 				if (Game.Sections.Length > 0)
 				{
@@ -146,6 +146,10 @@ namespace OpenBve
 					}
 				}
 				train.StationState = TrainStopState.Pending;
+				if (train == PlayerTrain)
+				{
+					train.LastStation = stationIndex;
+				}
 			}
 		}
 	}

@@ -8,11 +8,14 @@
 using System;
 using System.Drawing;
 using OpenBveApi.Colors;
+using OpenBveApi.Graphics;
+using OpenBveApi.Interface;
 using OpenTK;
 using OpenTK.Graphics.OpenGL;
 using Vector3 = OpenBveApi.Math.Vector3;
 using Vector2 = OpenBveApi.Math.Vector2;
 using OpenBveApi.Objects;
+using OpenBveApi.Textures;
 
 namespace OpenBve {
 	internal static partial class Renderer {
@@ -24,17 +27,7 @@ namespace OpenBve {
 		// first frame behavior
 		internal enum LoadTextureImmediatelyMode { NotYet, Yes, NoLonger }
 		internal static LoadTextureImmediatelyMode LoadTexturesImmediately = LoadTextureImmediatelyMode.NotYet;
-		internal enum TransparencyMode { Sharp, Smooth }
 
-		// object list
-		internal enum ObjectType : byte {
-			/// <summary>The object is part of the static scenery. The matching ObjectListType is StaticOpaque for fully opaque faces, and DynamicAlpha for all other faces.</summary>
-			Static = 1,
-			/// <summary>The object is part of the animated scenery or of a train exterior. The matching ObjectListType is DynamicOpaque for fully opaque faces, and DynamicAlpha for all other faces.</summary>
-			Dynamic = 2,
-			/// <summary>The object is part of the cab. The matching ObjectListType is OverlayOpaque for fully opaque faces, and OverlayAlpha for all other faces.</summary>
-			Overlay = 3
-		}
 		private struct Object {
 			internal int ObjectIndex;
 			internal int[] FaceListIndices;
@@ -149,16 +142,16 @@ namespace OpenBve {
 			GL.Disable(EnableCap.Dither);
 			// textures
 			string Folder = OpenBveApi.Path.CombineDirectory(Program.FileSystem.GetDataFolder(), "RouteViewer");
-			BackgroundChangeTexture = TextureManager.RegisterTexture(OpenBveApi.Path.CombineFile(Folder, "background.png"), TextureManager.TextureWrapMode.ClampToEdge, TextureManager.TextureWrapMode.ClampToEdge, true);
-			BrightnessChangeTexture = TextureManager.RegisterTexture(OpenBveApi.Path.CombineFile(Folder, "brightness.png"), TextureManager.TextureWrapMode.ClampToEdge, TextureManager.TextureWrapMode.ClampToEdge, true);
-			TransponderTexture = TextureManager.RegisterTexture(OpenBveApi.Path.CombineFile(Folder, "transponder.png"), TextureManager.TextureWrapMode.ClampToEdge, TextureManager.TextureWrapMode.ClampToEdge, true);
-			SectionTexture = TextureManager.RegisterTexture(OpenBveApi.Path.CombineFile(Folder, "section.png"), TextureManager.TextureWrapMode.ClampToEdge, TextureManager.TextureWrapMode.ClampToEdge, true);
-			LimitTexture = TextureManager.RegisterTexture(OpenBveApi.Path.CombineFile(Folder, "limit.png"), TextureManager.TextureWrapMode.ClampToEdge, TextureManager.TextureWrapMode.ClampToEdge, true);
-			StationStartTexture = TextureManager.RegisterTexture(OpenBveApi.Path.CombineFile(Folder, "station_start.png"), TextureManager.TextureWrapMode.ClampToEdge, TextureManager.TextureWrapMode.ClampToEdge, true);
-			StationEndTexture = TextureManager.RegisterTexture(OpenBveApi.Path.CombineFile(Folder, "station_end.png"), TextureManager.TextureWrapMode.ClampToEdge, TextureManager.TextureWrapMode.ClampToEdge, true);
-			StopTexture = TextureManager.RegisterTexture(OpenBveApi.Path.CombineFile(Folder, "stop.png"), TextureManager.TextureWrapMode.ClampToEdge, TextureManager.TextureWrapMode.ClampToEdge, true);
-			BufferTexture = TextureManager.RegisterTexture(OpenBveApi.Path.CombineFile(Folder, "buffer.png"), TextureManager.TextureWrapMode.ClampToEdge, TextureManager.TextureWrapMode.ClampToEdge, true);
-			SoundTexture = TextureManager.RegisterTexture(OpenBveApi.Path.CombineFile(Folder, "sound.png"), TextureManager.TextureWrapMode.ClampToEdge, TextureManager.TextureWrapMode.ClampToEdge, true);
+			BackgroundChangeTexture = TextureManager.RegisterTexture(OpenBveApi.Path.CombineFile(Folder, "background.png"), OpenGlTextureWrapMode.ClampClamp, OpenGlTextureWrapMode.ClampClamp, true);
+			BrightnessChangeTexture = TextureManager.RegisterTexture(OpenBveApi.Path.CombineFile(Folder, "brightness.png"), OpenGlTextureWrapMode.ClampClamp, OpenGlTextureWrapMode.ClampClamp, true);
+			TransponderTexture = TextureManager.RegisterTexture(OpenBveApi.Path.CombineFile(Folder, "transponder.png"), OpenGlTextureWrapMode.ClampClamp, OpenGlTextureWrapMode.ClampClamp, true);
+			SectionTexture = TextureManager.RegisterTexture(OpenBveApi.Path.CombineFile(Folder, "section.png"), OpenGlTextureWrapMode.ClampClamp, OpenGlTextureWrapMode.ClampClamp, true);
+			LimitTexture = TextureManager.RegisterTexture(OpenBveApi.Path.CombineFile(Folder, "limit.png"), OpenGlTextureWrapMode.ClampClamp, OpenGlTextureWrapMode.ClampClamp, true);
+			StationStartTexture = TextureManager.RegisterTexture(OpenBveApi.Path.CombineFile(Folder, "station_start.png"), OpenGlTextureWrapMode.ClampClamp, OpenGlTextureWrapMode.ClampClamp, true);
+			StationEndTexture = TextureManager.RegisterTexture(OpenBveApi.Path.CombineFile(Folder, "station_end.png"), OpenGlTextureWrapMode.ClampClamp, OpenGlTextureWrapMode.ClampClamp, true);
+			StopTexture = TextureManager.RegisterTexture(OpenBveApi.Path.CombineFile(Folder, "stop.png"), OpenGlTextureWrapMode.ClampClamp, OpenGlTextureWrapMode.ClampClamp, true);
+			BufferTexture = TextureManager.RegisterTexture(OpenBveApi.Path.CombineFile(Folder, "buffer.png"), OpenGlTextureWrapMode.ClampClamp, OpenGlTextureWrapMode.ClampClamp, true);
+			SoundTexture = TextureManager.RegisterTexture(OpenBveApi.Path.CombineFile(Folder, "sound.png"), OpenGlTextureWrapMode.ClampClamp, OpenGlTextureWrapMode.ClampClamp, true);
 			TextureManager.ValidateTexture(ref BackgroundChangeTexture);
 			TextureManager.ValidateTexture(ref BrightnessChangeTexture);
 			TextureManager.ValidateTexture(ref TransponderTexture);
@@ -178,7 +171,7 @@ namespace OpenBve {
 			GL.MatrixMode(MatrixMode.Modelview);
 			GL.LoadMatrix(ref lookat);
 			GL.PopMatrix();
-			TransparentColorDepthSorting = Interface.CurrentOptions.TransparencyMode == TransparencyMode.Smooth & Interface.CurrentOptions.Interpolation != TextureManager.InterpolationMode.NearestNeighbor & Interface.CurrentOptions.Interpolation != TextureManager.InterpolationMode.Bilinear;
+			TransparentColorDepthSorting = Interface.CurrentOptions.TransparencyMode == TransparencyMode.Quality& Interface.CurrentOptions.Interpolation != InterpolationMode.NearestNeighbor & Interface.CurrentOptions.Interpolation != InterpolationMode.Bilinear;
 		}
 
 		// initialize lighting
@@ -206,9 +199,6 @@ namespace OpenBve {
 			GL.DepthFunc(DepthFunction.Lequal);
 		}
 
-		// render scene
-		internal static byte[] PixelBuffer = null;
-		internal static int PixelBufferOpenGlTextureIndex = 0;
 		internal static void RenderScene(double TimeElapsed) {
 			// initialize
 			GL.Enable(EnableCap.DepthTest);
@@ -324,7 +314,7 @@ namespace OpenBve {
 			}
 			// alpha list
 			SortPolygons(AlphaList, AlphaListCount, AlphaListDistance, 2, TimeElapsed);
-			if (Interface.CurrentOptions.TransparencyMode == TransparencyMode.Smooth) {
+			if (Interface.CurrentOptions.TransparencyMode == TransparencyMode.Quality) {
 				BlendEnabled = true; GL.Enable(EnableCap.Blend);
 				bool depthMask = true;
 				for (int i = 0; i < AlphaListCount; i++) {
@@ -418,7 +408,7 @@ namespace OpenBve {
 					GL.BindTexture(TextureTarget.Texture2D, OpenGlDaytimeTextureIndex);
 					LastBoundTexture = OpenGlDaytimeTextureIndex;
 				}
-				if (TextureManager.Textures[Material.DaytimeTextureIndex].Transparency != TextureManager.TextureTransparencyMode.None) {
+				if (TextureManager.Textures[Material.DaytimeTextureIndex].Transparency != TextureTransparencyType.Opaque) {
 					if (!AlphaTestEnabled) {
 						GL.Enable(EnableCap.AlphaTest);
 						AlphaTestEnabled = true;
@@ -486,9 +476,24 @@ namespace OpenBve {
 			}
 			if (Material.GlowAttenuationData != 0) {
 				float alphafactor = (float)GetDistanceFactor(Vertices, ref Face, Material.GlowAttenuationData, CameraX, CameraY, CameraZ);
-				GL.Color4(inv255 * (float)Material.Color.R * factor, inv255 * Material.Color.G * factor, inv255 * (float)Material.Color.B * factor, inv255 * (float)Material.Color.A * alphafactor);
+				if (OptionWireframe)
+				{
+					GL.Color4(inv255 * (float)Material.Color.R * factor, inv255 * Material.Color.G * factor, inv255 * (float)Material.Color.B * factor, 1.0f);
+				}
+				else
+				{
+					GL.Color4(inv255 * (float)Material.Color.R * factor, inv255 * Material.Color.G * factor, inv255 * (float)Material.Color.B * factor, inv255 * (float)Material.Color.A * alphafactor);
+				}
 			} else {
-				GL.Color4(inv255 * (float)Material.Color.R * factor, inv255 * Material.Color.G * factor, inv255 * (float)Material.Color.B * factor, inv255 * (float)Material.Color.A);
+				if (OptionWireframe)
+				{
+					GL.Color4(inv255 * (float)Material.Color.R * factor, inv255 * Material.Color.G * factor, inv255 * (float)Material.Color.B * factor, 1.0f);
+				}
+				else
+				{
+					GL.Color4(inv255 * (float)Material.Color.R * factor, inv255 * Material.Color.G * factor, inv255 * (float)Material.Color.B * factor, inv255 * (float)Material.Color.A);
+				}
+				
 			}
 			if ((Material.Flags & World.MeshMaterial.EmissiveColorMask) != 0) {
 				GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Emission, new float[] { inv255 * (float)Material.EmissiveColor.R, inv255 * (float)Material.EmissiveColor.G, inv255 * (float)Material.EmissiveColor.B, 1.0f });
@@ -582,7 +587,15 @@ namespace OpenBve {
 					alphafactor = inv255 * (float)Material.DaytimeNighttimeBlend + 1.0f - OptionLightingResultingAmount;
 					if (alphafactor > 1.0f) alphafactor = 1.0f;
 				}
-				GL.Color4(inv255 * (float)Material.Color.R * factor, inv255 * Material.Color.G * factor, inv255 * (float)Material.Color.B * factor, inv255 * (float)Material.Color.A * alphafactor);
+
+				if (OptionWireframe)
+				{
+					GL.Color4(inv255 * (float)Material.Color.R * factor, inv255 * Material.Color.G * factor, inv255 * (float)Material.Color.B * factor, 1.0f);
+				}
+				else
+				{
+					GL.Color4(inv255 * (float)Material.Color.R * factor, inv255 * Material.Color.G * factor, inv255 * (float)Material.Color.B * factor, inv255 * (float)Material.Color.A * alphafactor);
+				}
 				if ((Material.Flags & World.MeshMaterial.EmissiveColorMask) != 0) {
 					GL.Material(MaterialFace.FrontAndBack, MaterialParameter.Emission, new float[] { inv255 * (float)Material.EmissiveColor.R, inv255 * (float)Material.EmissiveColor.G, inv255 * (float)Material.EmissiveColor.B, 1.0f });
 					EmissiveEnabled = true;
@@ -903,7 +916,7 @@ namespace OpenBve {
 			v[6] = new Vector3(-Size, -Size, Size);
 			v[7] = new Vector3(-Size, Size, Size);
 			for (int i = 0; i < 8; i++) {
-				World.Rotate(ref v[i].X, ref v[i].Y, ref v[i].Z, Direction.X, Direction.Y, Direction.Z, Up.X, Up.Y, Up.Z, Side.X, Side.Y, Side.Z);
+				v[i].Rotate(Direction, Up, Side);
 				v[i].X += Position.X - CameraX;
 				v[i].Y += Position.Y - CameraY;
 				v[i].Z += Position.Z - CameraZ;
@@ -1071,7 +1084,7 @@ namespace OpenBve {
 					if (Interface.MessageCount == 1) {
 						Keys = new string[][] { new string[] { "F9" } };
 						RenderKeys(4, 72, 24, Keys);
-						if (Interface.Messages[0].Type != Interface.MessageType.Information)
+						if (Interface.LogMessages[0].Type != MessageType.Information)
 						{
 							DrawString(Fonts.SmallFont, "Display the 1 error message recently generated.", new Point(32, 72), TextAlignment.TopLeft, Color128.Red, true);
 						}
@@ -1086,7 +1099,7 @@ namespace OpenBve {
 						bool error = false;
 						for (int i = 0; i < Interface.MessageCount; i++)
 						{
-							if (Interface.Messages[i].Type != Interface.MessageType.Information)
+							if (Interface.LogMessages[i].Type != MessageType.Information)
 							{
 								error = true;
 								break;
@@ -1229,18 +1242,18 @@ namespace OpenBve {
 							int tday = ObjectManager.Objects[ObjectIndex].Mesh.Materials[k].DaytimeTextureIndex;
 							if (tday >= 0) {
 								TextureManager.UseTexture(tday, TextureManager.UseMode.Normal);
-								if (TextureManager.Textures[tday].Transparency == TextureManager.TextureTransparencyMode.Alpha) {
+								if (TextureManager.Textures[tday].Transparency == TextureTransparencyType.Alpha) {
 									alpha = true;
-								} else if (TextureManager.Textures[tday].Transparency == TextureManager.TextureTransparencyMode.TransparentColor) {
+								} else if (TextureManager.Textures[tday].Transparency == TextureTransparencyType.Partial) {
 									transparentcolor = true;
 								}
 							}
 							int tnight = ObjectManager.Objects[ObjectIndex].Mesh.Materials[k].NighttimeTextureIndex;
 							if (tnight >= 0) {
 								TextureManager.UseTexture(tnight, TextureManager.UseMode.Normal);
-								if (TextureManager.Textures[tnight].Transparency == TextureManager.TextureTransparencyMode.Alpha) {
+								if (TextureManager.Textures[tnight].Transparency == TextureTransparencyType.Alpha) {
 									alpha = true;
-								} else if (TextureManager.Textures[tnight].Transparency == TextureManager.TextureTransparencyMode.TransparentColor) {
+								} else if (TextureManager.Textures[tnight].Transparency == TextureTransparencyType.Partial) {
 									transparentcolor = true;
 								}
 							}
@@ -1402,18 +1415,18 @@ namespace OpenBve {
 		// get distance factor
 		private static double GetDistanceFactor(VertexTemplate[] Vertices, ref World.MeshFace Face, ushort GlowAttenuationData, double CameraX, double CameraY, double CameraZ) {
 			if (Face.Vertices.Length != 0) {
-				World.GlowAttenuationMode mode; double halfdistance;
+				GlowAttenuationMode mode; double halfdistance;
 				World.SplitGlowAttenuationData(GlowAttenuationData, out mode, out halfdistance);
 				int i = (int)Face.Vertices[0].Index;
 				double dx = Vertices[i].Coordinates.X - CameraX;
 				double dy = Vertices[i].Coordinates.Y - CameraY;
 				double dz = Vertices[i].Coordinates.Z - CameraZ;
 				switch (mode) {
-						case World.GlowAttenuationMode.DivisionExponent2: {
+						case GlowAttenuationMode.DivisionExponent2: {
 							double t = dx * dx + dy * dy + dz * dz;
 							return t / (t + halfdistance * halfdistance);
 						}
-						case World.GlowAttenuationMode.DivisionExponent4: {
+						case GlowAttenuationMode.DivisionExponent4: {
 							double t = dx * dx + dy * dy + dz * dz;
 							t *= t; halfdistance *= halfdistance;
 							return t / (t + halfdistance * halfdistance);

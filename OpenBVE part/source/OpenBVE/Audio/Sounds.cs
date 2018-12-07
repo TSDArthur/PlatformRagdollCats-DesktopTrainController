@@ -3,6 +3,7 @@ using System.IO;
 using System.Windows.Forms;
 using OpenTK;
 using OpenTK.Audio.OpenAL;
+using OpenBveApi.Interface;
 
 namespace OpenBve
 {
@@ -29,7 +30,7 @@ namespace OpenBve
 		private static int SourceCount = 0;
 
 		/// <summary>The gain threshold. Sounds with gains below this value are not played.</summary>
-		internal const double GainThreshold = 0.0001;
+		private const double GainThreshold = 0.0001;
 
 		/// <summary>Whether all sounds are mute.</summary>
 		internal static bool GlobalMute = false;
@@ -92,18 +93,18 @@ namespace OpenBve
 					}
 					catch
 					{
-						MessageBox.Show(Interface.GetInterfaceString("errors_sound_openal_version"), Interface.GetInterfaceString("program_title"), MessageBoxButtons.OK, MessageBoxIcon.Hand);
+						MessageBox.Show(Translations.GetInterfaceString("errors_sound_openal_version"), Translations.GetInterfaceString("program_title"), MessageBoxButtons.OK, MessageBoxIcon.Hand);
 					}
 					AL.DistanceModel(ALDistanceModel.None);
 					return;
 				}
 				Alc.CloseDevice(OpenAlDevice);
 				OpenAlDevice = IntPtr.Zero;
-				MessageBox.Show(Interface.GetInterfaceString("errors_sound_openal_context"), Interface.GetInterfaceString("program_title"), MessageBoxButtons.OK, MessageBoxIcon.Hand);
+				MessageBox.Show(Translations.GetInterfaceString("errors_sound_openal_context"), Translations.GetInterfaceString("program_title"), MessageBoxButtons.OK, MessageBoxIcon.Hand);
 				return;
 			}
 			OpenAlContext = ContextHandle.Zero;
-			MessageBox.Show(Interface.GetInterfaceString("errors_sound_openal_device"), Interface.GetInterfaceString("program_title"), MessageBoxButtons.OK, MessageBoxIcon.Hand);
+			MessageBox.Show(Translations.GetInterfaceString("errors_sound_openal_device"), Translations.GetInterfaceString("program_title"), MessageBoxButtons.OK, MessageBoxIcon.Hand);
 		}
 
 		/// <summary>Deinitializes audio.</summary>
@@ -171,15 +172,15 @@ namespace OpenBve
 		/// <summary>Loads the specified sound buffer.</summary>
 		/// <param name="buffer">The sound buffer.</param>
 		/// <returns>Whether loading the buffer was successful.</returns>
-		internal static bool LoadBuffer(SoundBuffer buffer)
+		internal static void LoadBuffer(SoundBuffer buffer)
 		{
 			if (buffer.Loaded)
 			{
-				return true;
+				return;
 			}
 			if (buffer.Ignore)
 			{
-				return false;
+				return;
 			}
 			OpenBveApi.Sounds.Sound sound;
 			if (buffer.Origin.GetSound(out sound))
@@ -192,11 +193,10 @@ namespace OpenBve
 					AL.BufferData(buffer.OpenAlBufferName, format, bytes, bytes.Length, sound.SampleRate);
 					buffer.Duration = sound.Duration;
 					buffer.Loaded = true;
-					return true;
+					return;
 				}
 			}
 			buffer.Ignore = true;
-			return false;
 		}
 
 		/// <summary>Loads all sound buffers immediately.</summary>

@@ -1,12 +1,14 @@
-﻿using System;
+using System;
+using OpenBve.BrakeSystems;
 using OpenBveApi.Math;
+using OpenBveApi.Objects;
 
 namespace OpenBve
 {
 	public static partial class TrainManager
 	{
 		/// <summary>The base class containing the properties of a train car</summary>
-		internal class Car
+		internal partial class Car
 		{
 			/// <summary>Width in meters</summary>
 			internal double Width;
@@ -26,7 +28,8 @@ namespace OpenBve
 			internal Horn[] Horns;
 			/// <summary>The doors for this car</summary>
 			internal Door[] Doors;
-
+			/// <summary>The car brake for this car</summary>
+			internal CarBrake CarBrake;
 			internal Vector3 Up;
 			/// <summary>The car sections (objects) attached to the car</summary>
 			internal CarSection[] CarSections;
@@ -50,24 +53,16 @@ namespace OpenBve
 			internal double BeaconReceiverPosition;
 			internal TrackManager.TrackFollower BeaconReceiver;
 			/// <summary>A reference to the base train</summary>
-			internal Train baseTrain;
+			private readonly Train baseTrain;
 			/// <summary>The index of the car within the train</summary>
-			internal int Index;
+			internal readonly int Index;
 			/// <summary>Stores the camera restriction mode for the interior view of this car</summary>
-			internal World.CameraRestrictionMode CameraRestrictionMode = World.CameraRestrictionMode.NotSpecified;
+			internal Camera.RestrictionMode CameraRestrictionMode = Camera.RestrictionMode.NotSpecified;
 			/// <summary>Stores the camera interior camera alignment for this car</summary>
 			internal World.CameraAlignment InteriorCamera;
 
 			internal bool HasInteriorView = false;
-
-			internal struct CarBrightness
-			{
-				internal float PreviousBrightness;
-				internal double PreviousTrackPosition;
-				internal float NextBrightness;
-				internal double NextTrackPosition;
-			}
-
+			
 			internal Car(Train train, int index)
 			{
 				baseTrain = train;
@@ -159,18 +154,15 @@ namespace OpenBve
 				{
 					t = 1.0 / Math.Sqrt(t);
 					DirectionX *= t; DirectionY *= t; DirectionZ *= t;
-					double ux = Up.X;
-					double uy = Up.Y;
-					double uz = Up.Z;
-					double sx = DirectionZ * uy - DirectionY * uz;
-					double sy = DirectionX * uz - DirectionZ * ux;
-					double sz = DirectionY * ux - DirectionX * uy;
+					double sx = DirectionZ * Up.Y - DirectionY * Up.Z;
+					double sy = DirectionX * Up.Z - DirectionZ * Up.X;
+					double sz = DirectionY * Up.X - DirectionX * Up.Y;
 					double rx = 0.5 * (FrontAxle.Follower.WorldPosition.X + RearAxle.Follower.WorldPosition.X);
 					double ry = 0.5 * (FrontAxle.Follower.WorldPosition.Y + RearAxle.Follower.WorldPosition.Y);
 					double rz = 0.5 * (FrontAxle.Follower.WorldPosition.Z + RearAxle.Follower.WorldPosition.Z);
-					PositionX = rx + sx * CarX + ux * CarY + DirectionX * CarZ;
-					PositionY = ry + sy * CarX + uy * CarY + DirectionY * CarZ;
-					PositionZ = rz + sz * CarX + uz * CarY + DirectionZ * CarZ;
+					PositionX = rx + sx * CarX + Up.X * CarY + DirectionX * CarZ;
+					PositionY = ry + sy * CarX + Up.Y * CarY + DirectionY * CarZ;
+					PositionZ = rz + sz * CarX + Up.Z * CarY + DirectionZ * CarZ;
 				}
 				else
 				{
@@ -331,7 +323,7 @@ namespace OpenBve
 								else if (ndir == -1)
 								{
 									// brake
-									double max = Specs.BrakeDecelerationAtServiceMaximumPressure(this.baseTrain.Handles.Brake.Actual);
+									double max = CarBrake.DecelerationAtServiceMaximumPressure(baseTrain.Handles.Brake.Actual, Specs.CurrentSpeed);
 									if (max != 0.0)
 									{
 										double cur = -Specs.CurrentAccelerationOutput;
@@ -393,7 +385,7 @@ namespace OpenBve
 					CarSections[j].Elements = new ObjectManager.AnimatedObject[1];
 					CarSections[j].Elements[0] = new ObjectManager.AnimatedObject();
 					CarSections[j].Elements[0].States = new ObjectManager.AnimatedObjectState[1];
-					CarSections[j].Elements[0].States[0].Position = new Vector3(0.0, 0.0, 0.0);
+					CarSections[j].Elements[0].States[0].Position = Vector3.Zero;
 					CarSections[j].Elements[0].States[0].Object = s;
 					CarSections[j].Elements[0].CurrentState = 0;
 					CarSections[j].Elements[0].ObjectIndex = ObjectManager.CreateDynamicObject();
@@ -437,11 +429,11 @@ namespace OpenBve
 								int o = CarSections[0].Elements[j].ObjectIndex;
 								if (CarSections[0].Overlay)
 								{
-									Renderer.ShowObject(o, Renderer.ObjectType.Overlay);
+									Renderer.ShowObject(o, ObjectType.Overlay);
 								}
 								else
 								{
-									Renderer.ShowObject(o, Renderer.ObjectType.Dynamic);
+									Renderer.ShowObject(o, ObjectType.Dynamic);
 								}
 							}
 							break;
@@ -458,11 +450,11 @@ namespace OpenBve
 								int o = CarSections[1].Elements[j].ObjectIndex;
 								if (CarSections[1].Overlay)
 								{
-									Renderer.ShowObject(o, Renderer.ObjectType.Overlay);
+									Renderer.ShowObject(o, ObjectType.Overlay);
 								}
 								else
 								{
-									Renderer.ShowObject(o, Renderer.ObjectType.Dynamic);
+									Renderer.ShowObject(o, ObjectType.Dynamic);
 								}
 							}
 							break;
@@ -476,11 +468,11 @@ namespace OpenBve
 								int o = CarSections[0].Elements[j].ObjectIndex;
 								if (CarSections[0].Overlay)
 								{
-									Renderer.ShowObject(o, Renderer.ObjectType.Overlay);
+									Renderer.ShowObject(o, ObjectType.Overlay);
 								}
 								else
 								{
-									Renderer.ShowObject(o, Renderer.ObjectType.Dynamic);
+									Renderer.ShowObject(o, ObjectType.Dynamic);
 								}
 							}
 							break;
@@ -594,7 +586,7 @@ namespace OpenBve
 			internal void UpdateCarSectionElement(int SectionIndex, int ElementIndex, Vector3 Position, Vector3 Direction, Vector3 Up, Vector3 Side, bool Show, double TimeElapsed, bool ForceUpdate, bool EnableDamping)
 			{
 				Vector3 p;
-				if (CarSections[SectionIndex].Overlay & World.CameraRestriction != World.CameraRestrictionMode.NotAvailable)
+				if (CarSections[SectionIndex].Overlay & World.CameraRestriction != Camera.RestrictionMode.NotAvailable)
 				{
 					p = new Vector3(Driver.X, Driver.Y, Driver.Z);
 				}
@@ -635,22 +627,20 @@ namespace OpenBve
 			internal void UpdateTopplingCantAndSpring(double TimeElapsed)
 			{
 				// get direction, up and side vectors
-				double dx, dy, dz;
-				double ux, uy, uz;
-				double sx, sy, sz;
+				Vector3 d = new Vector3();
+				Vector3 u;
+				Vector3 s;
 				{
-					dx = FrontAxle.Follower.WorldPosition.X - RearAxle.Follower.WorldPosition.X;
-					dy = FrontAxle.Follower.WorldPosition.Y - RearAxle.Follower.WorldPosition.Y;
-					dz = FrontAxle.Follower.WorldPosition.Z - RearAxle.Follower.WorldPosition.Z;
-					double t = 1.0 / Math.Sqrt(dx * dx + dy * dy + dz * dz);
-					dx *= t; dy *= t; dz *= t;
-					t = 1.0 / Math.Sqrt(dx * dx + dz * dz);
-					double ex = dx * t;
-					double ez = dz * t;
-					sx = ez;
-					sy = 0.0;
-					sz = -ex;
-					World.Cross(dx, dy, dz, sx, sy, sz, out ux, out uy, out uz);
+					d.X = FrontAxle.Follower.WorldPosition.X - RearAxle.Follower.WorldPosition.X;
+					d.Y = FrontAxle.Follower.WorldPosition.Y - RearAxle.Follower.WorldPosition.Y;
+					d.Z = FrontAxle.Follower.WorldPosition.Z - RearAxle.Follower.WorldPosition.Z;
+					double t = 1.0 / Math.Sqrt(d.X * d.X + d.Y * d.Y + d.Z * d.Z);
+					d *= t;
+					t = 1.0 / Math.Sqrt(d.X * d.X + d.Z * d.Z);
+					double ex = d.X * t;
+					double ez = d.Z * t;
+					s = new Vector3(ez, 0.0, -ex);
+					u = Vector3.Cross(d, s);
 				}
 				// cant and radius
 				double c;
@@ -690,15 +680,15 @@ namespace OpenBve
 						const double c0 = 0.03;
 						const double c1 = 0.15;
 						a1 = c1 * Math.Atan(c0 * Specs.CurrentRollShakeDirection);
-						double d = 0.5 + Specs.CurrentRollShakeDirection * Specs.CurrentRollShakeDirection;
+						double dr = 0.5 + Specs.CurrentRollShakeDirection * Specs.CurrentRollShakeDirection;
 						if (Specs.CurrentRollShakeDirection < 0.0)
 						{
-							Specs.CurrentRollShakeDirection += d * TimeElapsed;
+							Specs.CurrentRollShakeDirection += dr * TimeElapsed;
 							if (Specs.CurrentRollShakeDirection > 0.0) Specs.CurrentRollShakeDirection = 0.0;
 						}
 						else
 						{
-							Specs.CurrentRollShakeDirection -= d * TimeElapsed;
+							Specs.CurrentRollShakeDirection -= dr * TimeElapsed;
 							if (Specs.CurrentRollShakeDirection < 0.0) Specs.CurrentRollShakeDirection = 0.0;
 						}
 					}
@@ -757,8 +747,8 @@ namespace OpenBve
 							v = Specs.CurrentPitchDueToAccelerationSlowValue;
 							j = 1.0;
 						}
-						double d = a - v;
-						if (d < 0.0)
+						double da = a - v;
+						if (da < 0.0)
 						{
 							v -= j * TimeElapsed;
 							if (v < a) v = a;
@@ -782,16 +772,16 @@ namespace OpenBve
 						}
 					}
 					{
-						double d = Specs.CurrentPitchDueToAccelerationSlowValue - Specs.CurrentPitchDueToAccelerationFastValue;
-						Specs.CurrentPitchDueToAccelerationTargetAngle = 0.03 * Math.Atan(d);
+						double da = Specs.CurrentPitchDueToAccelerationSlowValue - Specs.CurrentPitchDueToAccelerationFastValue;
+						Specs.CurrentPitchDueToAccelerationTargetAngle = 0.03 * Math.Atan(da);
 					}
 					{
 						double a = 3.0 * (double)Math.Sign(Specs.CurrentPitchDueToAccelerationTargetAngle - Specs.CurrentPitchDueToAccelerationAngle);
 						Specs.CurrentPitchDueToAccelerationAngularSpeed += a * TimeElapsed;
-						double s = Math.Abs(Specs.CurrentPitchDueToAccelerationTargetAngle - Specs.CurrentPitchDueToAccelerationAngle);
-						if (Math.Abs(Specs.CurrentPitchDueToAccelerationAngularSpeed) > s)
+						double ds = Math.Abs(Specs.CurrentPitchDueToAccelerationTargetAngle - Specs.CurrentPitchDueToAccelerationAngle);
+						if (Math.Abs(Specs.CurrentPitchDueToAccelerationAngularSpeed) > ds)
 						{
-							Specs.CurrentPitchDueToAccelerationAngularSpeed = s * (double)Math.Sign(Specs.CurrentPitchDueToAccelerationAngularSpeed);
+							Specs.CurrentPitchDueToAccelerationAngularSpeed = ds * (double)Math.Sign(Specs.CurrentPitchDueToAccelerationAngularSpeed);
 						}
 						Specs.CurrentPitchDueToAccelerationAngle += Specs.CurrentPitchDueToAccelerationAngularSpeed * TimeElapsed;
 					}
@@ -813,8 +803,8 @@ namespace OpenBve
 					double a = Specs.CurrentRollDueToTopplingAngle;
 					double ab = Specs.CurrentRollDueToTopplingAngle + Specs.CurrentRollDueToCantAngle;
 					double h = Specs.CenterOfGravityHeight;
-					double s = Math.Abs(Specs.CurrentSpeed);
-					double rmax = 2.0 * h * s * s / (Game.RouteAccelerationDueToGravity * Game.RouteRailGauge);
+					double sr = Math.Abs(Specs.CurrentSpeed);
+					double rmax = 2.0 * h * sr * sr / (Game.RouteAccelerationDueToGravity * Game.RouteRailGauge);
 					double ta;
 					Topples = false;
 					if (Derailed)
@@ -830,7 +820,7 @@ namespace OpenBve
 							{
 								double s0 = Math.Sqrt(r * Game.RouteAccelerationDueToGravity * Game.RouteRailGauge / (2.0 * h));
 								const double fac = 0.25; // arbitrary coefficient
-								ta = -fac * (s - s0) * rs;
+								ta = -fac * (sr - s0) * rs;
 								baseTrain.Topple(Index, TimeElapsed);
 							}
 							else
@@ -855,14 +845,14 @@ namespace OpenBve
 					}
 					if (a > ta)
 					{
-						double d = a - ta;
-						if (td > d) td = d;
+						double da = a - ta;
+						if (td > da) td = da;
 						a -= td * TimeElapsed;
 					}
 					else if (a < ta)
 					{
-						double d = ta - a;
-						if (td > d) td = d;
+						double da = ta - a;
+						if (td > da) td = da;
 						a += td * TimeElapsed;
 					}
 					Specs.CurrentRollDueToTopplingAngle = a;
@@ -876,26 +866,18 @@ namespace OpenBve
 					double a = Specs.CurrentRollDueToTopplingAngle + Specs.CurrentRollDueToCantAngle;
 					double x = Math.Sign(a) * 0.5 * Game.RouteRailGauge * (1.0 - Math.Cos(a));
 					double y = Math.Abs(0.5 * Game.RouteRailGauge * Math.Sin(a));
-					double cx = sx * x + ux * y;
-					double cy = sy * x + uy * y;
-					double cz = sz * x + uz * y;
-					FrontAxle.Follower.WorldPosition.X += cx;
-					FrontAxle.Follower.WorldPosition.Y += cy;
-					FrontAxle.Follower.WorldPosition.Z += cz;
-					RearAxle.Follower.WorldPosition.X += cx;
-					RearAxle.Follower.WorldPosition.Y += cy;
-					RearAxle.Follower.WorldPosition.Z += cz;
+					Vector3 cc = new Vector3(s.X * x + u.X * y, s.Y * x + u.Y * y, s.Z * x + u.Z * y);
+					FrontAxle.Follower.WorldPosition += cc;
+					RearAxle.Follower.WorldPosition += cc;
 				}
 				// apply rolling
 				{
 					double a = -Specs.CurrentRollDueToTopplingAngle - Specs.CurrentRollDueToCantAngle;
 					double cosa = Math.Cos(a);
 					double sina = Math.Sin(a);
-					World.Rotate(ref sx, ref sy, ref sz, dx, dy, dz, cosa, sina);
-					World.Rotate(ref ux, ref uy, ref uz, dx, dy, dz, cosa, sina);
-					Up.X = ux;
-					Up.Y = uy;
-					Up.Z = uz;
+					s.Rotate(d, cosa, sina);
+					u.Rotate(d, cosa, sina);
+					Up = u;
 				}
 				// apply pitching
 				if (CurrentCarSection >= 0 && CarSections[CurrentCarSection].Overlay)
@@ -903,8 +885,8 @@ namespace OpenBve
 					double a = Specs.CurrentPitchDueToAccelerationAngle;
 					double cosa = Math.Cos(a);
 					double sina = Math.Sin(a);
-					World.Rotate(ref dx, ref dy, ref dz, sx, sy, sz, cosa, sina);
-					World.Rotate(ref ux, ref uy, ref uz, sx, sy, sz, cosa, sina);
+					d.Rotate(s, cosa, sina);
+					u.Rotate(s, cosa, sina);
 					double cx = 0.5 * (FrontAxle.Follower.WorldPosition.X + RearAxle.Follower.WorldPosition.X);
 					double cy = 0.5 * (FrontAxle.Follower.WorldPosition.Y + RearAxle.Follower.WorldPosition.Y);
 					double cz = 0.5 * (FrontAxle.Follower.WorldPosition.Z + RearAxle.Follower.WorldPosition.Z);
@@ -914,17 +896,15 @@ namespace OpenBve
 					RearAxle.Follower.WorldPosition.X -= cx;
 					RearAxle.Follower.WorldPosition.Y -= cy;
 					RearAxle.Follower.WorldPosition.Z -= cz;
-					World.Rotate(ref FrontAxle.Follower.WorldPosition, sx, sy, sz, cosa, sina);
-					World.Rotate(ref RearAxle.Follower.WorldPosition, sx, sy, sz, cosa, sina);
+					FrontAxle.Follower.WorldPosition.Rotate(s, cosa, sina);
+					RearAxle.Follower.WorldPosition.Rotate(s, cosa, sina);
 					FrontAxle.Follower.WorldPosition.X += cx;
 					FrontAxle.Follower.WorldPosition.Y += cy;
 					FrontAxle.Follower.WorldPosition.Z += cz;
 					RearAxle.Follower.WorldPosition.X += cx;
 					RearAxle.Follower.WorldPosition.Y += cy;
 					RearAxle.Follower.WorldPosition.Z += cz;
-					Up.X = ux;
-					Up.Y = uy;
-					Up.Z = uz;
+					Up = u;
 				}
 				// spring sound
 				{
@@ -965,10 +945,10 @@ namespace OpenBve
 					 * line that forms between the axles hits the rail, i.e. the less perpendicular that
 					 * line is to the rails, the more flange noise there will be.
 					 * */
-					Vector3 d = FrontAxle.Follower.WorldPosition - RearAxle.Follower.WorldPosition;
-					World.Normalize(ref d.X, ref d.Y, ref d.Z);
-					double b0 = d.X * RearAxle.Follower.WorldSide.X + d.Y * RearAxle.Follower.WorldSide.Y + d.Z * RearAxle.Follower.WorldSide.Z;
-					double b1 = d.X * FrontAxle.Follower.WorldSide.X + d.Y * FrontAxle.Follower.WorldSide.Y + d.Z * FrontAxle.Follower.WorldSide.Z;
+					Vector3 df = FrontAxle.Follower.WorldPosition - RearAxle.Follower.WorldPosition;
+					df.Normalize();
+					double b0 = df.X * RearAxle.Follower.WorldSide.X + df.Y * RearAxle.Follower.WorldSide.Y + df.Z * RearAxle.Follower.WorldSide.Z;
+					double b1 = df.X * FrontAxle.Follower.WorldSide.X + df.Y * FrontAxle.Follower.WorldSide.Y + df.Z * FrontAxle.Follower.WorldSide.Z;
 					double spd = Math.Abs(Specs.CurrentSpeed);
 					double pitch = 0.5 + 0.04 * spd;
 					double b2 = Math.Abs(b0) + Math.Abs(b1);

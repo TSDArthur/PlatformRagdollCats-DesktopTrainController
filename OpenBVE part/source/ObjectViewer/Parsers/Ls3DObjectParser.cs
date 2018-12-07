@@ -9,6 +9,7 @@ using OpenBveApi.Colors;
 using OpenBveApi.Math;
 using PixelFormat = System.Drawing.Imaging.PixelFormat;
 using System.Linq;
+using OpenBveApi.Interface;
 using OpenBveApi.Objects;
 using OpenBveApi.Textures;
 
@@ -17,58 +18,7 @@ namespace OpenBve
 	/// <summary>Parses a Loksim3D xml format object</summary>
     internal static class Ls3DObjectParser
     {
-        // structures
-        private class Material
-        {
-            internal Color32 Color;
-            internal Color24 EmissiveColor;
-            internal bool EmissiveColorUsed;
-            internal Color24 TransparentColor;
-            internal bool TransparentColorUsed;
-            internal string DaytimeTexture;
-	        internal string TransparencyTexture;
-            internal string NighttimeTexture;
-            internal World.MeshMaterialBlendMode BlendMode;
-            internal ushort GlowAttenuationData;
-            internal Material()
-            {
-                this.Color = new Color32(255, 255, 255, 255);
-                this.EmissiveColor = new Color24(0, 0, 0);
-                this.EmissiveColorUsed = false;
-                this.TransparentColor = new Color24(0, 0, 0);
-                this.TransparentColorUsed = false;
-                this.DaytimeTexture = null;
-                this.NighttimeTexture = null;
-                this.BlendMode = World.MeshMaterialBlendMode.Normal;
-                this.GlowAttenuationData = 0;
-            }
-            internal Material(Material Prototype)
-            {
-                this.Color = Prototype.Color;
-                this.EmissiveColor = Prototype.EmissiveColor;
-                this.EmissiveColorUsed = Prototype.EmissiveColorUsed;
-                this.TransparentColor = Prototype.TransparentColor;
-                this.TransparentColorUsed = Prototype.TransparentColorUsed;
-                this.DaytimeTexture = Prototype.DaytimeTexture;
-                this.NighttimeTexture = Prototype.NighttimeTexture;
-                this.BlendMode = Prototype.BlendMode;
-                this.GlowAttenuationData = Prototype.GlowAttenuationData;
-            }
-        }
-        private class MeshBuilder
-        {
-            internal VertexTemplate[] Vertices;
-            internal World.MeshFace[] Faces;
-            internal Material[] Materials;
-            internal MeshBuilder()
-            {
-                this.Vertices = new VertexTemplate[] { };
-                this.Faces = new World.MeshFace[] { };
-                this.Materials = new Material[] { new Material() };
-            }
-        }
-
-		/// <summary>Loads a Loksim3D object from a file.</summary>
+        /// <summary>Loads a Loksim3D object from a file.</summary>
 		/// <param name="FileName">The text file to load the animated object from. Must be an absolute file name.</param>
 		/// <param name="Encoding">The encoding the file is saved in. If the file uses a byte order mark, the encoding indicated by the byte order mark is used and the Encoding parameter is ignored.</param>
 		/// <param name="LoadMode">The texture load mode.</param>
@@ -76,7 +26,7 @@ namespace OpenBve
 		/// <param name="ForceTextureRepeatY">Whether to force TextureWrapMode.Repeat for the Y-axis</param>
 		/// <param name="Rotation">A three-dimemsional vector describing the rotation to be applied</param>
 		/// <returns>The object loaded.</returns>
-		internal static ObjectManager.StaticObject ReadObject(string FileName, System.Text.Encoding Encoding,ObjectManager.ObjectLoadMode LoadMode, bool ForceTextureRepeatX, bool ForceTextureRepeatY, Vector3 Rotation)
+		internal static ObjectManager.StaticObject ReadObject(string FileName, System.Text.Encoding Encoding,ObjectLoadMode LoadMode, bool ForceTextureRepeatX, bool ForceTextureRepeatY, Vector3 Rotation)
         {
 	        string BaseDir = System.IO.Path.GetDirectoryName(FileName);
 			XmlDocument currentXML = new XmlDocument();
@@ -116,7 +66,7 @@ namespace OpenBve
             }
             else
             {
-	            Interface.AddMessage(Interface.MessageType.Error, false, "Loksim3D object " + FileName + " does not exist.");
+	            Interface.AddMessage(MessageType.Error, false, "Loksim3D object " + FileName + " does not exist.");
 				return null;
             }
             //Check for null
@@ -151,7 +101,7 @@ namespace OpenBve
 													tday = OpenBveApi.Path.Loksim3D.CombineFile(BaseDir, attribute.Value, Program.FileSystem.LoksimPackageInstallationDirectory);
 													if (!File.Exists(tday))
 													{
-														Interface.AddMessage(Interface.MessageType.Warning, true, "Ls3d Texture file " + attribute.Value + " not found.");
+														Interface.AddMessage(MessageType.Warning, true, "Ls3d Texture file " + attribute.Value + " not found.");
 														break;
 													}
 													try
@@ -166,7 +116,7 @@ namespace OpenBve
 													}
 													catch
 													{
-														Interface.AddMessage(Interface.MessageType.Error, true,
+														Interface.AddMessage(MessageType.Error, true,
 															"An error occured loading daytime texture " + tday +
 															" in file " + FileName);
 														tday = null;
@@ -183,7 +133,7 @@ namespace OpenBve
 													if (attribute.Value == "TRUE")
 													{
 														TransparencyUsed = true;
-														transparentColor = new Color24(0,0,0);
+														transparentColor = Color24.Black;
 													}
                                                     break;
 	                                            case "TransTexture":
@@ -195,7 +145,7 @@ namespace OpenBve
 		                                            transtex = OpenBveApi.Path.Loksim3D.CombineFile(BaseDir, attribute.Value, Program.FileSystem.LoksimPackageInstallationDirectory);
 		                                            if (!File.Exists(transtex))
 		                                            {
-			                                            Interface.AddMessage(Interface.MessageType.Error, true, "AlphaTexture " + transtex + " could not be found in file " + FileName);
+			                                            Interface.AddMessage(MessageType.Error, true, "AlphaTexture " + transtex + " could not be found in file " + FileName);
 			                                            transtex = null;
 													}
 		                                            break;
@@ -211,7 +161,7 @@ namespace OpenBve
                                                         case "1":
                                                             //Transparency is solid black
                                                             TransparencyUsed = true;
-                                                            transparentColor = new Color24(0,0,0);
+                                                            transparentColor = Color24.Black;
 	                                                        FirstPxTransparent = false;
                                                             break;
                                                         case "2":
@@ -230,7 +180,7 @@ namespace OpenBve
 															//TODO: (Low priority) Check what happens in Loksim itself when an image uses the Alpha channel, but doesn't actually specify type 5
 															break;
 														default:
-															Interface.AddMessage(Interface.MessageType.Error, false, "Unrecognised transparency type " + attribute.Value + " detected in " + attribute.Name + " in Loksim3D object file " + FileName);
+															Interface.AddMessage(MessageType.Error, false, "Unrecognised transparency type " + attribute.Value + " detected in " + attribute.Name + " in Loksim3D object file " + FileName);
 															break;
                                                     }
                                                     break;
@@ -278,15 +228,15 @@ namespace OpenBve
                                                         string[] NormalPoints = attribute.Value.Split(';');
 														if (!double.TryParse(NormalPoints[0], out nx))
 														{
-															Interface.AddMessage(Interface.MessageType.Error, false, "Invalid argument nX in " + attribute.Name + " in Loksim3D object file " + FileName);
+															Interface.AddMessage(MessageType.Error, false, "Invalid argument nX in " + attribute.Name + " in Loksim3D object file " + FileName);
 														}
 														if (!double.TryParse(NormalPoints[1], out ny))
 														{
-															Interface.AddMessage(Interface.MessageType.Error, false, "Invalid argument nY in " + attribute.Name + " in Loksim3D object file " + FileName);
+															Interface.AddMessage(MessageType.Error, false, "Invalid argument nY in " + attribute.Name + " in Loksim3D object file " + FileName);
 														}
 														if (!double.TryParse(NormalPoints[2], out nz))
 														{
-															Interface.AddMessage(Interface.MessageType.Error, false, "Invalid argument nZ in " + attribute.Name + " in Loksim3D object file " + FileName);
+															Interface.AddMessage(MessageType.Error, false, "Invalid argument nZ in " + attribute.Name + " in Loksim3D object file " + FileName);
 														}
                                                         break;
                                                     //Sets the vertex 3D co-ordinates
@@ -294,26 +244,26 @@ namespace OpenBve
                                                         string[] VertexPoints = attribute.Value.Split(';');
 														if (!double.TryParse(VertexPoints[0], out vx))
 														{
-															Interface.AddMessage(Interface.MessageType.Error, false, "Invalid argument vX in " + attribute.Name + " in Loksim3D object file " + FileName);
+															Interface.AddMessage(MessageType.Error, false, "Invalid argument vX in " + attribute.Name + " in Loksim3D object file " + FileName);
 														}
 														if (!double.TryParse(VertexPoints[1], out vy))
 														{
-															Interface.AddMessage(Interface.MessageType.Error, false, "Invalid argument yY in " + attribute.Name + " in Loksim3D object file " + FileName);
+															Interface.AddMessage(MessageType.Error, false, "Invalid argument yY in " + attribute.Name + " in Loksim3D object file " + FileName);
 														}
 														if (!double.TryParse(VertexPoints[2], out vz))
 														{
-															Interface.AddMessage(Interface.MessageType.Error, false, "Invalid argument vZ in " + attribute.Name + " in Loksim3D object file " + FileName);
+															Interface.AddMessage(MessageType.Error, false, "Invalid argument vZ in " + attribute.Name + " in Loksim3D object file " + FileName);
 														}
                                                         break;
                                                 }
                                             }
-                                            World.Normalize(ref nx, ref ny, ref nz);
 											//Resize temp arrays
                                             Array.Resize<VertexTemplate>(ref tempVertices, tempVertices.Length + 1);
                                             Array.Resize<Vector3>(ref tempNormals, tempNormals.Length + 1);
                                             //Add vertex and normals to temp array
                                             tempVertices[tempVertices.Length - 1] = new Vertex(vx, vy, vz);
                                             tempNormals[tempNormals.Length - 1] = new Vector3((float)nx, (float)ny, (float)nz);
+	                                        tempNormals[tempNormals.Length - 1].Normalize();
                                             Array.Resize<VertexTemplate>(ref Builder.Vertices, Builder.Vertices.Length + 1);
                                             while (Builder.Vertices.Length >= Normals.Length)
                                             {
@@ -357,7 +307,7 @@ namespace OpenBve
                                                     int currentVertex;
 													if (!int.TryParse(Verticies[j], out currentVertex))
 													{
-														Interface.AddMessage(Interface.MessageType.Error, false, Verticies[j] + " does not parse to a valid Vertex in " + node.Name + " in Loksim3D object file " + FileName);
+														Interface.AddMessage(MessageType.Error, false, Verticies[j] + " does not parse to a valid Vertex in " + node.Name + " in Loksim3D object file " + FileName);
 														continue;
 													}
                                                     //Add one to the actual vertex array
@@ -379,12 +329,12 @@ namespace OpenBve
                                                         string[] splitCoords = TextureCoords[j].Split(',');
 														if (!float.TryParse(splitCoords[0], out OpenBVEWidth))
 														{
-															Interface.AddMessage(Interface.MessageType.Error, false, "Invalid texture width specified in " + node.Name + " in Loksim3D object file " + FileName);
+															Interface.AddMessage(MessageType.Error, false, "Invalid texture width specified in " + node.Name + " in Loksim3D object file " + FileName);
 															continue;
 														}
 														if (!float.TryParse(splitCoords[1], out OpenBVEHeight))
 														{
-															Interface.AddMessage(Interface.MessageType.Error, false, "Invalid texture height specified in " + node.Name + " in Loksim3D object file " + FileName);
+															Interface.AddMessage(MessageType.Error, false, "Invalid texture height specified in " + node.Name + " in Loksim3D object file " + FileName);
 															continue;
 														}
 														if (OpenBVEWidth <= smallestX && OpenBVEHeight <= smallestY)
@@ -483,87 +433,11 @@ namespace OpenBve
                 }
                  
             }
-            ApplyMeshBuilder(ref Object, Builder, LoadMode, ForceTextureRepeatX, ForceTextureRepeatY);
-            World.CreateNormals(ref Object.Mesh);
+			Builder.Apply(ref Object);
+            Object.Mesh.CreateNormals();
             return Object;
         }
-        private static void ApplyMeshBuilder(ref ObjectManager.StaticObject Object, MeshBuilder Builder, ObjectManager.ObjectLoadMode LoadMode, bool ForceTextureRepeatX, bool ForceTextureRepeatY)
-        {
-            if (Builder.Faces.Length != 0)
-            {
-                int mf = Object.Mesh.Faces.Length;
-                int mm = Object.Mesh.Materials.Length;
-                int mv = Object.Mesh.Vertices.Length;
-                Array.Resize<World.MeshFace>(ref Object.Mesh.Faces, mf + Builder.Faces.Length);
-                Array.Resize<World.MeshMaterial>(ref Object.Mesh.Materials, mm + Builder.Materials.Length);
-                Array.Resize<VertexTemplate>(ref Object.Mesh.Vertices, mv + Builder.Vertices.Length);
-                for (int i = 0; i < Builder.Vertices.Length; i++)
-                {
-                    Object.Mesh.Vertices[mv + i] = Builder.Vertices[i];
-                }
-                for (int i = 0; i < Builder.Faces.Length; i++)
-                {
-                    Object.Mesh.Faces[mf + i] = Builder.Faces[i];
-                    for (int j = 0; j < Object.Mesh.Faces[mf + i].Vertices.Length; j++)
-                    {
-                        Object.Mesh.Faces[mf + i].Vertices[j].Index += (ushort)mv;
-                    }
-                    Object.Mesh.Faces[mf + i].Material += (ushort)mm;
-                }
-                for (int i = 0; i < Builder.Materials.Length; i++)
-                {
-                    Object.Mesh.Materials[mm + i].Flags = (byte)((Builder.Materials[i].EmissiveColorUsed ? World.MeshMaterial.EmissiveColorMask : 0) | (Builder.Materials[i].TransparentColorUsed ? World.MeshMaterial.TransparentColorMask : 0));
-                    Object.Mesh.Materials[mm + i].Color = Builder.Materials[i].Color;
-                    Object.Mesh.Materials[mm + i].TransparentColor = Builder.Materials[i].TransparentColor;
-                    if (Builder.Materials[i].DaytimeTexture != null)
-                    {
-	                    Textures.Texture tday;
-						
-
-	                    if (!string.IsNullOrEmpty(Builder.Materials[i].TransparencyTexture))
-	                    {
-		                    Bitmap Main = new Bitmap(Builder.Materials[i].DaytimeTexture);
-		                    Main = ResizeImage(Main, Main.Size.Width, Main.Size.Height);
-							Bitmap Alpha = new Bitmap(Builder.Materials[i].TransparencyTexture);
-							if (Alpha.Size != Main.Size)
-							{
-								Alpha = ResizeImage(Alpha, Main.Size.Width, Main.Size.Height);
-							}
-							Bitmap texture = MergeAlphaBitmap(Main, Alpha);
-							//Dispose of both main and alpha
-							Main.Dispose();
-							Alpha.Dispose();
-							tday = Textures.RegisterTexture(texture);
-						}
-						else
-						{
-							Textures.RegisterTexture(Builder.Materials[i].DaytimeTexture, new TextureParameters(null, Builder.Materials[i].TransparentColor), out tday);
-						}
-						Object.Mesh.Materials[mm + i].DaytimeTexture = tday;
-					}
-					else
-					{
-						Object.Mesh.Materials[mm + i].DaytimeTexture = null;
-					}
-					Object.Mesh.Materials[mm + i].EmissiveColor = Builder.Materials[i].EmissiveColor;
-					if (Builder.Materials[i].NighttimeTexture != null)
-					{
-						Textures.Texture tnight;
-						Textures.RegisterTexture(Builder.Materials[i].NighttimeTexture, new TextureParameters(null, Builder.Materials[i].TransparentColor), out tnight);
-						Object.Mesh.Materials[mm + i].DaytimeTexture = tnight;
-					}
-					else
-					{
-						Object.Mesh.Materials[mm + i].NighttimeTexture = null;
-					}
-					Object.Mesh.Materials[mm + i].DaytimeNighttimeBlend = 0;
-					Object.Mesh.Materials[mm + i].BlendMode = Builder.Materials[i].BlendMode;
-					Object.Mesh.Materials[mm + i].GlowAttenuationData = Builder.Materials[i].GlowAttenuationData;
-				}
-			}
-		}
-
-	    private static Bitmap MergeAlphaBitmap(Bitmap Main, Bitmap Alpha)
+        private static Bitmap MergeAlphaBitmap(Bitmap Main, Bitmap Alpha)
 	    {
 		    Bitmap Output = new Bitmap(Main.Width, Main.Height, PixelFormat.Format32bppArgb);
 
@@ -661,13 +535,13 @@ namespace OpenBve
             double sina = Math.Sin(a);
             for (int i = 0; i < Builder.Vertices.Length; i++)
             {
-                World.Rotate(ref Builder.Vertices[i].Coordinates.X, ref Builder.Vertices[i].Coordinates.Y, ref Builder.Vertices[i].Coordinates.Z, x, y, z, cosa, sina);
+	            Builder.Vertices[i].Coordinates.Rotate(new Vector3(x,y,z), cosa, sina);
             }
             for (int i = 0; i < Builder.Faces.Length; i++)
             {
                 for (int j = 0; j < Builder.Faces[i].Vertices.Length; j++)
                 {
-                    World.Rotate(ref Builder.Faces[i].Vertices[j].Normal.X, ref Builder.Faces[i].Vertices[j].Normal.Y, ref Builder.Faces[i].Vertices[j].Normal.Z, x, y, z, cosa, sina);
+	                Builder.Faces[i].Vertices[j].Normal.Rotate(new Vector3(x,y,z), cosa, sina);
                 }
             }
         }

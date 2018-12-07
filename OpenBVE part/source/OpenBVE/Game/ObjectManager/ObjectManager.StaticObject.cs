@@ -1,6 +1,8 @@
 ﻿using System;
 using OpenBveApi.Math;
 using OpenBveApi.Objects;
+using OpenBveApi.Textures;
+using OpenBveApi.World;
 
 namespace OpenBve
 {
@@ -31,7 +33,7 @@ namespace OpenBve
 			/// <param name="DaytimeTexture">The replacement daytime texture</param>
 			/// <param name="NighttimeTexture">The replacement nighttime texture</param>
 			/// <returns></returns>
-			internal StaticObject Clone(Textures.Texture DaytimeTexture, Textures.Texture NighttimeTexture)
+			internal StaticObject Clone(Texture DaytimeTexture, Texture NighttimeTexture)
 			{
 				StaticObject Result = new StaticObject
 				{
@@ -206,19 +208,20 @@ namespace OpenBve
 				}
 			}
 
-			internal void ApplyRotation(double x, double y, double z, double a)
+			internal void ApplyRotation(Vector3 Rotation, double Angle)
 			{
-				double cosa = Math.Cos(a);
-				double sina = Math.Sin(a);
+				double cosa = Math.Cos(Angle);
+				double sina = Math.Sin(Angle);
 				for (int j = 0; j < Mesh.Vertices.Length; j++)
 				{
-					World.Rotate(ref Mesh.Vertices[j].Coordinates, x, y, z, cosa, sina);
+					Mesh.Vertices[j].Coordinates.Rotate(Rotation, cosa, sina);
+
 				}
 				for (int j = 0; j < Mesh.Faces.Length; j++)
 				{
 					for (int k = 0; k < Mesh.Faces[j].Vertices.Length; k++)
 					{
-						World.Rotate(ref Mesh.Faces[j].Vertices[k].Normal, x, y, z, cosa, sina);
+						Mesh.Faces[j].Vertices[k].Normal.Rotate(Rotation, cosa, sina);
 					}
 				}
 			}
@@ -299,43 +302,30 @@ namespace OpenBve
 				}
 			}
 
-			internal void ApplyShear(double dx, double dy, double dz, double sx, double sy, double sz, double r)
+			internal void ApplyShear(Vector3 d, Vector3 s, double r)
 			{
 				for (int j = 0; j < Mesh.Vertices.Length; j++)
 				{
-					double n = r * (dx * Mesh.Vertices[j].Coordinates.X + dy * Mesh.Vertices[j].Coordinates.Y + dz * Mesh.Vertices[j].Coordinates.Z);
-					Mesh.Vertices[j].Coordinates.X += sx * n;
-					Mesh.Vertices[j].Coordinates.Y += sy * n;
-					Mesh.Vertices[j].Coordinates.Z += sz * n;
+					double n = r * (d.X * Mesh.Vertices[j].Coordinates.X + d.Y * Mesh.Vertices[j].Coordinates.Y + d.Z * Mesh.Vertices[j].Coordinates.Z);
+					Mesh.Vertices[j].Coordinates.X += s.X * n;
+					Mesh.Vertices[j].Coordinates.Y += s.Y * n;
+					Mesh.Vertices[j].Coordinates.Z += s.Z * n;
 				}
-
-				// ReSharper disable NotAccessedVariable
-				double ux, uy, uz;
-				// ReSharper restore NotAccessedVariable
-				World.Cross(sx, sy, sz, dx, dy, dz, out ux, out uy, out uz);
 				for (int j = 0; j < Mesh.Faces.Length; j++)
 				{
 					for (int k = 0; k < Mesh.Faces[j].Vertices.Length; k++)
 					{
 						if (Mesh.Faces[j].Vertices[k].Normal.X != 0.0f | Mesh.Faces[j].Vertices[k].Normal.Y != 0.0f | Mesh.Faces[j].Vertices[k].Normal.Z != 0.0f)
 						{
-							double nx = (double) Mesh.Faces[j].Vertices[k].Normal.X;
-							double ny = (double) Mesh.Faces[j].Vertices[k].Normal.Y;
-							double nz = (double) Mesh.Faces[j].Vertices[k].Normal.Z;
-							double n = r * (sx * nx + sy * ny + sz * nz);
-							nx -= dx * n;
-							ny -= dy * n;
-							nz -= dz * n;
-							World.Normalize(ref nx, ref ny, ref nz);
-							Mesh.Faces[j].Vertices[k].Normal.X = (float) nx;
-							Mesh.Faces[j].Vertices[k].Normal.Y = (float) ny;
-							Mesh.Faces[j].Vertices[k].Normal.Z = (float) nz;
+							double n = r * (s.X * Mesh.Faces[j].Vertices[k].Normal.X + s.Y * Mesh.Faces[j].Vertices[k].Normal.Y + s.Z * Mesh.Faces[j].Vertices[k].Normal.Z);
+							Mesh.Faces[j].Vertices[k].Normal -= d * n;
+							Mesh.Faces[j].Vertices[k].Normal.Normalize();
 						}
 					}
 				}
 			}
 
-			internal void ApplyData(StaticObject Prototype, Vector3 Position, World.Transformation BaseTransformation, World.Transformation AuxTransformation, bool AccurateObjectDisposal, double AccurateObjectDisposalZOffset, double startingDistance, double endingDistance, double BlockLength, double TrackPosition, double Brightness, bool DuplicateMaterials)
+			internal void ApplyData(StaticObject Prototype, Vector3 Position, Transformation BaseTransformation, Transformation AuxTransformation, bool AccurateObjectDisposal, double AccurateObjectDisposalZOffset, double startingDistance, double endingDistance, double BlockLength, double TrackPosition, double Brightness, bool DuplicateMaterials)
 			{
 				StartingDistance = float.MaxValue;
 				EndingDistance = float.MinValue;
@@ -353,7 +343,7 @@ namespace OpenBve
 					}
 					if (AccurateObjectDisposal)
 					{
-						World.Rotate(ref Mesh.Vertices[j].Coordinates.X, ref Mesh.Vertices[j].Coordinates.Y, ref Mesh.Vertices[j].Coordinates.Z, AuxTransformation);
+						Mesh.Vertices[j].Coordinates.Rotate(AuxTransformation);
 						if (Mesh.Vertices[j].Coordinates.Z < StartingDistance)
 						{
 							StartingDistance = (float)Mesh.Vertices[j].Coordinates.Z;
@@ -364,8 +354,8 @@ namespace OpenBve
 						}
 						Mesh.Vertices[j].Coordinates = Prototype.Mesh.Vertices[j].Coordinates;
 					}
-					World.Rotate(ref Mesh.Vertices[j].Coordinates.X, ref Mesh.Vertices[j].Coordinates.Y, ref Mesh.Vertices[j].Coordinates.Z, AuxTransformation);
-					World.Rotate(ref Mesh.Vertices[j].Coordinates.X, ref Mesh.Vertices[j].Coordinates.Y, ref Mesh.Vertices[j].Coordinates.Z, BaseTransformation);
+					Mesh.Vertices[j].Coordinates.Rotate(AuxTransformation);
+					Mesh.Vertices[j].Coordinates.Rotate(BaseTransformation);
 					Mesh.Vertices[j].Coordinates.X += Position.X;
 					Mesh.Vertices[j].Coordinates.Y += Position.Y;
 					Mesh.Vertices[j].Coordinates.Z += Position.Z;
@@ -390,8 +380,8 @@ namespace OpenBve
 						double nz = Mesh.Faces[j].Vertices[k].Normal.Z;
 						if (nx * nx + ny * ny + nz * nz != 0.0)
 						{
-							World.Rotate(ref Mesh.Faces[j].Vertices[k].Normal.X, ref Mesh.Faces[j].Vertices[k].Normal.Y, ref Mesh.Faces[j].Vertices[k].Normal.Z, AuxTransformation);
-							World.Rotate(ref Mesh.Faces[j].Vertices[k].Normal.X, ref Mesh.Faces[j].Vertices[k].Normal.Y, ref Mesh.Faces[j].Vertices[k].Normal.Z, BaseTransformation);
+							Mesh.Faces[j].Vertices[k].Normal.Rotate(AuxTransformation);
+							Mesh.Faces[j].Vertices[k].Normal.Rotate(BaseTransformation);
 						}
 					}
 				}
@@ -433,7 +423,7 @@ namespace OpenBve
 				}
 			}
 
-			internal override void CreateObject(Vector3 Position, World.Transformation BaseTransformation, World.Transformation AuxTransformation,
+			internal override void CreateObject(Vector3 Position, Transformation BaseTransformation, Transformation AuxTransformation,
 				int SectionIndex, bool AccurateObjectDisposal, double StartingDistance, double EndingDistance, double BlockLength,
 				double TrackPosition, double Brightness, bool DuplicateMaterials)
 			{

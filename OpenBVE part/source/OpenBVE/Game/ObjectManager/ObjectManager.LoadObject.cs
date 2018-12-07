@@ -1,6 +1,8 @@
 ﻿using System;
+using OpenBveApi.Interface;
 using OpenBveApi.Math;
-using OpenBve.Formats.MsTs;
+using OpenBveApi.Objects;
+
 namespace OpenBve
 {
 	/// <summary>The ObjectManager is the root class containing functions to load and manage objects within the simulation world</summary>
@@ -14,6 +16,13 @@ namespace OpenBve
 		/// <param name="ForceTextureRepeatX">Whether texture repeat is forced on the X-axis</param>
 		/// <param name="ForceTextureRepeatY">Whether texture repeat is forced on the Y-axis</param>
 		/// <returns>The new object, or a null reference if loading fails</returns>
+		/*
+		 * Notes for refactoring:
+		 *   * Unused vertices must only be preserved in deformable objects (e.g. Crack and Form)
+		 *   * ForceTextureRepeatX / Y is only used for animated objects using the TextureShiftFunction
+		 *   * TODO / BUG: ForceTextureRepeat is only supported by the B3D / CSV parser
+		 *   * TODO / BUG: No detection of actual file contents, which will make all parsers barf
+		 */
 		internal static UnifiedObject LoadObject(string FileName, System.Text.Encoding Encoding, ObjectLoadMode LoadMode, bool PreserveVertices, bool ForceTextureRepeatX, bool ForceTextureRepeatY)
 		{
 			if (String.IsNullOrEmpty(FileName))
@@ -106,7 +115,7 @@ namespace OpenBve
 			string e = System.IO.Path.GetExtension(FileName);
 			if (e == null)
 			{
-				Interface.AddMessage(Interface.MessageType.Error, false, "The file " + FileName + " does not have a recognised extension.");
+				Interface.AddMessage(MessageType.Error, false, "The file " + FileName + " does not have a recognised extension.");
 				return null;
 			}
 			switch (e.ToLowerInvariant())
@@ -116,7 +125,29 @@ namespace OpenBve
 					Result = CsvB3dObjectParser.ReadObject(FileName, Encoding, LoadMode, ForceTextureRepeatX, ForceTextureRepeatY);
 					break;
 				case ".x":
-					Result = XObjectParser.ReadObject(FileName, Encoding, LoadMode, ForceTextureRepeatX, ForceTextureRepeatY);
+					if (Interface.CurrentOptions.CurrentXParser != Interface.XParsers.Original)
+					{
+						try
+						{
+							if (Interface.CurrentOptions.CurrentXParser == Interface.XParsers.NewXParser)
+							{
+								Result = NewXParser.ReadObject(FileName, Encoding, LoadMode);
+							}
+							else
+							{
+								Result = AssimpXParser.ReadObject(FileName);
+							}
+						}
+						catch (Exception ex)
+						{
+							Interface.AddMessage(MessageType.Error, false, "The new X parser raised the following exception: " + ex);
+							Result = XObjectParser.ReadObject(FileName, Encoding, LoadMode);
+						}
+					}
+					else
+					{
+						Result = XObjectParser.ReadObject(FileName, Encoding, LoadMode);
+					}
 					break;
 				case ".animated":
 					Result = AnimatedObjectParser.ReadObject(FileName, Encoding, LoadMode);
@@ -137,7 +168,7 @@ namespace OpenBve
 					Result = MsTsShapeParser.ReadObject(FileName);
 					break;
 				default:
-					Interface.AddMessage(Interface.MessageType.Error, false, "The file extension is not supported: " + FileName);
+					Interface.AddMessage(MessageType.Error, false, "The file extension is not supported: " + FileName);
 					return null;
 			}
 			if (Result != null)
@@ -147,7 +178,7 @@ namespace OpenBve
 			return Result;
 #if !DEBUG
 			} catch (Exception ex) {
-				Interface.AddMessage(Interface.MessageType.Error, true, "An unexpected error occured (" + ex.Message + ") while attempting to load the file " + FileName);
+				Interface.AddMessage(MessageType.Error, true, "An unexpected error occured (" + ex.Message + ") while attempting to load the file " + FileName);
 				return null;
 			}
 #endif
@@ -189,7 +220,7 @@ namespace OpenBve
 			string e = System.IO.Path.GetExtension(FileName);
 			if (e == null)
 			{
-				Interface.AddMessage(Interface.MessageType.Error, false, "The file " + FileName + " does not have a recognised extension.");
+				Interface.AddMessage(MessageType.Error, false, "The file " + FileName + " does not have a recognised extension.");
 				return null;
 			}
 			switch (e.ToLowerInvariant())
@@ -199,11 +230,33 @@ namespace OpenBve
 					Result = CsvB3dObjectParser.ReadObject(FileName, Encoding, LoadMode, ForceTextureRepeatX, ForceTextureRepeatY);
 					break;
 				case ".x":
-					Result = XObjectParser.ReadObject(FileName, Encoding, LoadMode, ForceTextureRepeatX, ForceTextureRepeatY);
+					if (Interface.CurrentOptions.CurrentXParser != Interface.XParsers.Original)
+					{
+						try
+						{
+							if (Interface.CurrentOptions.CurrentXParser == Interface.XParsers.NewXParser)
+							{
+								Result = NewXParser.ReadObject(FileName, Encoding, LoadMode);
+							}
+							else
+							{
+								Result = AssimpXParser.ReadObject(FileName);
+							}
+						}
+						catch (Exception ex)
+						{
+							Interface.AddMessage(MessageType.Error, false, "The new X parser raised the following exception: " + ex);
+							Result = XObjectParser.ReadObject(FileName, Encoding, LoadMode);
+						}
+					}
+					else
+					{
+						Result = XObjectParser.ReadObject(FileName, Encoding, LoadMode);
+					}
 					break;
 				case ".animated":
 				case ".s":
-					Interface.AddMessage(Interface.MessageType.Error, false, "Tried to load an animated object even though only static objects are allowed: " + FileName);
+					Interface.AddMessage(MessageType.Error, false, "Tried to load an animated object even though only static objects are allowed: " + FileName);
 					return null;
 				case ".obj":
 					Result = WavefrontObjParser.ReadObject(FileName, Encoding, LoadMode, ForceTextureRepeatX, ForceTextureRepeatY);
@@ -216,7 +269,7 @@ namespace OpenBve
 				break;
 				 */
 				default:
-					Interface.AddMessage(Interface.MessageType.Error, false, "The file extension is not supported: " + FileName);
+					Interface.AddMessage(MessageType.Error, false, "The file extension is not supported: " + FileName);
 					return null;
 			}
 			if (Result != null)
@@ -226,7 +279,7 @@ namespace OpenBve
 			return Result;
 #if !DEBUG
 			} catch (Exception ex) {
-				Interface.AddMessage(Interface.MessageType.Error, true, "An unexpected error occured (" + ex.Message + ") while attempting to load the file " + FileName);
+				Interface.AddMessage(MessageType.Error, true, "An unexpected error occured (" + ex.Message + ") while attempting to load the file " + FileName);
 				return null;
 			}
 #endif

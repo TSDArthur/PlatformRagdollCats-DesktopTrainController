@@ -1,5 +1,8 @@
 ﻿using System;
+using System.IO;
+using System.Security.Cryptography;
 using OpenBveApi.Colors;
+using OpenBveApi.Textures;
 
 namespace OpenBve
 {
@@ -29,23 +32,23 @@ namespace OpenBve
 			double bmin = 1.0, bmax = 1.0;
 			for (int i = 0; i < Data.Blocks.Length; i++)
 			{
-				for (int j = 0; j < Data.Blocks[i].Brightness.Length; j++)
+				for (int j = 0; j < Data.Blocks[i].BrightnessChanges.Length; j++)
 				{
-					if (Data.Blocks[i].Brightness[j].TrackPosition <= TrackPosition)
+					if (Data.Blocks[i].BrightnessChanges[j].TrackPosition <= TrackPosition)
 					{
-						tmin = Data.Blocks[i].Brightness[j].TrackPosition;
-						bmin = (double)Data.Blocks[i].Brightness[j].Value;
+						tmin = Data.Blocks[i].BrightnessChanges[j].TrackPosition;
+						bmin = (double)Data.Blocks[i].BrightnessChanges[j].Value;
 					}
 				}
 			}
 			for (int i = Data.Blocks.Length - 1; i >= 0; i--)
 			{
-				for (int j = Data.Blocks[i].Brightness.Length - 1; j >= 0; j--)
+				for (int j = Data.Blocks[i].BrightnessChanges.Length - 1; j >= 0; j--)
 				{
-					if (Data.Blocks[i].Brightness[j].TrackPosition >= TrackPosition)
+					if (Data.Blocks[i].BrightnessChanges[j].TrackPosition >= TrackPosition)
 					{
-						tmax = Data.Blocks[i].Brightness[j].TrackPosition;
-						bmax = (double)Data.Blocks[i].Brightness[j].Value;
+						tmax = Data.Blocks[i].BrightnessChanges[j].TrackPosition;
+						bmax = (double)Data.Blocks[i].BrightnessChanges[j].Value;
 					}
 				}
 			}
@@ -76,15 +79,15 @@ namespace OpenBve
 		/// <param name="BaseFile">The base file.</param>
 		/// <param name="IsGlowTexture">Whether to load glow textures. If false, black is the transparent color. If true, the texture is edited according to the CSV route documentation.</param>
 		/// <returns>All textures matching the base file.</returns>
-		private static Textures.Texture[] LoadAllTextures(string BaseFile, bool IsGlowTexture)
+		private static Texture[] LoadAllTextures(string BaseFile, bool IsGlowTexture)
 		{
 			string Folder = System.IO.Path.GetDirectoryName(BaseFile);
 			if (Folder != null && !System.IO.Directory.Exists(Folder))
 			{
-				return new Textures.Texture[] { };
+				return new Texture[] { };
 			}
 			string Name = System.IO.Path.GetFileNameWithoutExtension(BaseFile);
-			Textures.Texture[] Textures = new Textures.Texture[] { };
+			Texture[] Textures = new Texture[] { };
 			if (Folder == null) return Textures;
 			string[] Files = System.IO.Directory.GetFiles(Folder);
 			for (int i = 0; i < Files.Length; i++)
@@ -114,7 +117,7 @@ namespace OpenBve
 										if (j >= Textures.Length)
 										{
 											int n = Textures.Length;
-											Array.Resize<Textures.Texture>(ref Textures, j + 1);
+											Array.Resize<Texture>(ref Textures, j + 1);
 											for (int k = n; k < j; k++)
 											{
 												Textures[k] = null;
@@ -122,21 +125,21 @@ namespace OpenBve
 										}
 										if (IsGlowTexture)
 										{
-											OpenBveApi.Textures.Texture texture;
+											Texture texture;
 											if (Program.CurrentHost.LoadTexture(Files[i], null, out texture))
 											{
 												if (texture.BitsPerPixel == 32)
 												{
 													byte[] bytes = texture.Bytes;
 													InvertLightness(bytes);
-													texture = new OpenBveApi.Textures.Texture(texture.Width, texture.Height, 32, bytes, texture.Palette);
+													texture = new Texture(texture.Width, texture.Height, 32, bytes, texture.Palette);
 												}
 												Textures[j] = OpenBve.Textures.RegisterTexture(texture);
 											}
 										}
 										else
 										{
-											OpenBve.Textures.RegisterTexture(Files[i], new OpenBveApi.Textures.TextureParameters(null, Color24.Black), out Textures[j]);
+											OpenBve.Textures.RegisterTexture(Files[i], new TextureParameters(null, Color24.Black), out Textures[j]);
 										}
 										break;
 								}
@@ -177,6 +180,16 @@ namespace OpenBve
 						bytes[i + 2] = (byte)(255 + b - r - g);
 					}
 				}
+			}
+		}
+
+		private static string GetChecksum(string file)
+		{
+			using (FileStream stream = File.OpenRead(file))
+			{
+				SHA256Managed sha = new SHA256Managed();
+				byte[] checksum = sha.ComputeHash(stream);
+				return BitConverter.ToString(checksum).Replace("-", string.Empty);
 			}
 		}
 	}

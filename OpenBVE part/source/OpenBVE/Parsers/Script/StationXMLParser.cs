@@ -4,12 +4,14 @@ using System.Xml;
 using OpenBveApi.Math;
 using System.Linq;
 using OpenBveApi.Runtime;
+using OpenBveApi.Textures;
+using OpenBveApi.Interface;
 
 namespace OpenBve
 {
 	class StationXMLParser
 	{
-		public static Game.Station ReadStationXML(string fileName, bool PreviewOnly, Textures.Texture[] daytimeTimetableTextures, Textures.Texture[] nighttimeTimetableTextures, int CurrentStation, ref bool passAlarm, ref CsvRwRouteParser.StopRequest stopRequest)
+		public static Game.Station ReadStationXML(string fileName, bool PreviewOnly, Texture[] daytimeTimetableTextures, Texture[] nighttimeTimetableTextures, int CurrentStation, ref bool passAlarm, ref CsvRwRouteParser.StopRequest stopRequest)
 		{
 			Game.Station station = new Game.Station
 			{
@@ -48,7 +50,7 @@ namespace OpenBve
 										}
 										else
 										{
-											Interface.AddMessage(Interface.MessageType.Error, false, "Station name was empty in XML file " + fileName);
+											Interface.AddMessage(MessageType.Error, false, "Station name was empty in XML file " + fileName);
 										}
 										break;
 									case "arrivaltime":
@@ -56,7 +58,7 @@ namespace OpenBve
 										{
 											if (!Interface.TryParseTime(c.InnerText, out station.ArrivalTime))
 											{
-												Interface.AddMessage(Interface.MessageType.Error, false, "Station arrival time was invalid in XML file " + fileName);
+												Interface.AddMessage(MessageType.Error, false, "Station arrival time was invalid in XML file " + fileName);
 											}
 										}
 										break;
@@ -65,7 +67,7 @@ namespace OpenBve
 										{
 											if (!Interface.TryParseTime(c.InnerText, out station.DepartureTime))
 											{
-												Interface.AddMessage(Interface.MessageType.Error, false, "Station arrival time was invalid in XML file " + fileName);
+												Interface.AddMessage(MessageType.Error, false, "Station arrival time was invalid in XML file " + fileName);
 											}
 										}
 										break;
@@ -125,7 +127,7 @@ namespace OpenBve
 												default:
 													if (!NumberFormats.TryParseIntVb6(c.InnerText, out door))
 													{
-														Interface.AddMessage(Interface.MessageType.Error, false, "Door side was invalid in XML file " + fileName);
+														Interface.AddMessage(MessageType.Error, false, "Door side was invalid in XML file " + fileName);
 														door = 0;
 													}
 													break;
@@ -159,7 +161,7 @@ namespace OpenBve
 												station.SafetySystem = Game.SafetySystem.Atc;
 												break;
 											default:
-												Interface.AddMessage(Interface.MessageType.Error, false, "An invalid station safety system was specified in XML file " + fileName);
+												Interface.AddMessage(MessageType.Error, false, "An invalid station safety system was specified in XML file " + fileName);
 												station.SafetySystem = Game.SafetySystem.Ats;
 												break;
 										}
@@ -180,13 +182,13 @@ namespace OpenBve
 														}
 														catch
 														{
-															Interface.AddMessage(Interface.MessageType.Error, false, "Arrival sound filename is invalid in XML file " + fileName);
+															Interface.AddMessage(MessageType.Error, false, "Arrival sound filename is invalid in XML file " + fileName);
 														}
 														break;
 													case "radius":
 														if (!double.TryParse(cc.InnerText, out arrRadius))
 														{
-															Interface.AddMessage(Interface.MessageType.Error, false, "Arrival sound radius was invalid in XML file " + fileName);
+															Interface.AddMessage(MessageType.Error, false, "Arrival sound radius was invalid in XML file " + fileName);
 														}
 														break;
 												}
@@ -200,7 +202,7 @@ namespace OpenBve
 											}
 											catch
 											{
-												Interface.AddMessage(Interface.MessageType.Error, false, "Arrival sound filename is invalid in XML file " + fileName);
+												Interface.AddMessage(MessageType.Error, false, "Arrival sound filename is invalid in XML file " + fileName);
 											}
 											
 										}
@@ -210,14 +212,14 @@ namespace OpenBve
 										}
 										else
 										{
-											Interface.AddMessage(Interface.MessageType.Error, false, "Arrival sound file does not exist in XML file " + fileName);
+											Interface.AddMessage(MessageType.Error, false, "Arrival sound file does not exist in XML file " + fileName);
 										}
 										break;
 									case "stopduration":
 										double stopDuration;
 										if (!double.TryParse(c.InnerText, out stopDuration))
 										{
-											Interface.AddMessage(Interface.MessageType.Error, false, "Stop duration is invalid in XML file " + fileName);
+											Interface.AddMessage(MessageType.Error, false, "Stop duration is invalid in XML file " + fileName);
 										}
 										else
 										{
@@ -232,13 +234,13 @@ namespace OpenBve
 										double ratio;
 										if (!double.TryParse(c.InnerText, out ratio))
 										{
-											Interface.AddMessage(Interface.MessageType.Error, false, "Passenger ratio is invalid in XML file " + fileName);
+											Interface.AddMessage(MessageType.Error, false, "Passenger ratio is invalid in XML file " + fileName);
 										}
 										else
 										{
 											if (ratio < 0.0)
 											{
-												Interface.AddMessage(Interface.MessageType.Error, false, "Passenger ratio must be non-negative in XML file " + fileName);
+												Interface.AddMessage(MessageType.Error, false, "Passenger ratio must be non-negative in XML file " + fileName);
 												ratio = 100.0;
 											}
 											station.PassengerRatio = ratio * 0.01;
@@ -260,13 +262,13 @@ namespace OpenBve
 														}
 														catch
 														{
-															Interface.AddMessage(Interface.MessageType.Error, false, "Departure sound filename is invalid in XML file " + fileName);
+															Interface.AddMessage(MessageType.Error, false, "Departure sound filename is invalid in XML file " + fileName);
 														}
 														break;
 													case "radius":
 														if (!double.TryParse(cc.InnerText, out depRadius))
 														{
-															Interface.AddMessage(Interface.MessageType.Error, false, "Departure sound radius was invalid in XML file " + fileName);
+															Interface.AddMessage(MessageType.Error, false, "Departure sound radius was invalid in XML file " + fileName);
 														}
 														break;
 												}
@@ -280,7 +282,7 @@ namespace OpenBve
 											}
 											catch
 											{
-												Interface.AddMessage(Interface.MessageType.Error, false, "Departure sound filename is invalid in XML file " + fileName);
+												Interface.AddMessage(MessageType.Error, false, "Departure sound filename is invalid in XML file " + fileName);
 											}
 
 										}
@@ -290,7 +292,7 @@ namespace OpenBve
 										}
 										else
 										{
-											Interface.AddMessage(Interface.MessageType.Error, false, "Departure sound file does not exist in XML file " + fileName);
+											Interface.AddMessage(MessageType.Error, false, "Departure sound file does not exist in XML file " + fileName);
 										}
 										break;
 									case "timetableindex":
@@ -303,12 +305,12 @@ namespace OpenBve
 												{
 													if (ttidx < 0)
 													{
-														Interface.AddMessage(Interface.MessageType.Error, false, "Timetable index must be non-negative in XML file " + fileName);
+														Interface.AddMessage(MessageType.Error, false, "Timetable index must be non-negative in XML file " + fileName);
 														ttidx = -1;
 													}
 													else if (ttidx >= daytimeTimetableTextures.Length & ttidx >= nighttimeTimetableTextures.Length)
 													{
-														Interface.AddMessage(Interface.MessageType.Error, false, "Timetable index references a non-loaded texture in XML file " + fileName);
+														Interface.AddMessage(MessageType.Error, false, "Timetable index references a non-loaded texture in XML file " + fileName);
 														ttidx = -1;
 													}
 													station.TimetableDaytimeTexture = ttidx >= 0 & ttidx < daytimeTimetableTextures.Length ? daytimeTimetableTextures[ttidx] : null;
@@ -330,6 +332,74 @@ namespace OpenBve
 												}
 											}
 										}
+										break;
+									case "reopendoor":
+										double reopenDoor;
+										if (!double.TryParse(c.InnerText, out reopenDoor))
+										{
+											Interface.AddMessage(MessageType.Error, false, "ReopenDoor is invalid in XML file " + fileName);
+											reopenDoor = 0.0;
+										}
+										else
+										{
+											if (reopenDoor < 0.0)
+											{
+												Interface.AddMessage(MessageType.Error, false, "ReopenDoor must be non-negative in XML file " + fileName);
+												reopenDoor = 0.0;
+											}
+										}
+										station.ReopenDoor = 0.01 * reopenDoor;
+										break;
+									case "reopenstationlimit":
+										int reopenStationLimit;
+										if (!int.TryParse(c.InnerText, out reopenStationLimit))
+										{
+											Interface.AddMessage(MessageType.Error, false, "ReopenStationLimit is invalid in XML file " + fileName);
+											reopenStationLimit = 5;
+										}
+										else
+										{
+											if (reopenStationLimit < 0)
+											{
+												Interface.AddMessage(MessageType.Error, false, "ReopenStationLimit must be non-negative in XML file " + fileName);
+												reopenStationLimit = 0;
+											}
+										}
+										station.ReopenStationLimit = reopenStationLimit;
+										break;
+									case "interferenceindoor":
+										double interferenceInDoor;
+										if (!double.TryParse(c.InnerText, out interferenceInDoor))
+										{
+											Interface.AddMessage(MessageType.Error, false, "InterferenceInDoor is invalid in XML file " + fileName);
+											interferenceInDoor = 0.0;
+										}
+										else
+										{
+											if (interferenceInDoor < 0.0)
+											{
+												Interface.AddMessage(MessageType.Error, false, "InterferenceInDoor must be non-negative in XML file " + fileName);
+												interferenceInDoor = 0.0;
+											}
+										}
+										station.InterferenceInDoor = interferenceInDoor;
+										break;
+									case "maxinterferingobjectrate":
+										int maxInterferingObjectRate;
+										if (!int.TryParse(c.InnerText, out maxInterferingObjectRate))
+										{
+											Interface.AddMessage(MessageType.Error, false, "MaxInterferingObjectRate is invalid in XML file " + fileName);
+											maxInterferingObjectRate = Program.RandomNumberGenerator.Next(1, 99);
+										}
+										else
+										{
+											if (maxInterferingObjectRate <= 0 || maxInterferingObjectRate >= 100)
+											{
+												Interface.AddMessage(MessageType.Error, false, "MaxInterferingObjectRate must be positive, less than 100 in XML file " + fileName);
+												maxInterferingObjectRate = Program.RandomNumberGenerator.Next(1, 99);
+											}
+										}
+										station.MaxInterferingObjectRate = maxInterferingObjectRate;
 										break;
 									case "requeststop":
 										station.Type = StationType.RequestStop;
@@ -362,7 +432,7 @@ namespace OpenBve
 														double d;
 														if (!NumberFormats.TryParseDoubleVb6(cc.InnerText, out d))
 														{
-															Interface.AddMessage(Interface.MessageType.Error, false, "Request stop distance is invalid in XML file " + fileName);
+															Interface.AddMessage(MessageType.Error, false, "Request stop distance is invalid in XML file " + fileName);
 															break;
 														}
 														stopRequest.TrackPosition -= Math.Abs(d);
@@ -373,7 +443,7 @@ namespace OpenBve
 													{
 														if (!Interface.TryParseTime(cc.InnerText, out stopRequest.Early.Time))
 														{
-															Interface.AddMessage(Interface.MessageType.Error, false, "Request stop early time was invalid in XML file " + fileName);
+															Interface.AddMessage(MessageType.Error, false, "Request stop early time was invalid in XML file " + fileName);
 														}
 													}
 													break;
@@ -382,7 +452,7 @@ namespace OpenBve
 													{
 														if (!Interface.TryParseTime(cc.InnerText, out stopRequest.Late.Time))
 														{
-															Interface.AddMessage(Interface.MessageType.Error, false, "Request stop late time was invalid in XML file " + fileName);
+															Interface.AddMessage(MessageType.Error, false, "Request stop late time was invalid in XML file " + fileName);
 														}
 													}
 													break;
@@ -464,7 +534,7 @@ namespace OpenBve
 																{
 																	if (!NumberFormats.TryParseIntVb6(cd.InnerText, out stopRequest.Early.Probability))
 																	{
-																		Interface.AddMessage(Interface.MessageType.Error, false, "Request stop early probability was invalid in XML file " + fileName);
+																		Interface.AddMessage(MessageType.Error, false, "Request stop early probability was invalid in XML file " + fileName);
 																	}
 																}
 																break;
@@ -474,7 +544,7 @@ namespace OpenBve
 																	if (!NumberFormats.TryParseIntVb6(cd.InnerText, out stopRequest.OnTime.Probability))
 																	{
 
-																		Interface.AddMessage(Interface.MessageType.Error, false, "Request stop ontime probability was invalid in XML file " + fileName);
+																		Interface.AddMessage(MessageType.Error, false, "Request stop ontime probability was invalid in XML file " + fileName);
 																	}
 																}
 																break;
@@ -484,7 +554,7 @@ namespace OpenBve
 																	if (!NumberFormats.TryParseIntVb6(cd.InnerText, out stopRequest.OnTime.Probability))
 																	{
 
-																		Interface.AddMessage(Interface.MessageType.Error, false, "Request stop late probability was invalid in XML file " + fileName);
+																		Interface.AddMessage(MessageType.Error, false, "Request stop late probability was invalid in XML file " + fileName);
 																	}
 																}
 																break;
@@ -492,7 +562,7 @@ namespace OpenBve
 																if (!NumberFormats.TryParseIntVb6(cd.InnerText, out stopRequest.OnTime.Probability))
 																{
 
-																	Interface.AddMessage(Interface.MessageType.Error, false, "Request stop probability was invalid in XML file " + fileName);
+																	Interface.AddMessage(MessageType.Error, false, "Request stop probability was invalid in XML file " + fileName);
 																}
 																break;
 														}
@@ -502,7 +572,7 @@ namespace OpenBve
 												case "maxcars":
 													if (!NumberFormats.TryParseIntVb6(cc.InnerText, out stopRequest.MaxNumberOfCars))
 													{
-														Interface.AddMessage(Interface.MessageType.Error, false, "Request stop maximum cars was invalid in XML file " + fileName);
+														Interface.AddMessage(MessageType.Error, false, "Request stop maximum cars was invalid in XML file " + fileName);
 													}
 													break;
 											}

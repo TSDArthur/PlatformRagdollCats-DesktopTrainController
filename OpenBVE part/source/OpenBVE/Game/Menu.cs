@@ -1,4 +1,6 @@
 ﻿using OpenBveApi.Colors;
+using OpenBveApi.Graphics;
+using OpenBveApi.Interface;
 using OpenTK.Graphics.OpenGL;
 using OpenTK.Input;             // for Key
 using System;
@@ -65,20 +67,9 @@ namespace OpenBve
 		};
 
 		// components of the semi-transparent screen overlay
-		private const float ovlR = 0.00f;
-		private const float ovlG = 0.00f;
-		private const float ovlB = 0.00f;
-		private const float ovlA = 0.20f;
-		// components of the menu background colour
-		private const float bkgMenuR = 0.00f;
-		private const float bkgMenuG = 0.00f;
-		private const float bkgMenuB = 0.00f;
-		private const float bkgMenuA = 1.00f;
-		// components of the highlighted item background
-		private const float bkgHgltR = 1.00f;
-		private const float bkgHgltG = 0.69f;
-		private const float bkgHgltB = 0.00f;
-		private const float bkgHgltA = 1.00f;
+		private readonly Color128 overlayColor = new Color128(0.0f, 0.0f, 0.0f, 0.2f);
+		private readonly Color128 backgroundColor = new Color128(0.0f, 0.0f, 0.0f, 1.0f);
+		private readonly Color128 highlightColor = new Color128(1.0f, 0.69f, 0.0f, 1.0f);
 		// text colours
 		private static readonly Color128 ColourCaption = new Color128(0.750f, 0.750f, 0.875f, 1.0f);
 		private static readonly Color128 ColourDimmed = new Color128(1.000f, 1.000f, 1.000f, 0.5f);
@@ -135,13 +126,14 @@ namespace OpenBve
 			/********************
 				MENU FIELDS
 			*********************/
-			public Renderer.TextAlignment Align;
-			public MenuEntry[] Items = { };
-			public int ItemWidth = 0;
-			public int Height = 0;
-			public int Selection = SelectionNone;
+			public readonly TextAlignment Align;
+			public readonly MenuEntry[] Items = { };
+			public readonly int ItemWidth = 0;
+			public readonly int Width = 0;
+			public readonly int Height = 0;
+			public int Selection;
 			public int TopItem;         // the top displayed menu item
-			public int Width = 0;
+			
 
 			/********************
 				MENU C'TOR
@@ -152,7 +144,7 @@ namespace OpenBve
 				int jump = 0;
 				Size size;
 
-				Align = Renderer.TextAlignment.TopMiddle;
+				Align = TextAlignment.TopMiddle;
 				Height = Width = 0;
 				Selection = 0;                      // defaults to first menu item
 				switch (menuType)
@@ -165,15 +157,15 @@ namespace OpenBve
 								break;
 							}
 						Items = new MenuEntry[4 + jump];
-						Items[0] = new MenuCommand(Interface.GetInterfaceString("menu_resume"), MenuTag.BackToSim, 0);
+						Items[0] = new MenuCommand(Translations.GetInterfaceString("menu_resume"), MenuTag.BackToSim, 0);
 						if (jump > 0)
-							Items[1] = new MenuCommand(Interface.GetInterfaceString("menu_jump"), MenuTag.MenuJumpToStation, 0);
+							Items[1] = new MenuCommand(Translations.GetInterfaceString("menu_jump"), MenuTag.MenuJumpToStation, 0);
 						if (!Interface.CurrentOptions.KioskMode)
 						{
 							//Don't allow quitting or customisation of the controls in kiosk mode
-							Items[1 + jump] = new MenuCommand(Interface.GetInterfaceString("menu_exit"), MenuTag.MenuExitToMainMenu, 0);
-							Items[2 + jump] = new MenuCommand(Interface.GetInterfaceString("menu_customize_controls"), MenuTag.MenuControls, 0);
-							Items[3 + jump] = new MenuCommand(Interface.GetInterfaceString("menu_quit"), MenuTag.MenuQuit, 0);
+							Items[1 + jump] = new MenuCommand(Translations.GetInterfaceString("menu_exit"), MenuTag.MenuExitToMainMenu, 0);
+							Items[2 + jump] = new MenuCommand(Translations.GetInterfaceString("menu_customize_controls"), MenuTag.MenuControls, 0);
+							Items[3 + jump] = new MenuCommand(Translations.GetInterfaceString("menu_quit"), MenuTag.MenuQuit, 0);
 						}
 						else
 						{
@@ -190,7 +182,7 @@ namespace OpenBve
 						// list available stations, selecting the next station as predefined choice
 						jump = 0;                           // no jump found yet
 						Items = new MenuEntry[menuItem + 1];
-						Items[0] = new MenuCommand(Interface.GetInterfaceString("menu_back"), MenuTag.MenuBack, 0);
+						Items[0] = new MenuCommand(Translations.GetInterfaceString("menu_back"), MenuTag.MenuBack, 0);
 						menuItem = 1;
 						for (i = 0; i < Game.Stations.Length; i++)
 							if (Game.PlayerStopsAtStation(i) & Game.Stations[i].Stops.Length > 0)
@@ -205,22 +197,22 @@ namespace OpenBve
 								}
 								menuItem++;
 							}
-						Align = Renderer.TextAlignment.TopLeft;
+						Align = TextAlignment.TopLeft;
 						break;
 
 					case MenuType.ExitToMainMenu:
 						Items = new MenuEntry[3];
-						Items[0] = new MenuCaption(Interface.GetInterfaceString("menu_exit_question"));
-						Items[1] = new MenuCommand(Interface.GetInterfaceString("menu_exit_no"), MenuTag.MenuBack, 0);
-						Items[2] = new MenuCommand(Interface.GetInterfaceString("menu_exit_yes"), MenuTag.ExitToMainMenu, 0);
+						Items[0] = new MenuCaption(Translations.GetInterfaceString("menu_exit_question"));
+						Items[1] = new MenuCommand(Translations.GetInterfaceString("menu_exit_no"), MenuTag.MenuBack, 0);
+						Items[2] = new MenuCommand(Translations.GetInterfaceString("menu_exit_yes"), MenuTag.ExitToMainMenu, 0);
 						Selection = 1;
 						break;
 
 					case MenuType.Quit:         // ask for quit confirmation
 						Items = new MenuEntry[3];
-						Items[0] = new MenuCaption(Interface.GetInterfaceString("menu_quit_question"));
-						Items[1] = new MenuCommand(Interface.GetInterfaceString("menu_quit_no"), MenuTag.MenuBack, 0);
-						Items[2] = new MenuCommand(Interface.GetInterfaceString("menu_quit_yes"), MenuTag.Quit, 0);
+						Items[0] = new MenuCaption(Translations.GetInterfaceString("menu_quit_question"));
+						Items[1] = new MenuCommand(Translations.GetInterfaceString("menu_quit_no"), MenuTag.MenuBack, 0);
+						Items[2] = new MenuCommand(Translations.GetInterfaceString("menu_quit_yes"), MenuTag.Quit, 0);
 						Selection = 1;
 						break;
 
@@ -228,10 +220,10 @@ namespace OpenBve
 						//Refresh the joystick list
 						Program.Joysticks.RefreshJoysticks();
 						Items = new MenuEntry[Interface.CurrentControls.Length + 1];
-						Items[0] = new MenuCommand(Interface.GetInterfaceString("menu_back"), MenuTag.MenuBack, 0);
+						Items[0] = new MenuCommand(Translations.GetInterfaceString("menu_back"), MenuTag.MenuBack, 0);
 						for (i = 0; i < Interface.CurrentControls.Length; i++)
 							Items[i + 1] = new MenuCommand(Interface.CurrentControls[i].Command.ToString(), MenuTag.Control, i);
-						Align = Renderer.TextAlignment.TopLeft;
+						Align = TextAlignment.TopLeft;
 						break;
 
 					case MenuType.Control:
@@ -241,12 +233,12 @@ namespace OpenBve
 						Items = new MenuEntry[4];
 						// get code name and description
 						Interface.Control loadedControl = Interface.CurrentControls[data];
-						for (int h = 0; h < Interface.CommandInfos.Length; h++)
+						for (int h = 0; h < Translations.CommandInfos.Length; h++)
 						{
-							if (Interface.CommandInfos[h].Command == loadedControl.Command)
+							if (Translations.CommandInfos[h].Command == loadedControl.Command)
 							{
 								Items[0] = new MenuCommand(loadedControl.Command.ToString() + " - " +
-										Interface.CommandInfos[h].Description, MenuTag.None, 0);
+										Translations.CommandInfos[h].Description, MenuTag.None, 0);
 								break;
 							}
 						}
@@ -256,30 +248,30 @@ namespace OpenBve
 						{
 							case Interface.ControlMethod.Keyboard:
 								string keyName = loadedControl.Key.ToString();
-								for (int k = 0; k < Interface.TranslatedKeys.Length; k++)
+								for (int k = 0; k < Translations.TranslatedKeys.Length; k++)
 								{
-									if (Interface.TranslatedKeys[k].Key == loadedControl.Key)
+									if (Translations.TranslatedKeys[k].Key == loadedControl.Key)
 									{
-										keyName = Interface.TranslatedKeys[k].Description;
+										keyName = Translations.TranslatedKeys[k].Description;
 										break;
 									}
 								}
 								if (loadedControl.Modifier != Interface.KeyboardModifier.None)
 								{
-									str = Interface.GetInterfaceString("menu_keyboard") + " [" + loadedControl.Modifier + "-" + keyName + "]";
+									str = Translations.GetInterfaceString("menu_keyboard") + " [" + loadedControl.Modifier + "-" + keyName + "]";
 								}
 								else
 								{
-									str = Interface.GetInterfaceString("menu_keyboard") + " [" + keyName + "]";
+									str = Translations.GetInterfaceString("menu_keyboard") + " [" + keyName + "]";
 								}
 								break;
 							case Interface.ControlMethod.Joystick:
-								str = Interface.GetInterfaceString("menu_joystick") + " " + loadedControl.Device + " [" + loadedControl.Component + " " + loadedControl.Element + "]";
+								str = Translations.GetInterfaceString("menu_joystick") + " " + loadedControl.Device + " [" + loadedControl.Component + " " + loadedControl.Element + "]";
 								switch (loadedControl.Component)
 								{
 									case Interface.JoystickComponent.FullAxis:
 									case Interface.JoystickComponent.Axis:
-										str += " " + (loadedControl.Direction == 1 ? Interface.GetInterfaceString("menu_joystickdirection_positive") : Interface.GetInterfaceString("menu_joystickdirection_negative"));
+										str += " " + (loadedControl.Direction == 1 ? Translations.GetInterfaceString("menu_joystickdirection_positive") : Translations.GetInterfaceString("menu_joystickdirection_negative"));
 										break;
 									//						case Interface.JoystickComponent.Button:	// NOTHING TO DO FOR THIS CASE!
 									//							str = str;
@@ -288,7 +280,7 @@ namespace OpenBve
 										str += " " + (OpenTK.Input.HatPosition)loadedControl.Direction;
 										break;
 									case Interface.JoystickComponent.Invalid:
-										str = Interface.GetInterfaceString("menu_joystick_notavailable");
+										str = Translations.GetInterfaceString("menu_joystick_notavailable");
 										break;
 								}
 								break;
@@ -298,20 +290,20 @@ namespace OpenBve
 								{
 									case Interface.JoystickComponent.FullAxis:
 									case Interface.JoystickComponent.Axis:
-										str += " " + (loadedControl.Direction == 1 ? Interface.GetInterfaceString("menu_joystickdirection_positive") : Interface.GetInterfaceString("menu_joystickdirection_negative"));
+										str += " " + (loadedControl.Direction == 1 ? Translations.GetInterfaceString("menu_joystickdirection_positive") : Translations.GetInterfaceString("menu_joystickdirection_negative"));
 										break;
 									case Interface.JoystickComponent.Invalid:
-										str = Interface.GetInterfaceString("menu_joystick_notavailable");
+										str = Translations.GetInterfaceString("menu_joystick_notavailable");
 										break;
 								}
 								break;
 							case Interface.ControlMethod.Invalid:
-								str = Interface.GetInterfaceString("menu_joystick_notavailable");
+								str = Translations.GetInterfaceString("menu_joystick_notavailable");
 								break;
 						}
-						Items[1] = new MenuCommand(Interface.GetInterfaceString("menu_assignment_current") + " " + str, MenuTag.None, 0);
+						Items[1] = new MenuCommand(Translations.GetInterfaceString("menu_assignment_current") + " " + str, MenuTag.None, 0);
 						Items[2] = new MenuCommand(" ", MenuTag.None, 0);
-						Items[3] = new MenuCommand(Interface.GetInterfaceString("menu_assign"), MenuTag.None, 0);
+						Items[3] = new MenuCommand(Translations.GetInterfaceString("menu_assign"), MenuTag.None, 0);
 						break;
 				}
 
@@ -366,7 +358,7 @@ namespace OpenBve
 			}
 		}
 
-		internal OpenTK.Input.Key MenuBackKey;
+		internal Key MenuBackKey;
 
 		/********************
 			MENU SYSTEM SINGLETON C'TOR
@@ -411,7 +403,7 @@ namespace OpenBve
 			for (int i = 0; i < Interface.CurrentControls.Length; i++)
 			{
 				//Find the current menu back key- It's unlikely that we want to set a new key to this
-				if (Interface.CurrentControls[i].Command == Interface.Command.MenuBack)
+				if (Interface.CurrentControls[i].Command == Translations.Command.MenuBack)
 				{
 					MenuBackKey = Interface.CurrentControls[i].Key;
 					break;
@@ -604,15 +596,15 @@ namespace OpenBve
 			{
 				if (Menus[CurrMenu].Selection == Menus[CurrMenu].TopItem + visibleItems)
 				{
-					ProcessCommand(Interface.Command.MenuDown, 0);
+					ProcessCommand(Translations.Command.MenuDown, 0);
 					return;
 				}
 				if (Menus[CurrMenu].Selection == Menus[CurrMenu].TopItem - 1)
 				{
-					ProcessCommand(Interface.Command.MenuUp, 0);
+					ProcessCommand(Translations.Command.MenuUp, 0);
 					return;
 				}
-				ProcessCommand(Interface.Command.MenuEnter, 0);
+				ProcessCommand(Translations.Command.MenuEnter, 0);
 			}
 		}
 
@@ -622,7 +614,7 @@ namespace OpenBve
 		/// <summary>Processes a user command for the current menu</summary>
 		/// <param name="cmd">The command to apply to the current menu</param>
 		/// <param name="timeElapsed">The time elapsed since previous frame</param>
-		internal void ProcessCommand(Interface.Command cmd, double timeElapsed)
+		internal void ProcessCommand(Translations.Command cmd, double timeElapsed)
 		{
 
 			if (CurrMenu < 0)
@@ -630,7 +622,7 @@ namespace OpenBve
 				return;
 			}
 			// MenuBack is managed independently from single menu data
-			if (cmd == Interface.Command.MenuBack)
+			if (cmd == Translations.Command.MenuBack)
 			{
 				PopMenu();
 				return;
@@ -641,7 +633,7 @@ namespace OpenBve
 				return;
 			switch (cmd)
 			{
-				case Interface.Command.MenuUp:      // UP
+				case Translations.Command.MenuUp:      // UP
 					if (menu.Selection > 0 &&
 						!(menu.Items[menu.Selection - 1] is MenuCaption))
 					{
@@ -649,16 +641,16 @@ namespace OpenBve
 						PositionMenu();
 					}
 					break;
-				case Interface.Command.MenuDown:    // DOWN
+				case Translations.Command.MenuDown:    // DOWN
 					if (menu.Selection < menu.Items.Length - 1)
 					{
 						menu.Selection++;
 						PositionMenu();
 					}
 					break;
-				//			case Interface.Command.MenuBack:	// ESC:	managed above
+				//			case Translations.Command.MenuBack:	// ESC:	managed above
 				//				break;
-				case Interface.Command.MenuEnter:   // ENTER
+				case Translations.Command.MenuEnter:   // ENTER
 					if (menu.Items[menu.Selection] is MenuCommand)
 					{
 						MenuCommand menuItem = (MenuCommand)menu.Items[menu.Selection];
@@ -695,7 +687,7 @@ namespace OpenBve
 								Reset();
 								Program.RestartArguments =
 									Interface.CurrentOptions.GameMode == Interface.GameMode.Arcade ? "/review" : "";
-								MainLoop.Quit = true;
+								MainLoop.Quit = MainLoop.QuitMode.ExitToMenu;
 								break;
 							case MenuTag.Control:               // CONTROL CUSTOMIZATION
 								PushMenu(MenuType.Control, ((MenuCommand)menu.Items[menu.Selection]).Data);
@@ -704,16 +696,16 @@ namespace OpenBve
 								break;
 							case MenuTag.Quit:                  // QUIT PROGRAMME
 								Reset();
-								MainLoop.Quit = true;
+								MainLoop.Quit = MainLoop.QuitMode.QuitProgram;
 								break;
 						}
 					}
 					break;
-				case Interface.Command.MiscFullscreen:
+				case Translations.Command.MiscFullscreen:
 					// fullscreen
 					Screen.ToggleFullscreen();
 					break;
-				case Interface.Command.MiscMute:
+				case Translations.Command.MiscMute:
 					// mute
 					Sounds.GlobalMute = !Sounds.GlobalMute;
 					Sounds.Update(timeElapsed, Interface.CurrentOptions.SoundModel);
@@ -735,31 +727,31 @@ namespace OpenBve
 
 			SingleMenu menu = Menus[CurrMenu];
 			// overlay background
-			GL.Color4(ovlR, ovlG, ovlB, ovlA);
+			GL.Color4(overlayColor.R, overlayColor.G, overlayColor.B, overlayColor.A);
 			Renderer.RenderOverlaySolid(0.0, 0.0, (double)Screen.Width, (double)Screen.Height);
 			GL.Color4(1.0f, 1.0f, 1.0f, 1.0f);
 
 			// HORIZONTAL PLACEMENT: centre the menu in the main window
 			int itemLeft = (Screen.Width - menu.ItemWidth) / 2; // item left edge
 																// if menu alignment is left, left-align items, otherwise centre them in the screen
-			int itemX = (menu.Align & Renderer.TextAlignment.Left) != 0 ? itemLeft : Screen.Width / 2;
+			int itemX = (menu.Align & TextAlignment.Left) != 0 ? itemLeft : Screen.Width / 2;
 
 			int menuBottomItem = menu.TopItem + visibleItems - 1;
 
 			// draw the menu background
-			GL.Color4(bkgMenuR, bkgMenuG, bkgMenuB, bkgMenuA);
+			GL.Color4(backgroundColor.R, backgroundColor.G, backgroundColor.B, backgroundColor.A);
 			Renderer.RenderOverlaySolid(menuXmin - MenuBorderX, menuYmin - MenuBorderY,
 				menuXmax + MenuBorderX, menuYmax + MenuBorderY);
 
 			// if not starting from the top of the menu, draw a dimmed ellipsis item
 			if (menu.Selection == menu.TopItem - 1 && !isCustomisingControl)
 			{
-				GL.Color4(bkgHgltR, bkgHgltG, bkgHgltB, bkgHgltA);
+				GL.Color4(highlightColor.R, highlightColor.G, highlightColor.B, highlightColor.A);
 				Renderer.RenderOverlaySolid(itemLeft - MenuItemBorderX, menuYmin/*-MenuItemBorderY*/,
 					itemLeft + menu.ItemWidth + MenuItemBorderX, menuYmin + em + MenuItemBorderY * 2);
 			}
 			if (menu.TopItem > 0)
-				Renderer.DrawString(MenuFont, "...", new System.Drawing.Point(itemX, menuYmin),
+				Renderer.DrawString(MenuFont, "...", new Point(itemX, menuYmin),
 					menu.Align, ColourDimmed, false);
 			// draw the items
 			int itemY = topItemY;
@@ -774,18 +766,18 @@ namespace OpenBve
 					// draw a solid highlight rectangle under the text
 					// HACK! the highlight rectangle has to be shifted a little down to match
 					// the text body. OpenGL 'feature'?
-					GL.Color4(bkgHgltR, bkgHgltG, bkgHgltB, bkgHgltA);
+					GL.Color4(highlightColor.R, highlightColor.G, highlightColor.B, highlightColor.A);
 					Renderer.RenderOverlaySolid(itemLeft - MenuItemBorderX, itemY/*-MenuItemBorderY*/,
 						itemLeft + menu.ItemWidth + MenuItemBorderX, itemY + em + MenuItemBorderY * 2);
 					// draw the text
-					Renderer.DrawString(MenuFont, menu.Items[i].Text, new System.Drawing.Point(itemX, itemY),
+					Renderer.DrawString(MenuFont, menu.Items[i].Text, new Point(itemX, itemY),
 						menu.Align, ColourHighlight, false);
 				}
 				else if (menu.Items[i] is MenuCaption)
-					Renderer.DrawString(MenuFont, menu.Items[i].Text, new System.Drawing.Point(itemX, itemY),
+					Renderer.DrawString(MenuFont, menu.Items[i].Text, new Point(itemX, itemY),
 						menu.Align, ColourCaption, false);
 				else
-					Renderer.DrawString(MenuFont, menu.Items[i].Text, new System.Drawing.Point(itemX, itemY),
+					Renderer.DrawString(MenuFont, menu.Items[i].Text, new Point(itemX, itemY),
 						menu.Align, ColourNormal, false);
 				itemY += lineHeight;
 			}
@@ -793,13 +785,13 @@ namespace OpenBve
 
 			if (menu.Selection == menu.TopItem + visibleItems)
 			{
-				GL.Color4(bkgHgltR, bkgHgltG, bkgHgltB, bkgHgltA);
+				GL.Color4(highlightColor.R, highlightColor.G, highlightColor.B, highlightColor.A);
 				Renderer.RenderOverlaySolid(itemLeft - MenuItemBorderX, itemY/*-MenuItemBorderY*/,
 					itemLeft + menu.ItemWidth + MenuItemBorderX, itemY + em + MenuItemBorderY * 2);
 			}
 			// if not at the end of the menu, draw a dimmed ellipsis item at the bottom
 			if (i < menu.Items.Length - 1)
-				Renderer.DrawString(MenuFont, "...", new System.Drawing.Point(itemX, itemY),
+				Renderer.DrawString(MenuFont, "...", new Point(itemX, itemY),
 					menu.Align, ColourDimmed, false);
 		}
 
