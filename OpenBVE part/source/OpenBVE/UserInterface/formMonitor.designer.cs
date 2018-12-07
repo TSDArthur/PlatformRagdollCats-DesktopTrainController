@@ -33,13 +33,10 @@
             this.toolScripMain = new System.Windows.Forms.ToolStrip();
             this.toolStripLabel1 = new System.Windows.Forms.ToolStripLabel();
             this.cmbSerials = new System.Windows.Forms.ToolStripComboBox();
-            this.toolStripSeparator2 = new System.Windows.Forms.ToolStripSeparator();
             this.btnRefresh = new System.Windows.Forms.ToolStripButton();
-            this.toolStripSeparator4 = new System.Windows.Forms.ToolStripSeparator();
             this.lblMainSwitch = new System.Windows.Forms.ToolStripLabel();
             this.btnRead = new System.Windows.Forms.ToolStripButton();
             this.btnStopRead = new System.Windows.Forms.ToolStripButton();
-            this.toolStripSeparator1 = new System.Windows.Forms.ToolStripSeparator();
             this.txtBoxConstSpeed = new System.Windows.Forms.TextBox();
             this.btnAPOFF = new System.Windows.Forms.Button();
             this.btnKeyLock = new System.Windows.Forms.Button();
@@ -65,7 +62,6 @@
             this.tmrUpdate = new System.Windows.Forms.Timer(this.components);
             this.toolStrip = new System.Windows.Forms.ToolStrip();
             this.toolStripLabel = new System.Windows.Forms.ToolStripLabel();
-            this.pictureBox = new System.Windows.Forms.PictureBox();
             this.txtBoxCurrentStation = new System.Windows.Forms.TextBox();
             this.txtBoxNextStation = new System.Windows.Forms.TextBox();
             this.txtBoxArrivalTime = new System.Windows.Forms.TextBox();
@@ -79,6 +75,7 @@
             this.btnLeftDoorClose = new System.Windows.Forms.Button();
             this.btnRightDoorOpen = new System.Windows.Forms.Button();
             this.btnRightDoorClose = new System.Windows.Forms.Button();
+            this.pictureBox = new System.Windows.Forms.PictureBox();
             this.toolScripMain.SuspendLayout();
             this.toolStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).BeginInit();
@@ -87,18 +84,15 @@
             // toolScripMain
             // 
             this.toolScripMain.AutoSize = false;
-            this.toolScripMain.BackColor = System.Drawing.Color.White;
+            this.toolScripMain.BackColor = System.Drawing.Color.Black;
             this.toolScripMain.Dock = System.Windows.Forms.DockStyle.None;
             this.toolScripMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripLabel1,
             this.cmbSerials,
-            this.toolStripSeparator2,
             this.btnRefresh,
-            this.toolStripSeparator4,
             this.lblMainSwitch,
             this.btnRead,
-            this.btnStopRead,
-            this.toolStripSeparator1});
+            this.btnStopRead});
             this.toolScripMain.Location = new System.Drawing.Point(4, 59);
             this.toolScripMain.Name = "toolScripMain";
             this.toolScripMain.Size = new System.Drawing.Size(435, 25);
@@ -115,14 +109,10 @@
             // cmbSerials
             // 
             this.cmbSerials.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.cmbSerials.FlatStyle = System.Windows.Forms.FlatStyle.System;
             this.cmbSerials.Name = "cmbSerials";
             this.cmbSerials.Size = new System.Drawing.Size(121, 25);
             this.cmbSerials.TextChanged += new System.EventHandler(this.cmbSerials_TextChanged);
-            // 
-            // toolStripSeparator2
-            // 
-            this.toolStripSeparator2.Name = "toolStripSeparator2";
-            this.toolStripSeparator2.Size = new System.Drawing.Size(6, 25);
             // 
             // btnRefresh
             // 
@@ -134,11 +124,6 @@
             this.btnRefresh.ToolTipText = "Refresh controller device list.";
             this.btnRefresh.Click += new System.EventHandler(this.btnRefresh_Click);
             // 
-            // toolStripSeparator4
-            // 
-            this.toolStripSeparator4.Name = "toolStripSeparator4";
-            this.toolStripSeparator4.Size = new System.Drawing.Size(6, 25);
-            // 
             // lblMainSwitch
             // 
             this.lblMainSwitch.Image = global::OpenBve.Properties.Resources.Switch;
@@ -147,6 +132,7 @@
             // 
             // btnRead
             // 
+            this.btnRead.ForeColor = System.Drawing.Color.White;
             this.btnRead.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnRead.Name = "btnRead";
             this.btnRead.Size = new System.Drawing.Size(59, 22);
@@ -156,20 +142,18 @@
             // 
             // btnStopRead
             // 
+            this.btnStopRead.ForeColor = System.Drawing.Color.White;
             this.btnStopRead.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnStopRead.Name = "btnStopRead";
-            this.btnStopRead.Size = new System.Drawing.Size(75, 22);
-            this.btnStopRead.Text = "Disconnect";
+            this.btnStopRead.Size = new System.Drawing.Size(59, 22);
+            this.btnStopRead.Text = "Dispose";
             this.btnStopRead.ToolTipText = "Disconnect to controller.";
             this.btnStopRead.Click += new System.EventHandler(this.btnStopRead_Click);
             // 
-            // toolStripSeparator1
-            // 
-            this.toolStripSeparator1.Name = "toolStripSeparator1";
-            this.toolStripSeparator1.Size = new System.Drawing.Size(6, 25);
-            // 
             // txtBoxConstSpeed
             // 
+            this.txtBoxConstSpeed.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.txtBoxConstSpeed.ForeColor = System.Drawing.Color.White;
             this.txtBoxConstSpeed.Location = new System.Drawing.Point(327, 317);
             this.txtBoxConstSpeed.Name = "txtBoxConstSpeed";
             this.txtBoxConstSpeed.ReadOnly = true;
@@ -179,7 +163,9 @@
             // 
             // btnAPOFF
             // 
-            this.btnAPOFF.BackColor = System.Drawing.Color.Yellow;
+            this.btnAPOFF.BackColor = System.Drawing.Color.DimGray;
+            this.btnAPOFF.Font = new System.Drawing.Font("微软雅黑", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.btnAPOFF.ForeColor = System.Drawing.Color.White;
             this.btnAPOFF.Location = new System.Drawing.Point(327, 288);
             this.btnAPOFF.Name = "btnAPOFF";
             this.btnAPOFF.Size = new System.Drawing.Size(100, 23);
@@ -190,7 +176,9 @@
             // 
             // btnKeyLock
             // 
-            this.btnKeyLock.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(128)))));
+            this.btnKeyLock.BackColor = System.Drawing.Color.DimGray;
+            this.btnKeyLock.Font = new System.Drawing.Font("微软雅黑", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.btnKeyLock.ForeColor = System.Drawing.Color.White;
             this.btnKeyLock.Location = new System.Drawing.Point(220, 207);
             this.btnKeyLock.Name = "btnKeyLock";
             this.btnKeyLock.Size = new System.Drawing.Size(100, 23);
@@ -201,7 +189,9 @@
             // 
             // btnEmeOff
             // 
-            this.btnEmeOff.BackColor = System.Drawing.Color.Lime;
+            this.btnEmeOff.BackColor = System.Drawing.Color.DimGray;
+            this.btnEmeOff.Font = new System.Drawing.Font("微软雅黑", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.btnEmeOff.ForeColor = System.Drawing.Color.White;
             this.btnEmeOff.Location = new System.Drawing.Point(327, 152);
             this.btnEmeOff.Name = "btnEmeOff";
             this.btnEmeOff.Size = new System.Drawing.Size(100, 23);
@@ -212,7 +202,9 @@
             // 
             // btnAPON
             // 
-            this.btnAPON.BackColor = System.Drawing.Color.Yellow;
+            this.btnAPON.BackColor = System.Drawing.Color.DimGray;
+            this.btnAPON.Font = new System.Drawing.Font("微软雅黑", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.btnAPON.ForeColor = System.Drawing.Color.White;
             this.btnAPON.Location = new System.Drawing.Point(327, 259);
             this.btnAPON.Name = "btnAPON";
             this.btnAPON.Size = new System.Drawing.Size(100, 23);
@@ -223,7 +215,9 @@
             // 
             // btnKeyUnlock
             // 
-            this.btnKeyUnlock.BackColor = System.Drawing.Color.Lime;
+            this.btnKeyUnlock.BackColor = System.Drawing.Color.DimGray;
+            this.btnKeyUnlock.Font = new System.Drawing.Font("微软雅黑", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.btnKeyUnlock.ForeColor = System.Drawing.Color.White;
             this.btnKeyUnlock.Location = new System.Drawing.Point(221, 181);
             this.btnKeyUnlock.Name = "btnKeyUnlock";
             this.btnKeyUnlock.Size = new System.Drawing.Size(100, 23);
@@ -234,7 +228,9 @@
             // 
             // btnEmeOn
             // 
-            this.btnEmeOn.BackColor = System.Drawing.Color.Red;
+            this.btnEmeOn.BackColor = System.Drawing.Color.DimGray;
+            this.btnEmeOn.Font = new System.Drawing.Font("微软雅黑", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.btnEmeOn.ForeColor = System.Drawing.Color.White;
             this.btnEmeOn.Location = new System.Drawing.Point(327, 123);
             this.btnEmeOn.Name = "btnEmeOn";
             this.btnEmeOn.Size = new System.Drawing.Size(100, 23);
@@ -245,25 +241,31 @@
             // 
             // txtBoxSend
             // 
+            this.txtBoxSend.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.txtBoxSend.ForeColor = System.Drawing.Color.White;
             this.txtBoxSend.Location = new System.Drawing.Point(221, 424);
+            this.txtBoxSend.Multiline = true;
             this.txtBoxSend.Name = "txtBoxSend";
             this.txtBoxSend.ReadOnly = true;
-            this.txtBoxSend.Size = new System.Drawing.Size(206, 21);
+            this.txtBoxSend.Size = new System.Drawing.Size(206, 52);
             this.txtBoxSend.TabIndex = 32;
-            this.txtBoxSend.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // txtBoxRecieve
             // 
+            this.txtBoxRecieve.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.txtBoxRecieve.ForeColor = System.Drawing.Color.White;
             this.txtBoxRecieve.Location = new System.Drawing.Point(9, 424);
+            this.txtBoxRecieve.Multiline = true;
             this.txtBoxRecieve.Name = "txtBoxRecieve";
             this.txtBoxRecieve.ReadOnly = true;
-            this.txtBoxRecieve.Size = new System.Drawing.Size(206, 21);
+            this.txtBoxRecieve.Size = new System.Drawing.Size(206, 52);
             this.txtBoxRecieve.TabIndex = 31;
-            this.txtBoxRecieve.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // btnHornSt
             // 
-            this.btnHornSt.BackColor = System.Drawing.Color.Yellow;
+            this.btnHornSt.BackColor = System.Drawing.Color.DimGray;
+            this.btnHornSt.Font = new System.Drawing.Font("微软雅黑", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.btnHornSt.ForeColor = System.Drawing.Color.White;
             this.btnHornSt.Location = new System.Drawing.Point(327, 181);
             this.btnHornSt.Name = "btnHornSt";
             this.btnHornSt.Size = new System.Drawing.Size(100, 72);
@@ -275,7 +277,9 @@
             // 
             // btnNeu
             // 
-            this.btnNeu.BackColor = System.Drawing.Color.Silver;
+            this.btnNeu.BackColor = System.Drawing.Color.DimGray;
+            this.btnNeu.Font = new System.Drawing.Font("微软雅黑", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.btnNeu.ForeColor = System.Drawing.Color.White;
             this.btnNeu.Location = new System.Drawing.Point(9, 205);
             this.btnNeu.Name = "btnNeu";
             this.btnNeu.Size = new System.Drawing.Size(100, 50);
@@ -286,6 +290,8 @@
             // 
             // txtBoxPowerHandle
             // 
+            this.txtBoxPowerHandle.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.txtBoxPowerHandle.ForeColor = System.Drawing.Color.White;
             this.txtBoxPowerHandle.Location = new System.Drawing.Point(115, 152);
             this.txtBoxPowerHandle.Name = "txtBoxPowerHandle";
             this.txtBoxPowerHandle.ReadOnly = true;
@@ -296,6 +302,8 @@
             // 
             // txtBoxBrakeHandle
             // 
+            this.txtBoxBrakeHandle.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.txtBoxBrakeHandle.ForeColor = System.Drawing.Color.White;
             this.txtBoxBrakeHandle.Location = new System.Drawing.Point(115, 317);
             this.txtBoxBrakeHandle.Name = "txtBoxBrakeHandle";
             this.txtBoxBrakeHandle.ReadOnly = true;
@@ -305,7 +313,9 @@
             // 
             // btnFor
             // 
-            this.btnFor.BackColor = System.Drawing.Color.Silver;
+            this.btnFor.BackColor = System.Drawing.Color.DimGray;
+            this.btnFor.Font = new System.Drawing.Font("微软雅黑", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.btnFor.ForeColor = System.Drawing.Color.White;
             this.btnFor.Location = new System.Drawing.Point(9, 152);
             this.btnFor.Name = "btnFor";
             this.btnFor.Size = new System.Drawing.Size(100, 50);
@@ -316,7 +326,9 @@
             // 
             // btnUp
             // 
-            this.btnUp.BackColor = System.Drawing.Color.Lime;
+            this.btnUp.BackColor = System.Drawing.Color.DimGray;
+            this.btnUp.Font = new System.Drawing.Font("微软雅黑", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.btnUp.ForeColor = System.Drawing.Color.White;
             this.btnUp.Location = new System.Drawing.Point(115, 181);
             this.btnUp.Name = "btnUp";
             this.btnUp.Size = new System.Drawing.Size(100, 63);
@@ -327,7 +339,9 @@
             // 
             // btnDown
             // 
-            this.btnDown.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(128)))));
+            this.btnDown.BackColor = System.Drawing.Color.DimGray;
+            this.btnDown.Font = new System.Drawing.Font("微软雅黑", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.btnDown.ForeColor = System.Drawing.Color.White;
             this.btnDown.Location = new System.Drawing.Point(115, 248);
             this.btnDown.Name = "btnDown";
             this.btnDown.Size = new System.Drawing.Size(100, 63);
@@ -338,7 +352,9 @@
             // 
             // btnBack
             // 
-            this.btnBack.BackColor = System.Drawing.Color.Silver;
+            this.btnBack.BackColor = System.Drawing.Color.DimGray;
+            this.btnBack.Font = new System.Drawing.Font("微软雅黑", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.btnBack.ForeColor = System.Drawing.Color.White;
             this.btnBack.Location = new System.Drawing.Point(9, 261);
             this.btnBack.Name = "btnBack";
             this.btnBack.Size = new System.Drawing.Size(100, 50);
@@ -349,6 +365,8 @@
             // 
             // txtBoxSpdLimit
             // 
+            this.txtBoxSpdLimit.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.txtBoxSpdLimit.ForeColor = System.Drawing.Color.White;
             this.txtBoxSpdLimit.Location = new System.Drawing.Point(115, 123);
             this.txtBoxSpdLimit.Name = "txtBoxSpdLimit";
             this.txtBoxSpdLimit.ReadOnly = true;
@@ -359,6 +377,8 @@
             // 
             // txtBoxSpeed
             // 
+            this.txtBoxSpeed.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.txtBoxSpeed.ForeColor = System.Drawing.Color.White;
             this.txtBoxSpeed.Location = new System.Drawing.Point(9, 123);
             this.txtBoxSpeed.Name = "txtBoxSpeed";
             this.txtBoxSpeed.ReadOnly = true;
@@ -369,6 +389,8 @@
             // 
             // txtBoxSignalDis
             // 
+            this.txtBoxSignalDis.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.txtBoxSignalDis.ForeColor = System.Drawing.Color.White;
             this.txtBoxSignalDis.Location = new System.Drawing.Point(221, 152);
             this.txtBoxSignalDis.Name = "txtBoxSignalDis";
             this.txtBoxSignalDis.ReadOnly = true;
@@ -379,6 +401,8 @@
             // 
             // txtBoxSignal
             // 
+            this.txtBoxSignal.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.txtBoxSignal.ForeColor = System.Drawing.Color.White;
             this.txtBoxSignal.Location = new System.Drawing.Point(221, 123);
             this.txtBoxSignal.Name = "txtBoxSignal";
             this.txtBoxSignal.ReadOnly = true;
@@ -389,6 +413,8 @@
             // 
             // txtBoxReserver
             // 
+            this.txtBoxReserver.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.txtBoxReserver.ForeColor = System.Drawing.Color.White;
             this.txtBoxReserver.Location = new System.Drawing.Point(9, 317);
             this.txtBoxReserver.Name = "txtBoxReserver";
             this.txtBoxReserver.ReadOnly = true;
@@ -404,10 +430,11 @@
             // 
             // toolStrip
             // 
+            this.toolStrip.BackColor = System.Drawing.Color.Transparent;
             this.toolStrip.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.toolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripLabel});
-            this.toolStrip.Location = new System.Drawing.Point(0, 460);
+            this.toolStrip.Location = new System.Drawing.Point(0, 483);
             this.toolStrip.Name = "toolStrip";
             this.toolStrip.Size = new System.Drawing.Size(439, 25);
             this.toolStrip.TabIndex = 41;
@@ -415,22 +442,15 @@
             // 
             // toolStripLabel
             // 
+            this.toolStripLabel.ForeColor = System.Drawing.Color.White;
             this.toolStripLabel.Name = "toolStripLabel";
             this.toolStripLabel.Size = new System.Drawing.Size(47, 22);
             this.toolStripLabel.Text = "Ready.";
             // 
-            // pictureBox
-            // 
-            this.pictureBox.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
-            this.pictureBox.Image = global::OpenBve.Properties.Resources.Banner_small;
-            this.pictureBox.Location = new System.Drawing.Point(0, 0);
-            this.pictureBox.Name = "pictureBox";
-            this.pictureBox.Size = new System.Drawing.Size(439, 56);
-            this.pictureBox.TabIndex = 3;
-            this.pictureBox.TabStop = false;
-            // 
             // txtBoxCurrentStation
             // 
+            this.txtBoxCurrentStation.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.txtBoxCurrentStation.ForeColor = System.Drawing.Color.White;
             this.txtBoxCurrentStation.Location = new System.Drawing.Point(9, 344);
             this.txtBoxCurrentStation.Name = "txtBoxCurrentStation";
             this.txtBoxCurrentStation.ReadOnly = true;
@@ -440,6 +460,8 @@
             // 
             // txtBoxNextStation
             // 
+            this.txtBoxNextStation.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.txtBoxNextStation.ForeColor = System.Drawing.Color.White;
             this.txtBoxNextStation.Location = new System.Drawing.Point(221, 344);
             this.txtBoxNextStation.Name = "txtBoxNextStation";
             this.txtBoxNextStation.ReadOnly = true;
@@ -449,6 +471,8 @@
             // 
             // txtBoxArrivalTime
             // 
+            this.txtBoxArrivalTime.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.txtBoxArrivalTime.ForeColor = System.Drawing.Color.White;
             this.txtBoxArrivalTime.Location = new System.Drawing.Point(327, 370);
             this.txtBoxArrivalTime.Name = "txtBoxArrivalTime";
             this.txtBoxArrivalTime.ReadOnly = true;
@@ -458,6 +482,8 @@
             // 
             // txtBoxNextStationDis
             // 
+            this.txtBoxNextStationDis.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.txtBoxNextStationDis.ForeColor = System.Drawing.Color.White;
             this.txtBoxNextStationDis.Location = new System.Drawing.Point(9, 371);
             this.txtBoxNextStationDis.Name = "txtBoxNextStationDis";
             this.txtBoxNextStationDis.ReadOnly = true;
@@ -467,6 +493,8 @@
             // 
             // txtBoxDepartureTime
             // 
+            this.txtBoxDepartureTime.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.txtBoxDepartureTime.ForeColor = System.Drawing.Color.White;
             this.txtBoxDepartureTime.Location = new System.Drawing.Point(221, 370);
             this.txtBoxDepartureTime.Name = "txtBoxDepartureTime";
             this.txtBoxDepartureTime.ReadOnly = true;
@@ -476,6 +504,8 @@
             // 
             // txtBoxCurrentTime
             // 
+            this.txtBoxCurrentTime.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.txtBoxCurrentTime.ForeColor = System.Drawing.Color.White;
             this.txtBoxCurrentTime.Location = new System.Drawing.Point(9, 397);
             this.txtBoxCurrentTime.Name = "txtBoxCurrentTime";
             this.txtBoxCurrentTime.ReadOnly = true;
@@ -485,6 +515,8 @@
             // 
             // txtBoxRouteName
             // 
+            this.txtBoxRouteName.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.txtBoxRouteName.ForeColor = System.Drawing.Color.White;
             this.txtBoxRouteName.Location = new System.Drawing.Point(9, 96);
             this.txtBoxRouteName.Name = "txtBoxRouteName";
             this.txtBoxRouteName.ReadOnly = true;
@@ -494,6 +526,8 @@
             // 
             // txBoxTrainName
             // 
+            this.txBoxTrainName.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.txBoxTrainName.ForeColor = System.Drawing.Color.White;
             this.txBoxTrainName.Location = new System.Drawing.Point(184, 96);
             this.txBoxTrainName.Name = "txBoxTrainName";
             this.txBoxTrainName.ReadOnly = true;
@@ -504,6 +538,7 @@
             // btnRestartGame
             // 
             this.btnRestartGame.BackColor = System.Drawing.Color.Silver;
+            this.btnRestartGame.Font = new System.Drawing.Font("微软雅黑", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
             this.btnRestartGame.Location = new System.Drawing.Point(360, 94);
             this.btnRestartGame.Name = "btnRestartGame";
             this.btnRestartGame.Size = new System.Drawing.Size(67, 23);
@@ -514,7 +549,9 @@
             // 
             // btnLeftDoorOpen
             // 
-            this.btnLeftDoorOpen.BackColor = System.Drawing.Color.Lime;
+            this.btnLeftDoorOpen.BackColor = System.Drawing.Color.DimGray;
+            this.btnLeftDoorOpen.Font = new System.Drawing.Font("微软雅黑", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.btnLeftDoorOpen.ForeColor = System.Drawing.Color.White;
             this.btnLeftDoorOpen.Location = new System.Drawing.Point(221, 233);
             this.btnLeftDoorOpen.Name = "btnLeftDoorOpen";
             this.btnLeftDoorOpen.Size = new System.Drawing.Size(100, 23);
@@ -525,7 +562,9 @@
             // 
             // btnLeftDoorClose
             // 
-            this.btnLeftDoorClose.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(128)))));
+            this.btnLeftDoorClose.BackColor = System.Drawing.Color.DimGray;
+            this.btnLeftDoorClose.Font = new System.Drawing.Font("微软雅黑", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.btnLeftDoorClose.ForeColor = System.Drawing.Color.White;
             this.btnLeftDoorClose.Location = new System.Drawing.Point(221, 260);
             this.btnLeftDoorClose.Name = "btnLeftDoorClose";
             this.btnLeftDoorClose.Size = new System.Drawing.Size(100, 23);
@@ -536,7 +575,9 @@
             // 
             // btnRightDoorOpen
             // 
-            this.btnRightDoorOpen.BackColor = System.Drawing.Color.Lime;
+            this.btnRightDoorOpen.BackColor = System.Drawing.Color.DimGray;
+            this.btnRightDoorOpen.Font = new System.Drawing.Font("微软雅黑", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.btnRightDoorOpen.ForeColor = System.Drawing.Color.White;
             this.btnRightDoorOpen.Location = new System.Drawing.Point(221, 287);
             this.btnRightDoorOpen.Name = "btnRightDoorOpen";
             this.btnRightDoorOpen.Size = new System.Drawing.Size(100, 23);
@@ -547,7 +588,9 @@
             // 
             // btnRightDoorClose
             // 
-            this.btnRightDoorClose.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(128)))), ((int)(((byte)(128)))));
+            this.btnRightDoorClose.BackColor = System.Drawing.Color.DimGray;
+            this.btnRightDoorClose.Font = new System.Drawing.Font("微软雅黑", 7.5F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(134)));
+            this.btnRightDoorClose.ForeColor = System.Drawing.Color.White;
             this.btnRightDoorClose.Location = new System.Drawing.Point(220, 315);
             this.btnRightDoorClose.Name = "btnRightDoorClose";
             this.btnRightDoorClose.Size = new System.Drawing.Size(100, 23);
@@ -556,12 +599,22 @@
             this.btnRightDoorClose.UseVisualStyleBackColor = false;
             this.btnRightDoorClose.Click += new System.EventHandler(this.btnRightDoorClose_Click);
             // 
+            // pictureBox
+            // 
+            this.pictureBox.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Zoom;
+            this.pictureBox.Image = global::OpenBve.Properties.Resources.CPBackground;
+            this.pictureBox.Location = new System.Drawing.Point(0, 0);
+            this.pictureBox.Name = "pictureBox";
+            this.pictureBox.Size = new System.Drawing.Size(439, 56);
+            this.pictureBox.TabIndex = 3;
+            this.pictureBox.TabStop = false;
+            // 
             // formMonitor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-            this.ClientSize = new System.Drawing.Size(439, 485);
+            this.BackColor = System.Drawing.Color.Black;
+            this.ClientSize = new System.Drawing.Size(439, 508);
             this.Controls.Add(this.btnRightDoorClose);
             this.Controls.Add(this.btnRightDoorOpen);
             this.Controls.Add(this.btnLeftDoorClose);
@@ -606,11 +659,12 @@
             this.MaximizeBox = false;
             this.Name = "formMonitor";
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
-            this.Text = "Controller Monitor V3 [Monitor]";
+            this.Text = "Control Panel V3.1 [SWJTUVersion]";
             this.TopMost = true;
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.frmMain_FormClosing);
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.formCM_FormClosed);
             this.Load += new System.EventHandler(this.formCM_Load);
+            this.Move += new System.EventHandler(this.formMonitor_Move);
             this.toolScripMain.ResumeLayout(false);
             this.toolScripMain.PerformLayout();
             this.toolStrip.ResumeLayout(false);
@@ -628,8 +682,6 @@
 		private System.Windows.Forms.ToolStripComboBox cmbSerials;
 		private System.Windows.Forms.ToolStripButton btnRead;
 		private System.Windows.Forms.ToolStripButton btnStopRead;
-		private System.Windows.Forms.ToolStripSeparator toolStripSeparator1;
-		private System.Windows.Forms.ToolStripSeparator toolStripSeparator2;
 		private System.Windows.Forms.ToolStripLabel lblMainSwitch;
 		private System.Windows.Forms.TextBox txtBoxReserver;
 		private System.Windows.Forms.TextBox txtBoxSpdLimit;
@@ -647,7 +699,6 @@
 		private System.Windows.Forms.Button btnNeu;
 		private System.Windows.Forms.PictureBox pictureBox;
 		private System.Windows.Forms.ToolStripButton btnRefresh;
-		private System.Windows.Forms.ToolStripSeparator toolStripSeparator4;
 		private System.Windows.Forms.TextBox txtBoxSend;
 		private System.Windows.Forms.TextBox txtBoxRecieve;
 		private System.Windows.Forms.Button btnEmeOn;

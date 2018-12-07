@@ -1413,7 +1413,7 @@
             this.groupBoxAdvancedOptions.Controls.Add(this.checkBoxLoadInAdvance);
             this.groupBoxAdvancedOptions.Location = new System.Drawing.Point(6, 160);
             this.groupBoxAdvancedOptions.Name = "groupBoxAdvancedOptions";
-            this.groupBoxAdvancedOptions.Size = new System.Drawing.Size(316, 208);
+            this.groupBoxAdvancedOptions.Size = new System.Drawing.Size(634, 208);
             this.groupBoxAdvancedOptions.TabIndex = 21;
             this.groupBoxAdvancedOptions.TabStop = false;
             this.groupBoxAdvancedOptions.Text = "Advanced Options";
@@ -1453,7 +1453,7 @@
             // 
             this.labelNumberFive.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.labelNumberFive.AutoSize = true;
-            this.labelNumberFive.Location = new System.Drawing.Point(267, 163);
+            this.labelNumberFive.Location = new System.Drawing.Point(585, 163);
             this.labelNumberFive.Name = "labelNumberFive";
             this.labelNumberFive.Size = new System.Drawing.Size(11, 12);
             this.labelNumberFive.TabIndex = 12;
@@ -1486,7 +1486,7 @@
             this.trackBarTimeAccelerationFactor.Maximum = 5;
             this.trackBarTimeAccelerationFactor.Name = "trackBarTimeAccelerationFactor";
             this.trackBarTimeAccelerationFactor.RightToLeft = System.Windows.Forms.RightToLeft.No;
-            this.trackBarTimeAccelerationFactor.Size = new System.Drawing.Size(108, 45);
+            this.trackBarTimeAccelerationFactor.Size = new System.Drawing.Size(426, 45);
             this.trackBarTimeAccelerationFactor.TabIndex = 3;
             this.trackBarTimeAccelerationFactor.TickStyle = System.Windows.Forms.TickStyle.Both;
             // 
@@ -2496,7 +2496,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.labelOptionsTitle.AutoEllipsis = true;
             this.labelOptionsTitle.AutoSize = true;
-            this.labelOptionsTitle.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(122)))), ((int)(((byte)(153)))), ((int)(((byte)(61)))));
+            this.labelOptionsTitle.BackColor = System.Drawing.Color.RoyalBlue;
             this.labelOptionsTitle.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.labelOptionsTitle.ForeColor = System.Drawing.Color.White;
             this.labelOptionsTitle.Location = new System.Drawing.Point(8, 8);
@@ -2509,7 +2509,7 @@
             // 
             this.labelOptionsTitleBackground.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.labelOptionsTitleBackground.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(122)))), ((int)(((byte)(153)))), ((int)(((byte)(61)))));
+            this.labelOptionsTitleBackground.BackColor = System.Drawing.Color.RoyalBlue;
             this.labelOptionsTitleBackground.Location = new System.Drawing.Point(0, 0);
             this.labelOptionsTitleBackground.Name = "labelOptionsTitleBackground";
             this.labelOptionsTitleBackground.Size = new System.Drawing.Size(659, 32);
@@ -4136,7 +4136,7 @@
             this.splitContainerDependancies.Panel2.Controls.Add(this.labelSelectedDependencies);
             this.splitContainerDependancies.Panel2.Controls.Add(this.buttonDepends);
             this.splitContainerDependancies.Size = new System.Drawing.Size(643, 444);
-            this.splitContainerDependancies.SplitterDistance = 231;
+            this.splitContainerDependancies.SplitterDistance = 216;
             this.splitContainerDependancies.TabIndex = 27;
             // 
             // labelDependancyType
@@ -4186,7 +4186,7 @@
             this.dataGridViewPackages2.RowHeadersVisible = false;
             this.dataGridViewPackages2.RowHeadersWidth = 90;
             this.dataGridViewPackages2.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dataGridViewPackages2.Size = new System.Drawing.Size(643, 149);
+            this.dataGridViewPackages2.Size = new System.Drawing.Size(525, 117);
             this.dataGridViewPackages2.TabIndex = 21;
             this.dataGridViewPackages2.SelectionChanged += new System.EventHandler(this.dataGridViewPackages2_SelectionChanged);
             // 
@@ -4224,7 +4224,7 @@
             this.labelInstalledDependancies.ForeColor = System.Drawing.Color.White;
             this.labelInstalledDependancies.Location = new System.Drawing.Point(0, 0);
             this.labelInstalledDependancies.Name = "labelInstalledDependancies";
-            this.labelInstalledDependancies.Size = new System.Drawing.Size(643, 24);
+            this.labelInstalledDependancies.Size = new System.Drawing.Size(525, 24);
             this.labelInstalledDependancies.TabIndex = 20;
             this.labelInstalledDependancies.Text = "Installed Packages";
             this.labelInstalledDependancies.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -4254,7 +4254,7 @@
             this.dataGridViewPackages3.RowHeadersVisible = false;
             this.dataGridViewPackages3.RowHeadersWidth = 90;
             this.dataGridViewPackages3.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dataGridViewPackages3.Size = new System.Drawing.Size(643, 149);
+            this.dataGridViewPackages3.Size = new System.Drawing.Size(525, 147);
             this.dataGridViewPackages3.TabIndex = 22;
             this.dataGridViewPackages3.SelectionChanged += new System.EventHandler(this.dataGridViewPackages3_SelectionChanged);
             // 
@@ -4297,7 +4297,7 @@
             // 
             this.buttonReccomends.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.buttonReccomends.Enabled = false;
-            this.buttonReccomends.Location = new System.Drawing.Point(477, 1);
+            this.buttonReccomends.Location = new System.Drawing.Point(359, 1);
             this.buttonReccomends.Name = "buttonReccomends";
             this.buttonReccomends.Size = new System.Drawing.Size(166, 23);
             this.buttonReccomends.TabIndex = 24;
@@ -4315,7 +4315,7 @@
             this.labelSelectedDependencies.ForeColor = System.Drawing.Color.White;
             this.labelSelectedDependencies.Location = new System.Drawing.Point(0, 30);
             this.labelSelectedDependencies.Name = "labelSelectedDependencies";
-            this.labelSelectedDependencies.Size = new System.Drawing.Size(643, 24);
+            this.labelSelectedDependencies.Size = new System.Drawing.Size(525, 24);
             this.labelSelectedDependencies.TabIndex = 21;
             this.labelSelectedDependencies.Text = "Selected Packages";
             this.labelSelectedDependencies.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -5291,7 +5291,7 @@
             this.KeyPreview = true;
             this.Name = "formMain";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "openBVE";
+            this.Text = "OpenBVE [With RAGController]";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.formMain_FormClosing);
             this.Load += new System.EventHandler(this.formMain_Load);
             this.Shown += new System.EventHandler(this.formMain_Shown);

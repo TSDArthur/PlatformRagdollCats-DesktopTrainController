@@ -874,9 +874,8 @@ namespace OpenBve
 				Min = (int)Math.Floor(x / 60.0);
 				x -= 60.0 * (double)Min;
 				Sec = (int)Math.Floor(x);
-				_currentTime = Hour.ToString("00", System.Globalization.CultureInfo.InvariantCulture) + ":" + 
-					Min.ToString("00", System.Globalization.CultureInfo.InvariantCulture) + ":" + 
-					Sec.ToString("00", System.Globalization.CultureInfo.InvariantCulture);
+				_currentTime = Hour.ToString("00", System.Globalization.CultureInfo.InvariantCulture) + ":" +
+					Min.ToString("00", System.Globalization.CultureInfo.InvariantCulture)+":"+ Sec.ToString("00", System.Globalization.CultureInfo.InvariantCulture);
 				return _currentTime;
 			}
 			catch (Exception ex)
@@ -931,6 +930,34 @@ namespace OpenBve
 				TrainManager.CloseTrainDoors(TrainManager.PlayerTrain, false, true);
 			}
 			catch (Exception ex) { }
+		}
+
+		static public int GetLeftDoorState()
+		{
+			try
+			{
+				TrainManager.TrainDoorState value;
+				value = TrainManager.GetDoorsState(TrainManager.PlayerTrain, true, false);
+				if (value == TrainManager.TrainDoorState.AllClosed) return 0;
+				if (value == TrainManager.TrainDoorState.AllOpened) return 1;
+				return -1;
+			}
+			catch (Exception ex) { }
+			return -1;
+		}
+
+		static public int GetRightDoorState()
+		{
+			try
+			{
+				TrainManager.TrainDoorState value;
+				value = TrainManager.GetDoorsState(TrainManager.PlayerTrain, false, true);
+				if (value == TrainManager.TrainDoorState.AllClosed) return 0;
+				if (value == TrainManager.TrainDoorState.AllOpened) return 1;
+				return -1;
+			}
+			catch (Exception ex) { }
+			return -1;
 		}
 	}
 }

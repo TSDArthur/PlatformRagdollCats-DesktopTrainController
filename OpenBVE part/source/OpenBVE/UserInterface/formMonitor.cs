@@ -23,6 +23,7 @@ namespace OpenBve
 
 		public string taskRecord = "";
 		public string frameMCU = "";
+		static public Point formMonitorPosition = new Point(0,0);
 
         void port_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
@@ -48,7 +49,23 @@ namespace OpenBve
         private void frmMain_FormClosing(object sender, FormClosingEventArgs e)
         {
             this.DisposeSerialPort();
-        }
+			try
+			{
+				if (MessageBox.Show("Would you want to restart the simulator?", "RAGDOLL Controller",
+					MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
+				{
+					if (!TrainMethods.RestartGame())
+					{
+						MessageBox.Show("Unable to restart simulator.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+					}
+				}
+				e.Cancel = true;
+			}
+			catch (Exception ex)
+			{
+				MessageBox.Show("Unable to restart simulator.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+			}
+		}
 
         private SerialPort port = null;
         /// <summary>
@@ -414,7 +431,7 @@ namespace OpenBve
 		{
 			try
 			{
-				if (MessageBox.Show("Would you want to restart the simulator?", "RAGDOOL Controller",
+				if (MessageBox.Show("Would you want to restart the simulator?", "RAGDOLL Controller",
 					MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
 				{
 					if (!TrainMethods.RestartGame())
@@ -447,6 +464,12 @@ namespace OpenBve
 		private void btnRightDoorClose_Click(object sender, EventArgs e)
 		{
 			TrainMethods.RightDoorClose();
+		}
+
+		private void formMonitor_Move(object sender, EventArgs e)
+		{
+			formMonitorPosition.X = this.Location.X;
+			formMonitorPosition.Y = this.Location.Y + 540;
 		}
 	}
 }

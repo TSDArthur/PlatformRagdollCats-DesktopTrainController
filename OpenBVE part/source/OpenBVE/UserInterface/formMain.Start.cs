@@ -712,13 +712,19 @@ namespace OpenBve
 					Result.Start = true;
 					this.Close();
 					//
-					MethodInvoker MethInvk = new MethodInvoker(() =>
+					MethodInvoker MethInvk0 = new MethodInvoker(() =>
 					{
 						formMonitor FrmCCP = new formMonitor();
 						FrmCCP.Show();
 					});
+					MethodInvoker MethInvk1 = new MethodInvoker(() =>
+					{
+						formHMI FrmHMI = new formHMI();
+						FrmHMI.Show();
+					});
 					StartTime = Result.StartTime;
-					BeginInvoke(MethInvk);
+					BeginInvoke(MethInvk0);
+					BeginInvoke(MethInvk1);
 					//
 					//HACK: Call Application.DoEvents() to force the message pump to process all pending messages when the form closes
 					//This fixes the main form failing to close on Linux

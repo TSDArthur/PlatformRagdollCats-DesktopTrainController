@@ -93,9 +93,39 @@ namespace OpenBve.Properties {
         /// <summary>
         ///   查找 System.Drawing.Bitmap 类型的本地化资源。
         /// </summary>
+        internal static System.Drawing.Bitmap CPBackground {
+            get {
+                object obj = ResourceManager.GetObject("CPBackground", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   查找 System.Drawing.Bitmap 类型的本地化资源。
+        /// </summary>
         internal static System.Drawing.Bitmap Device {
             get {
                 object obj = ResourceManager.GetObject("Device", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   查找 System.Drawing.Bitmap 类型的本地化资源。
+        /// </summary>
+        internal static System.Drawing.Bitmap HMI1 {
+            get {
+                object obj = ResourceManager.GetObject("HMI1", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   查找 System.Drawing.Bitmap 类型的本地化资源。
+        /// </summary>
+        internal static System.Drawing.Bitmap HMI2 {
+            get {
+                object obj = ResourceManager.GetObject("HMI2", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }

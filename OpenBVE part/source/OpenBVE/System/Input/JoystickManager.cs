@@ -16,7 +16,7 @@ namespace OpenBve {
 			/// <summary>The handle to the joystick.</summary>
 			internal int Handle;
 
-			internal byte[] currentState = new byte[15];
+			internal byte[] currentState = new byte[25];
 
 			internal abstract ButtonState GetButton(int button);
 
@@ -35,11 +35,15 @@ namespace OpenBve {
 
 		internal JoystickManager()
 		{
-			if (!Program.CurrentlyRunningOnWindows)
+			try
 			{
-				return;
+				if (!Program.CurrentlyRunningOnWindows)
+				{
+					return;
+				}
+				devices = PIEDevice.EnumeratePIE();
 			}
-			devices = PIEDevice.EnumeratePIE();
+			catch(Exception ex) { }
 		}
 
 		/// <summary>Holds all joysticks currently attached to the computer.</summary>
