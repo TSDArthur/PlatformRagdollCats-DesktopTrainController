@@ -17,4 +17,4 @@ Demo Images
 
 ![N/A](https://raw.githubusercontent.com/TSDArthur/RAGDOLLCAT/master/Demo%20Images/Controller_1.jpg)
 
-![N/A](https://raw.githubusercontent.com/TSDArthur/RAGDOLLCAT/master/Demo%20Images/Control Panel.jpg)
+![N/A](https://raw.githubusercontent.com/TSDArthur/RAGDOLLCAT/master/Demo%20Images/Control%20Panel.jpg)
