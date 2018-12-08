@@ -140,7 +140,7 @@ Type:3.ENCODER -> CHANGE (in developing)
 #define NO_DATA ""
 #define RECIEVE_DELAY 2
 #define SEND_DELAY 25
-#define TIMER_TICK 200
+#define TIMER_TICK 300
 //
 
 #define NOP do { __asm__ __volatile__ ("nop"); } while (0)
@@ -676,7 +676,7 @@ void process10()
 
 void process11()
 {
-	pinMode(devicePins[11], OUTPUT);
+	//pinMode(devicePins[11], OUTPUT);
 	digitalWrite(devicePins[11], processData.GetData(LDDOR_IN_OP));
 }
 
@@ -698,7 +698,7 @@ void process12()
 
 void process13()
 {
-	pinMode(devicePins[13], OUTPUT);
+	//pinMode(devicePins[13], OUTPUT);
 	digitalWrite(devicePins[13], processData.GetData(RDOOR_IN_OP));
 }
 

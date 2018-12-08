@@ -324,6 +324,8 @@ namespace OpenBve
 			this.Left = 1;
 			this.cmbSerials.Items.AddRange(SerialPort.GetPortNames());
 			this.cmbSerials.SelectedIndex = this.cmbSerials.Items.Count - 1;
+			formMonitorPosition.X = this.Location.X;
+			formMonitorPosition.Y = this.Location.Y + 540;
 			TrainMethods.AttachMainTimerInterrupt(500);
 		}
 
