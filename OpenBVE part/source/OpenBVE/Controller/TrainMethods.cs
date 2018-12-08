@@ -569,7 +569,7 @@ namespace OpenBve
 		/// </summary>
 		static public int GetNextStationIndex()
 		{
-			int errState = 0;
+			int errState = -1;
 			int stationIndex = -1;
 			try
 			{
@@ -655,7 +655,7 @@ namespace OpenBve
 		static public double GetNextStationDis()
 		{
 			double errState = -1;
-			double stationDis;
+			double stationDis = 0;
 			try
 			{
 				if (!isTimetableReady) UpdateTimeTable();
@@ -668,14 +668,8 @@ namespace OpenBve
 				double currentSectionPos = nowControl.Cars[nowControl.DriverCar].FrontAxle.Follower.TrackPosition + 1.9;
 				int stationStopIndex = Game.GetStopIndex(nextStationIndex, nowControl.Cars.Length);
 				double nextStationPos = Game.Stations[nextStationIndex].Stops[stationStopIndex].TrackPosition;
-				double stopPos = nowControl.StationDistanceToStopPoint;
 				stationDis = nextStationPos - currentSectionPos;
-				//
-				/*if (!Table.Stations[nextStationIndex].Pass)
-				{
-					stationDis = (stationDis <= 180 && stopPos >= 0) ? stopPos : stationDis;
-				}*/
-				return stationDis;
+				return stationDis < 0 ? 0 : stationDis;
 			}
 			catch (Exception ex)
 			{
