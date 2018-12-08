@@ -120,10 +120,16 @@ namespace OpenBve
 				port.Write(endSymmbol, 0, 3);
 			}
 			//update something everytime
+			mcuFrame = DataCoverter.GetDataToHMI(1); //speed
+			port.Write(mcuFrame);
+			//this.txtBoxSend.Text = mcuFrame;
+			port.Write(endSymmbol, 0, 3);
+
 			mcuFrame = DataCoverter.GetDataToHMI(2); //distance to next station
 			port.Write(mcuFrame);
 			//this.txtBoxSend.Text = mcuFrame;
 			port.Write(endSymmbol, 0, 3);
+
 			//this.listBoxTsk.Items.Insert(0, DateTime.Now.ToString() + " >> Send: " + mcuFrame);
 			//this.listBoxTsk.SelectedIndex = this.listBoxTsk.Items.Count - 1;
 			//if (listBoxTsk.Items.Count > 18) listBoxTsk.Items.Clear();

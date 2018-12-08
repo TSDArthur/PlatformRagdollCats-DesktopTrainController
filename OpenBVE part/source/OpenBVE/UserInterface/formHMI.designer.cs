@@ -158,7 +158,7 @@
             // tmrSerial
             // 
             this.tmrSerial.Enabled = true;
-            this.tmrSerial.Interval = 500;
+            this.tmrSerial.Interval = 50;
             this.tmrSerial.Tick += new System.EventHandler(this.tmrSerial_Tick);
             // 
             // txtBoxRecieved

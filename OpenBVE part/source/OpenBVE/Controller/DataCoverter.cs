@@ -84,8 +84,8 @@ namespace OpenBve
 		const int OVERWRITE = 0;
 		const int NORMAL = 1;
 		//
-		const int LDOOR_OPEN_DEF = 1;
-		const int RDDOR_OPEN_DEF = 1;
+		const int LDOOR_OPEN_DEF = 0;
+		const int RDDOR_OPEN_DEF = 0;
 		const int SANDER_OFF = 0;
 		const int PANTO_UP = 1;
 		const int LIGHT_OFF = 0;
@@ -107,7 +107,7 @@ namespace OpenBve
 		const int _BOOL = 1;
 		const int _STRING = 3;
 		//
-		const int HMI_SCRIPT_NUM = 25;
+		const int HMI_SCRIPT_NUM = 24;
 		//
 		static private int[] trainData = new int[TRAIN_DATA_NUMBER];
 		static private string[] trainDataStr = new string[TRAIN_DATA_NUMBER];
@@ -123,13 +123,13 @@ namespace OpenBve
 										 _BOOL, _BOOL, _INT, _STRING, _STRING, _STRING, _STRING, _STRING, _STRING, _BOOL, _BOOL
 										};
 
-		static private String[] HMIScript= new string[HMI_SCRIPT_NUM] { "a.val=", "b.val=", "u.txt=", "c.val=", "d.val=", "u.txt=", "e.val=", "v.txt=",
+		static private String[] HMIScript= new string[HMI_SCRIPT_NUM] { "a.val=", "b.val=", "u.txt=", "c.val=", "d.val=", "e.val=", "v.txt=",
 										  "u.txt=", "f.val=", "g.val=", "h.val=", "i.val=",
 										   "j.val=", "v.txt=", "k.val=", "l.val=", "m.val=", "n.val=",
 										   "o.val=", "p.val=", "q.txt=", "r.txt=", "s.txt=", "t.txt="
 										 };
 
-		static private int[] HMIMap = new int[HMI_SCRIPT_NUM]  {SPEED, REVERSER, NEXT_STATION_DIS, POWER, BRAKE, NEXT_STATION_DIS, SIGNAL_INFO, CURRENT_TIME,
+		static private int[] HMIMap = new int[HMI_SCRIPT_NUM]  {SPEED, REVERSER, NEXT_STATION_DIS, POWER, BRAKE, SIGNAL_INFO, CURRENT_TIME,
 									NEXT_STATION_DIS, SIGNAL_DISTANCE, SPEED_LIMIT, HORN, MASTER_KEY, LDOOR_OPEN, CURRENT_TIME, LDDOR_IN_OP, RDOOR_OPEN, RDOOR_IN_OP,
 									SANDER_OPEN, LIGHT_OPEN, PANTO_OPEN, CURRENT_STATION_NAME, CURRENT_STATION_DEPART, NEXT_STATION_NAME, NEXT_STATION_ARRIVAL
 								   };
@@ -308,6 +308,7 @@ namespace OpenBve
 						return (TrainMethods.GetNextStationDis() >= 1000 ?
 						decimal.Round(decimal.Parse((TrainMethods.GetNextStationDis() / 1000).ToString()), 2) :
 						decimal.Round(decimal.Parse((TrainMethods.GetNextStationDis()).ToString()), 1)) +
+						(TrainMethods.GetNextStationDis() >= 1000 ? " KM":" M") +
 						" / " +
 						(TrainMethods.GetNextStationStopMode() == 1 ? "VIA" : "STOP");
 					}

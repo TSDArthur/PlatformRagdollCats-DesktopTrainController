@@ -72,8 +72,8 @@ Type:3.ENCODER -> CHANGE (in developing)
 #define OVERWRITE 0
 #define NORMAL 1
 //
-#define LDOOR_OPEN_DEF 1
-#define RDDOR_OPEN_DEF 1
+#define LDOOR_OPEN_DEF 0
+#define RDDOR_OPEN_DEF 0
 #define SANDER_OFF 0
 #define PANTO_UP 1
 #define LIGHT_OFF 0
@@ -128,11 +128,6 @@ Type:3.ENCODER -> CHANGE (in developing)
 #define RDOOR_IN_OP 24
 #define UPDATE_LAST_NUM 14
 #define UPDATE_OW 8
-#define NO_BINDING -1
-//HMI
-#define HMI_SCRIPT_NUM 22
-#define HMI_END_SYM 0xFF
-#define MAX_SERIAL_STEP 5
 //PC
 #define FILTER '|'
 #define START_SYM '#'
@@ -215,11 +210,6 @@ const int recieveToUpdate[UPDATE_LAST_NUM] = {SPEED, SIGNAL_INFO, SIGNAL_DISTANC
                                               NEXT_STATION_DIS, NEXT_STATION_ARRIVAL, CURRENT_STATION_DEPART, NEXT_STATION_DIS, CURRENT_TIME
                                              };
 const int overwriteToUpdate[UPDATE_OW] = {POWER, BRAKE, REVERSER, SPEED, SIGNAL_INFO, SIGNAL_DISTANCE, SPEED_LIMIT, RC_MODE};
-const int dataBinding[TRAIN_DATA_NUMBER] = {NO_BINDING, NO_BINDING, NO_BINDING, NO_BINDING, NO_BINDING,
-                                            NO_BINDING, NO_BINDING, NO_BINDING, NO_BINDING, NO_BINDING, NO_BINDING,
-                                            NO_BINDING, NO_BINDING, NO_BINDING, NO_BINDING, NO_BINDING, NO_BINDING, NO_BINDING,
-                                            NO_BINDING, NO_BINDING, NO_BINDING, NO_BINDING, NO_BINDING, 11, 13
-                                           };
 
 class TrainManager
 {
@@ -725,7 +715,10 @@ void process15()
 	if (deviceState == ACTIVE)
 	{
 		processData.SetData(PANTO_OPEN, !processData.GetData(PANTO_OPEN));
-		delay(1000);
+		while (Devices.GetState(15) == ACTIVE)
+		{
+			wdt_reset();
+		}
 		//while (Devices.GetState(14) == ACTIVE);
 	}
 }
@@ -764,8 +757,11 @@ void loop()
 {
 	//state automatic
 	Queue.GetLastState(processData);
-	wdt_reset();
-	for (int i = 0; i < DEVICE_NUMBER; i++)Process[i]();
+	for (int i = 0; i < DEVICE_NUMBER; i++)
+	{
+		Process[i]();
+		wdt_reset();
+	}
 	Queue.UpdateData(processData);
 	Queue.AddProc(processData);
 }
