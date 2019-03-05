@@ -1,4 +1,4 @@
-# RAGDOLLCAT
+# RAGLINK+ CabViewer
 A desktop train controller based on Arduino for OpenBVE.
 
 Controller:
