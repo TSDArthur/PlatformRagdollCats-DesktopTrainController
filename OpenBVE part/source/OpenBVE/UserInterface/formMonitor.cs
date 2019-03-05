@@ -10,7 +10,6 @@ using System.Windows.Forms;
 using OpenBve.UserInterface;
 using OpenBveApi.Packages;
 using OpenBve;
-using OpenBve;
 
 namespace OpenBve
 {
@@ -24,36 +23,44 @@ namespace OpenBve
 		public string taskRecord = "";
 		public string frameMCU = "";
 		static public Point formMonitorPosition = new Point(0,0);
+		static public bool isConnected = false;
+		static public int selectPort = 0;
+		static public int connectedLasting = 0;
+		static public int BaudRate = 115200;
 
-        void port_DataReceived(object sender, SerialDataReceivedEventArgs e)
+		void port_DataReceived(object sender, SerialDataReceivedEventArgs e)
         {
             this.RefreshInfoTextBox();
         }
 
         private void btnStartRead_Click(object sender, EventArgs e)
         {
-            this.InitialSerialPort();
+			//SerialManager.Enabled = false;
+			this.DisposeSerialPort();
+            this.InitialSerialPort(cmbSerials.SelectedItem.ToString(), BaudRate);
             this.btnRead.Enabled = false;
             this.btnStopRead.Enabled = true;
-			toolStripLabel.Text = "Controller Connected,";
+			toolStripLabel.Text = "Controller Connected.";
 		}
 
         private void btnStopRead_Click(object sender, EventArgs e)
         {
             this.DisposeSerialPort();
-            this.btnStopRead.Enabled = false;
+			this.btnStopRead.Enabled = false;
             this.btnRead.Enabled = true;
 			toolStripLabel.Text = "Ready.";
+			txtBoxRecieve.Text = "";
+			txtBoxSend.Text = "";
 		}
 
         private void frmMain_FormClosing(object sender, FormClosingEventArgs e)
         {
-            this.DisposeSerialPort();
 			try
 			{
 				if (MessageBox.Show("Would you want to restart the simulator?", "RAGDOLL Controller",
 					MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
 				{
+					this.DisposeSerialPort();
 					if (!TrainMethods.RestartGame())
 					{
 						MessageBox.Show("Unable to restart simulator.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -71,12 +78,11 @@ namespace OpenBve
         /// <summary>
         /// Initialize Serials
         /// </summary>
-        private void InitialSerialPort()
+        private void InitialSerialPort(String portName, int BAUD)
         {
             try
             {
-                string portName = cmbSerials.SelectedItem.ToString();
-                port = new SerialPort(portName, 115200);
+                port = new SerialPort(portName, BAUD);
                 port.Encoding = Encoding.ASCII;
 				port.ReceivedBytesThreshold = 1;
 				port.DataReceived += port_DataReceived;
@@ -145,20 +151,26 @@ namespace OpenBve
 			int st = 0, ed = 0;
 			for (int i = 0; i < taskRecord.Length; i++)
 			{
-				if (taskRecord.Substring(i, 1) == "#") st = i;
+				if (taskRecord.Substring(i, 1) == "#")
+				{
+					st = i;
+					break;
+				}
 			}
-			for (int i = 0; i < taskRecord.Length; i++)
+			for (int i = taskRecord.Length - 1; i >= 0; i--)
 			{
-				if (taskRecord.Substring(i, 1) == "!") ed = i;
+				if (taskRecord.Substring(i, 1) == "!")
+				{
+					ed = i;
+					break;
+				}
 			}
 			if (ed <= st) return;
 			taskRecord = taskRecord.Substring(st, ed - st + 1);
-
 			Action<string> setValueAction = text =>
 			{
 				this.txtBoxRecieve.Text = taskRecord;
 				doEvents(taskRecord);
-				//listBoxTsk.Items.Insert(0, DateTime.Now.ToString() + " >> Recieve: " + taskRecord);
 				taskRecord = String.Empty;
 			};
 
@@ -174,13 +186,10 @@ namespace OpenBve
 
 		private void doEvents(string frame)
 		{
-			string mcuFrame = DataCoverter.GetDataToArduino();
 			DataCoverter.RecieceFrame(frame);
+			string mcuFrame = DataCoverter.GetDataToArduino();
 			port.Write(mcuFrame);
 			this.txtBoxSend.Text = mcuFrame;
-			//this.listBoxTsk.Items.Insert(0, DateTime.Now.ToString() + " >> Send: " + mcuFrame);
-			//this.listBoxTsk.SelectedIndex = this.listBoxTsk.Items.Count - 1;
-			//if (listBoxTsk.Items.Count > 18) listBoxTsk.Items.Clear();
 			return;
 		}
 
@@ -278,14 +287,18 @@ namespace OpenBve
 				cmbSerials.Items.Clear();
 				cmbSerials.Items.AddRange(SerialPort.GetPortNames());
 				cmbSerials.SelectedIndex = this.cmbSerials.Items.Count - 1;
+				//
 			}
 
-			if (SerialPort.GetPortNames().Length==0)
+			if (SerialPort.GetPortNames().Length == 0)
 			{
+				DisposeSerialPort();
 				btnRead.Enabled = false;
 				btnStopRead.Enabled = false;
 				cmbSerials.Items.Clear();
 			}
+			//
+
 		}
 
 		private void btnFor_Click(object sender, EventArgs e)
@@ -327,6 +340,7 @@ namespace OpenBve
 			formMonitorPosition.X = this.Location.X;
 			formMonitorPosition.Y = this.Location.Y + 540;
 			TrainMethods.AttachMainTimerInterrupt(500);
+			isConnected = false;
 		}
 
 		private void cmbSerials_TextChanged(object sender, EventArgs e)

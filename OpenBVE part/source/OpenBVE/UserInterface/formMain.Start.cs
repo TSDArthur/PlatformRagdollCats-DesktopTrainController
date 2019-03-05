@@ -4,6 +4,7 @@ using System.Drawing;
 using System.IO;
 using System.Text;
 using System.Windows.Forms;
+using OpenBve.UserInterface;
 using OpenBveApi;
 using OpenBveApi.Interface;
 
@@ -721,14 +722,23 @@ namespace OpenBve
 					{
 						formMonitor FrmCCP = new formMonitor();
 						FrmCCP.Show();
+						//FrmCCP.Dispose();
 					});
 					MethodInvoker MethInvk1 = new MethodInvoker(() =>
 					{
 						formHMI FrmHMI = new formHMI();
 						FrmHMI.Show();
+						//FrmHMI.Dispose();
+					});
+					MethodInvoker MethInvk2 = new MethodInvoker(() =>
+					{
+						formAnalysis frmAnalysis = new formAnalysis();
+						frmAnalysis.Show();
+						//frmAnalysis.Dispose();
 					});
 					BeginInvoke(MethInvk0);
 					BeginInvoke(MethInvk1);
+					BeginInvoke(MethInvk2);
 					//
 					Application.DoEvents();
 				}

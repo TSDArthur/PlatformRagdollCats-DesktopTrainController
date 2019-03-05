@@ -135,8 +135,9 @@ Type:3.ENCODER -> CHANGE (in developing)
 #define NO_DATA ""
 #define RECIEVE_DELAY 2
 #define SEND_DELAY 25
-#define TIMER_TICK 300
-//
+#define TIMER_TICK 200
+//Special Args
+#define CONTROLLER_INFO "#ver|"
 
 #define NOP do { __asm__ __volatile__ ("nop"); } while (0)
 
@@ -347,6 +348,21 @@ public:
 		sendEd = 0;
 	}
 
+	bool IsSpecialArgs(String recieveData)
+	{
+		if (recieveData == CONTROLLER_INFO)return true;
+		return false;
+	}
+
+	bool SendControllerInfo()
+	{
+		String sendData = NO_DATA;
+		sendData += START_SYM;
+		sendData += "ver|3.1";
+		sendData += END_SYM;
+		Serial.print(sendData);
+	}
+
 	bool RecieveDataFromPC(TrainManager & p)
 	{
 		tmp = NO_DATA;
@@ -365,6 +381,14 @@ public:
 		if (!length)return false;
 		//find start pos
 		//Serial.println(recieveData);
+
+		//Special Args
+		if (IsSpecialArgs(recieveData))
+		{
+			SendControllerInfo();
+			return true;
+		}
+
 		st = ed = 0;
 		for (int i = 0; i < length; i++)
 			if (recieveData.charAt(i) == START_SYM)

@@ -109,6 +109,8 @@ namespace OpenBve
 		//
 		const int HMI_SCRIPT_NUM = 24;
 		//
+		static public String controllerVersion = NO_DATA; 
+		//
 		static private int[] trainData = new int[TRAIN_DATA_NUMBER];
 		static private string[] trainDataStr = new string[TRAIN_DATA_NUMBER];
 		//
@@ -142,30 +144,11 @@ namespace OpenBve
 		{
 			try
 			{
-				int st = 0, ed = 0;
 				int strLength = 0;
 				int operationNum = 0;
 				string[] operation = new string[TRAIN_DATA_NUMBER];
 				strLength = data.Length;
-				for (int i = 0; i < strLength; i++)
-				{
-					if (data.Substring(i, 1) == START_SYM)
-					{
-						st = i;
-						break;
-					}
-				}
-				//
-				for (int i = 0; i < strLength; i++)
-				{
-					if (data.Substring(i, 1) == END_SYM)
-					{
-						ed = i;
-						break;
-					}
-				}
-				if (ed < st || ed - st < TRAIN_DATA_NUMBER) return;
-				data = data.Substring(st + 1, ed - st - 1);
+				data = data.Substring(1, strLength - 2);
 				operation = data.Split(FILTER);
 				operationNum = operation.Length;
 				for (int i = 0; i < operationNum; i++)
@@ -184,6 +167,7 @@ namespace OpenBve
 			}
 			catch(Exception ex) { }
 		}
+
 		//
 		/// <summary>
 		/// send operation data to train

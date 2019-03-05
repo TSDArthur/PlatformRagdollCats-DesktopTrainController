@@ -108,6 +108,7 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Windows.Forms.DataVisualization" />
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
@@ -327,6 +328,12 @@
     <Compile Include="System\Messages\Message.MessageType.cs" />
     <Compile Include="System\Options.cs" />
     <Compile Include="System\Program\CommandLine.cs" />
+    <Compile Include="UserInterface\formAnalysis.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="UserInterface\formAnalysis.Designer.cs">
+      <DependentUpon>formAnalysis.cs</DependentUpon>
+    </Compile>
     <Compile Include="UserInterface\formHMI.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -369,6 +376,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="UserInterface\formAbout.resx">
       <DependentUpon>formAbout.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="UserInterface\formAnalysis.resx">
+      <DependentUpon>formAnalysis.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="UserInterface\formHMI.resx">
       <DependentUpon>formHMI.cs</DependentUpon>
@@ -547,6 +557,11 @@
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>AssemblyInfo.cs</LastGenOutput>
     </Content>
+    <None Include="Resources\Banner22.jpg" />
+    <None Include="Resources\Timer1.png" />
+    <None Include="Resources\Timer.png" />
+    <None Include="Resources\Banner21.jpg" />
+    <None Include="Resources\Banner2.jpg" />
     <None Include="Resources\Switch.png" />
     <None Include="Resources\Refresh.png" />
     <None Include="Resources\Logo.jpg" />

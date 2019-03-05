@@ -1365,11 +1365,12 @@
             // 
             this.labelFillerTwo.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
-            this.labelFillerTwo.BackColor = System.Drawing.Color.Silver;
+            this.labelFillerTwo.BackColor = System.Drawing.Color.Gray;
             this.labelFillerTwo.Image = global::OpenBve.Properties.Resources.Logo;
-            this.labelFillerTwo.Location = new System.Drawing.Point(0, 333);
+            this.labelFillerTwo.ImageAlign = System.Drawing.ContentAlignment.TopCenter;
+            this.labelFillerTwo.Location = new System.Drawing.Point(-1, 336);
             this.labelFillerTwo.Name = "labelFillerTwo";
-            this.labelFillerTwo.Size = new System.Drawing.Size(160, 130);
+            this.labelFillerTwo.Size = new System.Drawing.Size(159, 132);
             this.labelFillerTwo.TabIndex = 2;
             // 
             // panelOptions
@@ -4400,7 +4401,7 @@
             this.splitContainerDependancies.Panel2.Controls.Add(this.labelSelectedDependencies);
             this.splitContainerDependancies.Panel2.Controls.Add(this.buttonDepends);
             this.splitContainerDependancies.Size = new System.Drawing.Size(643, 444);
-            this.splitContainerDependancies.SplitterDistance = 231;
+            this.splitContainerDependancies.SplitterDistance = 264;
             this.splitContainerDependancies.TabIndex = 27;
             // 
             // labelDependancyType
@@ -4450,7 +4451,7 @@
             this.dataGridViewPackages2.RowHeadersVisible = false;
             this.dataGridViewPackages2.RowHeadersWidth = 90;
             this.dataGridViewPackages2.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dataGridViewPackages2.Size = new System.Drawing.Size(643, 149);
+            this.dataGridViewPackages2.Size = new System.Drawing.Size(643, 214);
             this.dataGridViewPackages2.TabIndex = 21;
             this.dataGridViewPackages2.SelectionChanged += new System.EventHandler(this.dataGridViewPackages2_SelectionChanged);
             // 
@@ -4518,7 +4519,7 @@
             this.dataGridViewPackages3.RowHeadersVisible = false;
             this.dataGridViewPackages3.RowHeadersWidth = 90;
             this.dataGridViewPackages3.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.dataGridViewPackages3.Size = new System.Drawing.Size(643, 149);
+            this.dataGridViewPackages3.Size = new System.Drawing.Size(643, 144);
             this.dataGridViewPackages3.TabIndex = 22;
             this.dataGridViewPackages3.SelectionChanged += new System.EventHandler(this.dataGridViewPackages3_SelectionChanged);
             // 
@@ -5539,13 +5540,13 @@
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
             this.BackColor = System.Drawing.Color.White;
             this.ClientSize = new System.Drawing.Size(819, 606);
+            this.Controls.Add(this.labelFillerTwo);
             this.Controls.Add(this.labelVerticalSeparator);
             this.Controls.Add(this.panelInfo);
             this.Controls.Add(this.panelPanels);
             this.Controls.Add(this.buttonClose);
             this.Controls.Add(this.pictureboxLogo);
             this.Controls.Add(this.labelFillerOne);
-            this.Controls.Add(this.labelFillerTwo);
             this.Controls.Add(this.labelFillerThree);
             this.Controls.Add(this.panelOptions);
             this.Controls.Add(this.panelControls);

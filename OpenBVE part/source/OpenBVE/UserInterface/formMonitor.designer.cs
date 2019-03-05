@@ -84,8 +84,9 @@
             // toolScripMain
             // 
             this.toolScripMain.AutoSize = false;
-            this.toolScripMain.BackColor = System.Drawing.Color.Black;
+            this.toolScripMain.BackColor = System.Drawing.SystemColors.Control;
             this.toolScripMain.Dock = System.Windows.Forms.DockStyle.None;
+            this.toolScripMain.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
             this.toolScripMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripLabel1,
             this.cmbSerials,
@@ -95,7 +96,8 @@
             this.btnStopRead});
             this.toolScripMain.Location = new System.Drawing.Point(4, 59);
             this.toolScripMain.Name = "toolScripMain";
-            this.toolScripMain.Size = new System.Drawing.Size(435, 25);
+            this.toolScripMain.RenderMode = System.Windows.Forms.ToolStripRenderMode.Professional;
+            this.toolScripMain.Size = new System.Drawing.Size(429, 25);
             this.toolScripMain.TabIndex = 0;
             this.toolScripMain.Text = "toolStrip1";
             // 
@@ -127,12 +129,13 @@
             // lblMainSwitch
             // 
             this.lblMainSwitch.Image = global::OpenBve.Properties.Resources.Switch;
+            this.lblMainSwitch.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.lblMainSwitch.Name = "lblMainSwitch";
             this.lblMainSwitch.Size = new System.Drawing.Size(16, 22);
             // 
             // btnRead
             // 
-            this.btnRead.ForeColor = System.Drawing.Color.White;
+            this.btnRead.ForeColor = System.Drawing.Color.Black;
             this.btnRead.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnRead.Name = "btnRead";
             this.btnRead.Size = new System.Drawing.Size(59, 22);
@@ -142,7 +145,7 @@
             // 
             // btnStopRead
             // 
-            this.btnStopRead.ForeColor = System.Drawing.Color.White;
+            this.btnStopRead.ForeColor = System.Drawing.Color.Black;
             this.btnStopRead.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnStopRead.Name = "btnStopRead";
             this.btnStopRead.Size = new System.Drawing.Size(59, 22);
@@ -430,19 +433,19 @@
             // 
             // toolStrip
             // 
-            this.toolStrip.BackColor = System.Drawing.Color.Transparent;
+            this.toolStrip.BackColor = System.Drawing.SystemColors.Control;
             this.toolStrip.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.toolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripLabel});
             this.toolStrip.Location = new System.Drawing.Point(0, 483);
             this.toolStrip.Name = "toolStrip";
-            this.toolStrip.Size = new System.Drawing.Size(439, 25);
+            this.toolStrip.Size = new System.Drawing.Size(435, 25);
             this.toolStrip.TabIndex = 41;
             this.toolStrip.Text = "toolStrip1";
             // 
             // toolStripLabel
             // 
-            this.toolStripLabel.ForeColor = System.Drawing.Color.White;
+            this.toolStripLabel.ForeColor = System.Drawing.Color.Black;
             this.toolStripLabel.Name = "toolStripLabel";
             this.toolStripLabel.Size = new System.Drawing.Size(47, 22);
             this.toolStripLabel.Text = "Ready.";
@@ -613,8 +616,8 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.Black;
-            this.ClientSize = new System.Drawing.Size(439, 508);
+            this.BackColor = System.Drawing.Color.DimGray;
+            this.ClientSize = new System.Drawing.Size(435, 508);
             this.Controls.Add(this.btnRightDoorClose);
             this.Controls.Add(this.btnRightDoorOpen);
             this.Controls.Add(this.btnLeftDoorClose);

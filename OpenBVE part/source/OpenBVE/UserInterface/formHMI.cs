@@ -42,12 +42,12 @@ namespace OpenBve
 
         private void frmMain_FormClosing(object sender, FormClosingEventArgs e)
         {
-            this.DisposeSerialPort();
 			try
 			{
 				if (MessageBox.Show("Would you want to restart the simulator?", "RAGDOLL Controller",
 					MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
 				{
+					this.DisposeSerialPort();
 					if (!TrainMethods.RestartGame())
 					{
 						MessageBox.Show("Unable to restart simulator.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -208,7 +208,7 @@ namespace OpenBve
 			{
 				cmbSerials.Items.Clear();
 				cmbSerials.Items.AddRange(SerialPort.GetPortNames());
-				cmbSerials.SelectedIndex = this.cmbSerials.Items.Count - 1;
+				cmbSerials.SelectedIndex = 0;
 			}
 
 			if (SerialPort.GetPortNames().Length == 0)

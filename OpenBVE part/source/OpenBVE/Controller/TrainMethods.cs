@@ -952,5 +952,56 @@ namespace OpenBve
 			catch (Exception ex) { }
 			return -1;
 		}
+
+		static public bool IsSimulatorReady()
+		{
+			bool ret = false;
+			try
+			{
+				//Get a data
+				int probe = (int)nowControl.CurrentSectionLimit;
+				ret = true;
+			}
+			catch (Exception ex)
+			{
+				ret = false;
+			}
+			return ret;
+		}
+
+		static public double GetAcceleration()
+		{
+			double ret = 0;
+			try
+			{
+				ret = nowControl.Cars[nowControl.DriverCar].Specs.CurrentAccelerationOutput;
+			}catch(Exception ex) { };
+			return ret;
+		}
+
+		static public double GetPowerRate()
+		{
+			double ret = 0;
+			try
+			{
+				double currentSpeed = GetSpeed() / 3.6;
+				double currentAcceleration = GetAcceleration();
+				int carsNumber = nowControl.Cars.Length;
+				double carWeight = 0;
+				for (int i = 0; i < carsNumber; i++)
+				{
+					double length = nowControl.Cars[i].Length;
+					double width = nowControl.Cars[i].Width;
+					double height = nowControl.Cars[i].Height;
+					double v = length * width * height;
+					if (nowControl.Cars[i].Specs.IsMotorCar) carWeight += v * 250;
+					else carWeight += v * 125;
+				}
+				double force = carWeight * currentAcceleration;
+				ret = force * currentSpeed;
+			}
+			catch (Exception ex) { };
+			return ret;
+		}
 	}
 }
