@@ -401,35 +401,32 @@
             // 
             // btnStartRecord
             // 
-            this.btnStartRecord.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this.btnStartRecord.Image = ((System.Drawing.Image)(resources.GetObject("btnStartRecord.Image")));
             this.btnStartRecord.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.btnStartRecord.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnStartRecord.Name = "btnStartRecord";
-            this.btnStartRecord.Size = new System.Drawing.Size(23, 22);
-            this.btnStartRecord.Text = "toolStripButton1";
+            this.btnStartRecord.Size = new System.Drawing.Size(70, 22);
+            this.btnStartRecord.Text = "Record";
             this.btnStartRecord.Click += new System.EventHandler(this.btnStartRecord_Click);
             // 
             // btnPauseRecord
             // 
-            this.btnPauseRecord.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this.btnPauseRecord.Image = ((System.Drawing.Image)(resources.GetObject("btnPauseRecord.Image")));
             this.btnPauseRecord.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.btnPauseRecord.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnPauseRecord.Name = "btnPauseRecord";
-            this.btnPauseRecord.Size = new System.Drawing.Size(23, 22);
-            this.btnPauseRecord.Text = "toolStripButton2";
+            this.btnPauseRecord.Size = new System.Drawing.Size(62, 22);
+            this.btnPauseRecord.Text = "Pause";
             this.btnPauseRecord.Click += new System.EventHandler(this.btnPauseRecord_Click);
             // 
             // btnStopRecord
             // 
-            this.btnStopRecord.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
             this.btnStopRecord.Image = ((System.Drawing.Image)(resources.GetObject("btnStopRecord.Image")));
             this.btnStopRecord.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
             this.btnStopRecord.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.btnStopRecord.Name = "btnStopRecord";
-            this.btnStopRecord.Size = new System.Drawing.Size(26, 22);
-            this.btnStopRecord.Text = "toolStripButton3";
+            this.btnStopRecord.Size = new System.Drawing.Size(61, 22);
+            this.btnStopRecord.Text = "Stop";
             this.btnStopRecord.Click += new System.EventHandler(this.btnStopRecord_Click);
             // 
             // toolStripSeparator1
@@ -468,7 +465,7 @@
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "formAnalysis";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = " RAGLINK Analysis System";
+            this.Text = " RAGLINK+ Analysis System";
             this.TopMost = true;
             this.Load += new System.EventHandler(this.formAnalysis_Load);
             this.toolStripBottom.ResumeLayout(false);
