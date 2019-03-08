@@ -2,15 +2,10 @@
 A desktop train controller based on Arduino for OpenBVE.
 
 Controller:
-
 Board: Arduino MEGA 2560 / Arduino DUE
-
-RAGLINK+ CabViewer Controller Version: 3.1
-
-RAGLINK+ CabViewer OpenBVE Proxy Version: 3.11
-
-OpenBVE Version: 1.4.1044.1408
-
+RAGLINK+ CabViewer Controller Version: 3.1.1028
+RAGLINK+ CabViewer OpenBVE Proxy Version: 3.1.1021
+OpenBVE Version: 1.4.1135.867
 Lincense: GPL
 
 Demo Images
