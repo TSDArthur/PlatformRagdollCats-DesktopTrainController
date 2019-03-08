@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="12.0">
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -21,7 +21,7 @@
     <RunCodeAnalysis>False</RunCodeAnalysis>
     <RunSourceAnalysis>False</RunSourceAnalysis>
     <ApplicationIcon>..\..\assets\icon.ico</ApplicationIcon>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <PublishUrl>publish\</PublishUrl>
     <Install>true</Install>
@@ -41,13 +41,12 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>Full</DebugType>
-    <Optimize>true</Optimize>
+    <Optimize>false</Optimize>
     <OutputPath>..\..\bin_debug\</OutputPath>
     <PlatformTarget>x86</PlatformTarget>
     <DefineConstants>TRACE;DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
-    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -61,7 +60,6 @@
     <DebugSymbols>true</DebugSymbols>
     <DocumentationFile>..\..\bin_release\OpenBve.XML</DocumentationFile>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
@@ -96,9 +94,8 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\dependencies\OpenTK.dll</HintPath>
     </Reference>
-    <Reference Include="PIEHid32Net, Version=2.2.4.21348, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\bin_debug\PIEHid32Net.dll</HintPath>
+    <Reference Include="PIEHid32Net">
+      <HintPath>..\..\dependencies\PIEHid32Net.dll</HintPath>
     </Reference>
     <Reference Include="SharpCompress, Version=0.21.1.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -109,11 +106,11 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Windows.Forms.DataVisualization" />
+    <Reference Include="System.Windows.Forms.DataVisualization.Design" />
     <Reference Include="System.Xml" />
+    <Reference Include="System.Xml.Linq" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Controller\DataCoverter.cs" />
-    <Compile Include="Controller\TrainMethods.cs" />
     <Compile Include="Game\AI\AI.cs" />
     <Compile Include="Game\AI\AI.PreTrain.cs">
       <DependentUpon>AI.cs</DependentUpon>
@@ -159,7 +156,6 @@
     <Compile Include="Game\ObjectManager\AnimatedObjects\WorldSound.cs" />
     <Compile Include="Game\ObjectManager\ObjectManager.cs" />
     <Compile Include="Game\ObjectManager\ObjectManager.StaticObject.cs" />
-    <Compile Include="Game\ObjectManager\ObjectManager.UnifiedObject.cs" />
     <Compile Include="Game\ObjectManager\ObjectManager.Visibility.cs" />
     <Compile Include="Game\ObjectManager\WorldObject.cs" />
     <Compile Include="Game\PointsOfInterest.cs" />
@@ -193,7 +189,6 @@
     <Compile Include="Graphics\Renderer\Colors.cs" />
     <Compile Include="Graphics\Renderer\Events.cs" />
     <Compile Include="Graphics\Renderer\Functions.cs" />
-    <Compile Include="Graphics\Renderer\Glow.cs" />
     <Compile Include="Graphics\Renderer\Lamp.cs" />
     <Compile Include="Graphics\Renderer\Lighting.cs" />
     <Compile Include="Graphics\Renderer\MotionBlur.cs" />
@@ -218,12 +213,16 @@
     </Compile>
     <Compile Include="Graphics\Renderer\Structures.cs" />
     <Compile Include="Graphics\Renderer\Objects.cs" />
+    <Compile Include="Graphics\Renderer\Touch.cs" />
     <Compile Include="Graphics\Renderer\ViewportModes.cs" />
+    <Compile Include="Parsers\Object\Generic\AssimpObjParser.cs" />
     <Compile Include="Parsers\Object\Generic\AssimpXParser.cs" />
     <Compile Include="Parsers\Object\Generic\NewXParser.cs" />
     <Compile Include="Parsers\Object\Generic\WavefrontObjParser.cs" />
     <Compile Include="Parsers\Object\MeshBuilder.cs" />
     <Compile Include="Parsers\Object\MSTS\ShapeParser.cs" />
+    <Compile Include="Parsers\Panel\PanelAnimatedXmlParser.cs" />
+    <Compile Include="Parsers\Panel\PanelXmlParser.cs" />
     <Compile Include="Parsers\Route\BVE\CsvRwRouteParser.ApplyRouteData.cs" />
     <Compile Include="Parsers\Route\BVE\CsvRwRouteParser.CompatibilityObjects.cs" />
     <Compile Include="Parsers\Route\BVE\CsvRwRouteParser.Expression.cs" />
@@ -250,16 +249,14 @@
     <Compile Include="Parsers\Train\XML\TrainXmlParser.BrakeNode.cs" />
     <Compile Include="Parsers\Train\XML\TrainXmlParser.CarNode.cs" />
     <Compile Include="Parsers\Train\XML\TrainXmlParser.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>AssemblyInfo.tt</DependentUpon>
-    </Compile>
+    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Properties\Resources.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Include="RAGLINKProxy\DataCoverter.cs" />
+    <Compile Include="RAGLINKProxy\TrainMethods.cs" />
     <Compile Include="Simulation\TrainManager\Brake\AirBrake\AirSound.cs" />
     <Compile Include="Simulation\TrainManager\Brake\AirBrake\AutomaticAirBrake.cs" />
     <Compile Include="Simulation\TrainManager\Brake\CarBrake.BrakeType.cs" />
@@ -315,7 +312,8 @@
     <Compile Include="Simulation\TrainManager\Train\Train.Specs.cs" />
     <Compile Include="Simulation\TrainManager\Train\Train.States.cs" />
     <Compile Include="Simulation\World\BackgroundManager.cs" />
-    <Compile Include="Simulation\World\Transformations.cs" />
+    <Compile Include="System\Cursor.cs" />
+    <Compile Include="System\Functions\Bve5Shared.cs" />
     <Compile Include="System\Functions\CrashHandler.cs" />
     <Compile Include="System\Functions\FolderBrowserDialog.cs" />
     <Compile Include="System\Functions\TextEncoding.cs" />
@@ -505,6 +503,15 @@
     <Compile Include="Simulation\TrainManager\Train\Handles\Handles.AirBrake.cs" />
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="..\..\assets\Cursors\nk.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="..\..\assets\Cursors\Symbols\plus.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="..\..\assets\Cursors\Symbols\minus.png" />
+  </ItemGroup>
+  <ItemGroup>
     <BootstrapperPackage Include=".NETFramework,Version=v4.0,Profile=Client">
       <Visible>False</Visible>
       <ProductName>Microsoft .NET Framework 4 Client Profile %28x86 and x64%29</ProductName>
@@ -527,9 +534,9 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\AssimpXParser\AssimpXParser.csproj">
-      <Project>{572cd7ff-a0c9-4a48-81b7-79b65e37d3c7}</Project>
-      <Name>AssimpXParser</Name>
+    <ProjectReference Include="..\AssimpParser\AssimpParser.csproj">
+      <Project>{77ccae62-d374-468e-98a0-dd8adb461c10}</Project>
+      <Name>AssimpParser</Name>
     </ProjectReference>
     <ProjectReference Include="..\DevTools\LBAHeader\LBAHeader.csproj">
       <Project>{e9b64673-65b7-4d77-a4db-4b441a7c9197}</Project>
@@ -545,7 +552,7 @@
     </ProjectReference>
     <ProjectReference Include="..\Plugins\Formats.Msts\Formats.Msts.csproj">
       <Project>{E81B7BD8-A326-47D3-B7EE-E9C7D4D119FA}</Project>
-      <Name>OpenBve.Formats.Msts</Name>
+      <Name>Formats.Msts</Name>
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
@@ -557,11 +564,15 @@
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>AssemblyInfo.cs</LastGenOutput>
     </Content>
+    <None Include="Resources\Connected.png" />
     <None Include="Resources\Banner22.jpg" />
-    <None Include="Resources\Timer1.png" />
-    <None Include="Resources\Timer.png" />
     <None Include="Resources\Banner21.jpg" />
     <None Include="Resources\Banner2.jpg" />
+    <None Include="Resources\Banner_small.jpg" />
+    <None Include="Resources\Banner.jpg" />
+    <None Include="Resources\Banner.bmp" />
+    <None Include="Resources\Timer1.png" />
+    <None Include="Resources\Timer.png" />
     <None Include="Resources\Switch.png" />
     <None Include="Resources\Refresh.png" />
     <None Include="Resources\Logo.jpg" />
@@ -569,10 +580,6 @@
     <None Include="Resources\HMI1.jpg" />
     <None Include="Resources\Device.png" />
     <None Include="Resources\CPBackground.jpg" />
-    <None Include="Resources\Connected.png" />
-    <None Include="Resources\Banner_small.jpg" />
-    <None Include="Resources\Banner.jpg" />
-    <None Include="Resources\Banner.bmp" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

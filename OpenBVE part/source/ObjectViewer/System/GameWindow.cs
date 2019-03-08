@@ -35,7 +35,10 @@ namespace OpenBve
             double timeElapsed = CPreciseTimer.GetElapsedTime();
             DateTime time = DateTime.Now;
             Game.SecondsSinceMidnight = (double)(3600 * time.Hour + 60 * time.Minute + time.Second) + 0.001 * (double)time.Millisecond;
-            ObjectManager.UpdateAnimatedWorldObjects(timeElapsed, false);
+            lock (Program.LockObj)
+            {
+                ObjectManager.UpdateAnimatedWorldObjects(timeElapsed, false);
+            }
             if (Program.ReducedMode)
             {
                 System.Threading.Thread.Sleep(125);
@@ -77,9 +80,9 @@ namespace OpenBve
             {
                 double cosa = Math.Cos(RotateXSpeed * timeElapsed);
                 double sina = Math.Sin(RotateXSpeed * timeElapsed);
-				World.AbsoluteCameraDirection.Rotate(new Vector3(0,1.0,0.0), cosa, sina);
-	            World.AbsoluteCameraUp.Rotate(new Vector3(0,1.0,0.0), cosa, sina);
-	            World.AbsoluteCameraSide.Rotate(new Vector3(0,1.0,0.0), cosa, sina);
+				World.AbsoluteCameraDirection.Rotate(Vector3.Down, cosa, sina);
+	            World.AbsoluteCameraUp.Rotate(Vector3.Down, cosa, sina);
+	            World.AbsoluteCameraSide.Rotate(Vector3.Down, cosa, sina);
                 keep = true;
             }
             // rotate y
@@ -313,8 +316,8 @@ namespace OpenBve
             //         {
             //             try
             //             {
-            //                 ObjectManager.UnifiedObject o = ObjectManager.LoadObject(commandLineArgs[i],
-            //                     System.Text.Encoding.UTF8, ObjectLoadMode.Normal, false, false, false,0,0,0);
+            //                 UnifiedObject o = ObjectManager.LoadObject(commandLineArgs[i],
+            //                     System.Text.Encoding.UTF8, false, false, false,0,0,0);
             //                 ObjectManager.CreateObject(o, new Vector3(0.0, 0.0, 0.0),
             //                     new Transformation(0.0, 0.0, 0.0), new Transformation(0.0, 0.0, 0.0), true,
             //                     0.0, 0.0, 25.0, 0.0);

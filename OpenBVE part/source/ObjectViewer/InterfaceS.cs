@@ -6,7 +6,6 @@
 // ╚══════════════════════════════════════════════════════════════╝
 
 using System;
-using OpenBveApi;
 using OpenBveApi.Graphics;
 using OpenBveApi.Interface;
 using OpenBveApi.Math;
@@ -119,49 +118,14 @@ namespace OpenBve {
 		    internal int AntialiasingLevel;
 			internal int ObjectOptimizationBasicThreshold;
 			internal int ObjectOptimizationFullThreshold;
-			internal int UseNewXParser;
+			internal int CurrentXParser;
+			internal int CurrentObjParser;
 		}
 		internal static Options CurrentOptions;
 
 		// ================================
 
 #pragma warning restore 0649
-
-		
-		// try parse time
-		internal static bool TryParseTime(string Expression, out double Value)
-		{
-			Expression = Expression.TrimInside();
-			if (Expression.Length != 0) {
-				System.Globalization.CultureInfo Culture = System.Globalization.CultureInfo.InvariantCulture;
-				int i = Expression.IndexOf('.');
-				if (i >= 1) {
-					int h; if (int.TryParse(Expression.Substring(0, i), System.Globalization.NumberStyles.Integer, Culture, out h)) {
-						int n = Expression.Length - i - 1;
-						if (n == 1 | n == 2) {
-							uint m; if (uint.TryParse(Expression.Substring(i + 1, n), System.Globalization.NumberStyles.None, Culture, out m)) {
-								Value = 3600.0 * (double)h + 60.0 * (double)m;
-								return true;
-							}
-						} else if (n == 3 | n == 4) {
-							uint m; if (uint.TryParse(Expression.Substring(i + 1, 2), System.Globalization.NumberStyles.None, Culture, out m)) {
-								uint s; if (uint.TryParse(Expression.Substring(i + 3, n - 2), System.Globalization.NumberStyles.None, Culture, out s)) {
-									Value = 3600.0 * (double)h + 60.0 * (double)m + (double)s;
-									return true;
-								}
-							}
-						}
-					}
-				} else if (i == -1) {
-					int h; if (int.TryParse(Expression, System.Globalization.NumberStyles.Integer, Culture, out h)) {
-						Value = 3600.0 * (double)h;
-						return true;
-					}
-				}
-			}
-			Value = 0.0;
-			return false;
-		}
 
 		// round to power of two
 		internal static int RoundToPowerOfTwo(int Value) {

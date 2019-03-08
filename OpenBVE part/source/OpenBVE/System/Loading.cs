@@ -221,18 +221,18 @@ namespace OpenBve {
 			{
 				if (k == TrainManager.Trains.Length - 1 & Game.BogusPretrainInstructions.Length != 0)
 				{
-					TrainManager.Trains[k] = new TrainManager.Train(k, TrainManager.TrainState.Bogus);
+					TrainManager.Trains[k] = new TrainManager.Train(TrainManager.TrainState.Bogus);
 				}
 				else
 				{
-					TrainManager.Trains[k] = new TrainManager.Train(k, TrainManager.TrainState.Pending);
+					TrainManager.Trains[k] = new TrainManager.Train(TrainManager.TrainState.Pending);
 				}
 				
 			}
 			TrainManager.PlayerTrain = TrainManager.Trains[Game.PrecedingTrainTimeDeltas.Length];
 
-			ObjectManager.UnifiedObject[] CarObjects = null;
-			ObjectManager.UnifiedObject[] BogieObjects = null;
+			UnifiedObject[] CarObjects = null;
+			UnifiedObject[] BogieObjects = null;
 
 			// load trains
 			double TrainProgressMaximum = 0.7 + 0.3 * (double)TrainManager.Trains.Length;
@@ -323,7 +323,7 @@ namespace OpenBve {
 					}
 				}
 				// add panel section
-				if (k == TrainManager.PlayerTrain.TrainIndex) {	
+				if (TrainManager.Trains[k] == TrainManager.PlayerTrain) {	
 					TrainProgressCurrentWeight = 0.7 / TrainProgressMaximum;
 					TrainManager.ParsePanelConfig(TrainManager.Trains[k].TrainFolder, CurrentTrainEncoding, TrainManager.Trains[k]);
 					TrainProgressCurrentSum += TrainProgressCurrentWeight;
@@ -336,8 +336,8 @@ namespace OpenBve {
 					bool LoadObjects = false;
 					if (CarObjects == null)
 					{
-						CarObjects = new ObjectManager.UnifiedObject[TrainManager.Trains[k].Cars.Length];
-						BogieObjects = new ObjectManager.UnifiedObject[TrainManager.Trains[k].Cars.Length * 2];
+						CarObjects = new UnifiedObject[TrainManager.Trains[k].Cars.Length];
+						BogieObjects = new UnifiedObject[TrainManager.Trains[k].Cars.Length * 2];
 						LoadObjects = true;
 					}
 					string tXml = OpenBveApi.Path.CombineFile(TrainManager.Trains[k].TrainFolder, "train.xml");
@@ -359,7 +359,7 @@ namespace OpenBve {
 						if (CarObjects[i] == null) {
 							// load default exterior object
 							string file = OpenBveApi.Path.CombineFile(Program.FileSystem.GetDataFolder("Compatibility"), "exterior.csv");
-							ObjectManager.StaticObject so = ObjectManager.LoadStaticObject(file, System.Text.Encoding.UTF8, ObjectLoadMode.Normal, false, false, false);
+							ObjectManager.StaticObject so = ObjectManager.LoadStaticObject(file, System.Text.Encoding.UTF8, false, false, false);
 							if (so == null) {
 								CarObjects[i] = null;
 							} else {

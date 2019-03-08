@@ -2,8 +2,11 @@
 using OpenBveApi.Math;
 using System.Linq;
 using System;
+using System.Collections.Generic;
 using System.Text;
+using System.Xml.Linq;
 using OpenBve.BrakeSystems;
+using OpenBve.Parsers.Panel;
 using OpenBveApi.Objects;
 using OpenBveApi.Interface;
 
@@ -11,9 +14,8 @@ namespace OpenBve.Parsers.Train
 {
 	partial class TrainXmlParser
 	{
-		private static void ParseCarNode(XmlNode Node, string fileName, int Car, ref TrainManager.Train Train, ref ObjectManager.UnifiedObject[] CarObjects, ref ObjectManager.UnifiedObject[] BogieObjects)
+		private static void ParseCarNode(XmlNode Node, string fileName, int Car, ref TrainManager.Train Train, ref UnifiedObject[] CarObjects, ref UnifiedObject[] BogieObjects)
 		{
-			double driverZ = 0.0;
 			string interiorFile = string.Empty;
 			foreach (XmlNode c in Node.ChildNodes)
 			{
@@ -150,7 +152,7 @@ namespace OpenBve.Parsers.Train
 						string f = OpenBveApi.Path.CombineFile(currentPath, c.InnerText);
 						if (System.IO.File.Exists(f))
 						{
-							CarObjects[Car] = ObjectManager.LoadObject(f, System.Text.Encoding.Default, ObjectLoadMode.Normal, false, false, false);
+							CarObjects[Car] = ObjectManager.LoadObject(f, System.Text.Encoding.Default, false, false, false);
 						}
 						break;
 					case "reversed":
@@ -182,7 +184,7 @@ namespace OpenBve.Parsers.Train
 										string fb = OpenBveApi.Path.CombineFile(currentPath, cc.InnerText);
 										if (System.IO.File.Exists(fb))
 										{
-											BogieObjects[Car * 2] = ObjectManager.LoadObject(fb, System.Text.Encoding.Default, ObjectLoadMode.Normal, false, false, false);
+											BogieObjects[Car * 2] = ObjectManager.LoadObject(fb, System.Text.Encoding.Default, false, false, false);
 										}
 										break;
 									case "reversed":
@@ -215,7 +217,7 @@ namespace OpenBve.Parsers.Train
 										string fb = OpenBveApi.Path.CombineFile(currentPath, cc.InnerText);
 										if (System.IO.File.Exists(fb))
 										{
-											BogieObjects[Car * 2 + 1] = ObjectManager.LoadObject(fb, System.Text.Encoding.Default, ObjectLoadMode.Normal, false, false, false);
+											BogieObjects[Car * 2 + 1] = ObjectManager.LoadObject(fb, System.Text.Encoding.Default, false, false, false);
 										}
 										break;
 									case "reversed":
@@ -233,6 +235,7 @@ namespace OpenBve.Parsers.Train
 							break;
 						}
 						Train.Cars[Car].Driver = new Vector3();
+						double driverZ;
 						if (!NumberFormats.TryParseDoubleVb6(splitText[0], out Train.Cars[Car].Driver.X))
 						{
 							Interface.AddMessage(MessageType.Warning, false, "Driver position X was invalid for Car " + Car + " in XML file " + fileName);
@@ -256,9 +259,15 @@ namespace OpenBve.Parsers.Train
 						if (Car != Train.DriverCar)
 						{
 							Train.Cars[Car].CarSections = new TrainManager.CarSection[1];
-							Train.Cars[Car].CarSections[0] = new TrainManager.CarSection();
-							Train.Cars[Car].CarSections[0].Elements = new ObjectManager.AnimatedObject[] { };
-							Train.Cars[Car].CarSections[0].Overlay = true;
+							Train.Cars[Car].CarSections[0] = new TrainManager.CarSection
+							{
+								Groups = new TrainManager.ElementsGroup[1]
+							};
+							Train.Cars[Car].CarSections[0].Groups[0] = new TrainManager.ElementsGroup
+							{
+								Elements = new ObjectManager.AnimatedObject[] { },
+								Overlay = true
+							};
 						}
 						string cv = OpenBveApi.Path.CombineFile(currentPath, c.InnerText);
 						if (!System.IO.File.Exists(cv))
@@ -274,8 +283,32 @@ namespace OpenBve.Parsers.Train
 			//As there is no set order, this needs to be done after the loop
 			if (interiorFile != String.Empty)
 			{
-				
-				if (interiorFile.ToLowerInvariant().EndsWith(".cfg"))
+				if (interiorFile.ToLowerInvariant().EndsWith(".xml"))
+				{
+					XDocument CurrentXML = XDocument.Load(interiorFile, LoadOptions.SetLineInfo);
+
+					// Check for null
+					if (CurrentXML.Root == null)
+					{
+						// We couldn't find any valid XML, so return false
+						throw new System.IO.InvalidDataException();
+					}
+					IEnumerable<XElement> DocumentElements = CurrentXML.Root.Elements("PanelAnimated");
+					if (DocumentElements != null && DocumentElements.Count() != 0)
+					{
+						PanelAnimatedXmlParser.ParsePanelAnimatedXml(interiorFile, currentPath, Train, Car);
+						Train.Cars[Car].CameraRestrictionMode = Camera.RestrictionMode.NotAvailable;
+						return;
+					}
+					DocumentElements = CurrentXML.Root.Elements("Panel");
+					if (DocumentElements != null  && DocumentElements.Count() != 0)
+					{
+						PanelXmlParser.ParsePanelXml(interiorFile, currentPath, Train, Car);
+						Train.Cars[Car].CameraRestrictionMode = Camera.RestrictionMode.On;
+						return;
+					}
+				}
+				else if (interiorFile.ToLowerInvariant().EndsWith(".cfg"))
 				{
 					//Only supports panel2.cfg format
 					Panel2CfgParser.ParsePanel2Config(System.IO.Path.GetFileName(interiorFile), System.IO.Path.GetDirectoryName(interiorFile), Encoding.UTF8, Train, Car);
@@ -283,14 +316,14 @@ namespace OpenBve.Parsers.Train
 				}
 				else if (interiorFile.ToLowerInvariant().EndsWith(".animated"))
 				{
-					ObjectManager.AnimatedObjectCollection a = AnimatedObjectParser.ReadObject(interiorFile, Encoding.UTF8, ObjectLoadMode.DontAllowUnloadOfTextures);
+					ObjectManager.AnimatedObjectCollection a = AnimatedObjectParser.ReadObject(interiorFile, Encoding.UTF8);
 					try
 					{
 						for (int i = 0; i < a.Objects.Length; i++)
 						{
 							a.Objects[i].ObjectIndex = ObjectManager.CreateDynamicObject();
 						}
-						Train.Cars[Car].CarSections[0].Elements = a.Objects;
+						Train.Cars[Car].CarSections[0].Groups[0].Elements = a.Objects;
 						Train.Cars[Car].CameraRestrictionMode = Camera.RestrictionMode.NotAvailable;
 					}
 					catch

@@ -57,7 +57,15 @@ namespace OpenBve
 			/// <summary>C# port of Assimp</summary>
 			Assimp = 2
 		}
-		
+
+		internal enum ObjParsers
+		{
+			/// <summary>Original parser</summary>
+			Original = 0,
+			/// <summary>C# port of Assimp</summary>
+			Assimp = 1
+		}
+
 		internal class Options
 		{
 			/// <summary>The ISO 639-1 code for the current user interface language</summary>
@@ -171,7 +179,12 @@ namespace OpenBve
 			/// <summary>The list of enable Input Device Plugins</summary>
 			internal string[] EnableInputDevicePlugins;
 
+			internal string CursorFileName;
+			internal bool Panel2ExtendedMode;
+			internal int Panel2ExtendedMinSize;
+
 			internal XParsers CurrentXParser;
+			internal ObjParsers CurrentObjParser;
 
 			internal TimeTableMode TimeTableStyle;
 
@@ -262,7 +275,11 @@ namespace OpenBve
 				this.KioskMode = false;
 				this.KioskModeTimer = 300;
 				this.EnableInputDevicePlugins = new string[] { };
+				this.CursorFileName = "nk.png";
+				this.Panel2ExtendedMode = false;
+				this.Panel2ExtendedMinSize = 128;
 				this.CurrentXParser = XParsers.Original; //Set to Michelle's original X parser by default
+				this.CurrentObjParser = ObjParsers.Original; //Set to original Obj parser by default
 			}
 		}
 		/// <summary>The current game options</summary>
@@ -753,16 +770,48 @@ namespace OpenBve
 									switch (Key)
 									{
 										case "xobject":
-											int p;
-											if (!int.TryParse(Value, NumberStyles.Integer, Culture, out p) || p < 0 || p > 3)
 											{
-												Interface.CurrentOptions.CurrentXParser = XParsers.Original;
+												int p;
+												if (!int.TryParse(Value, NumberStyles.Integer, Culture, out p) || p < 0 || p > 3)
+												{
+													Interface.CurrentOptions.CurrentXParser = XParsers.Original;
+												}
+												else
+												{
+													Interface.CurrentOptions.CurrentXParser = (XParsers)p;
+												}
+												break;
 											}
-											else
+										case "objobject":
 											{
-												Interface.CurrentOptions.CurrentXParser = (XParsers)p;
+												int p;
+												if (!int.TryParse(Value, NumberStyles.Integer, Culture, out p) || p < 0 || p > 2)
+												{
+													Interface.CurrentOptions.CurrentObjParser = ObjParsers.Original;
+												}
+												else
+												{
+													Interface.CurrentOptions.CurrentObjParser = (ObjParsers)p;
+												}
+												break;
 											}
+									}
+									break;
+								case "touch":
+									switch (Key)
+									{
+										case "cursor":
+											Interface.CurrentOptions.CursorFileName = Value;
 											break;
+										case "panel2extended":
+											Interface.CurrentOptions.Panel2ExtendedMode = string.Compare(Value, "false", StringComparison.OrdinalIgnoreCase) != 0;
+											break;
+										case "panel2extendedminsize":
+											{
+												int a;
+												int.TryParse(Value, NumberStyles.Integer, Culture, out a);
+												Interface.CurrentOptions.Panel2ExtendedMinSize = a;
+											} break;
 									}
 									break;
 							}
@@ -976,9 +1025,15 @@ namespace OpenBve
 			{
 				Builder.AppendLine(CurrentOptions.EnableInputDevicePlugins[i]);
 			}
-
+			Builder.AppendLine();
 			Builder.AppendLine("[Parsers]");
-			Builder.AppendLine("xobject=" + (int) Interface.CurrentOptions.CurrentXParser);
+			Builder.AppendLine("xObject = " + (int)Interface.CurrentOptions.CurrentXParser);
+			Builder.AppendLine("objObject = " + (int)Interface.CurrentOptions.CurrentObjParser);
+			Builder.AppendLine();
+			Builder.AppendLine("[Touch]");
+			Builder.AppendLine("cursor = " + CurrentOptions.CursorFileName);
+			Builder.AppendLine("panel2extended = " + (CurrentOptions.Panel2ExtendedMode ? "true" : "false"));
+			Builder.AppendLine("panel2extendedminsize = " + CurrentOptions.Panel2ExtendedMinSize.ToString(Culture));
 			string File = OpenBveApi.Path.CombineFile(Program.FileSystem.SettingsFolder, "1.5.0/options.cfg");
 			System.IO.File.WriteAllText(File, Builder.ToString(), new System.Text.UTF8Encoding(true));
 		}

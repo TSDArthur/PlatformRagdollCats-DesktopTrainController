@@ -43,10 +43,6 @@ namespace OpenBve {
 			internal Time Departure;
 			internal bool Pass;
 			internal bool Terminal;
-			internal double TrackPosition;
-			internal double StopPosition;
-			internal bool OpenLeftDoor;
-			internal bool OpenRightDoor;
 		}
 		internal struct Track {
 			internal Time Time;
@@ -94,10 +90,6 @@ namespace OpenBve {
 						Table.Stations[n].NameJapanese = Game.Stations[sse.StationIndex].Name.IsJapanese();
 						Table.Stations[n].Pass = !Game.PlayerStopsAtStation(sse.StationIndex);
 						Table.Stations[n].Terminal = Game.Stations[sse.StationIndex].Type != StationType.Normal;
-						Table.Stations[n].TrackPosition = Game.Stations[sse.StationIndex].DefaultTrackPosition;
-						Table.Stations[n].StopPosition = Game.Stations[sse.StationIndex].StopPosition;
-						Table.Stations[n].OpenLeftDoor = Game.Stations[sse.StationIndex].OpenLeftDoors;
-						Table.Stations[n].OpenLeftDoor = Game.Stations[sse.StationIndex].OpenRightDoors;
 						double x;
 						if (Game.Stations[sse.StationIndex].ArrivalTime >= 0.0) {
 							x = Game.Stations[sse.StationIndex].ArrivalTime;
@@ -113,8 +105,8 @@ namespace OpenBve {
 							Table.Stations[n].Arrival.Second = seconds.ToString("00", Culture);
 							LastArrivalHours = hours;
 						} else {
-							Table.Stations[n].Arrival._Hour = "";
 							Table.Stations[n].Arrival.Hour = "";
+							Table.Stations[n].Arrival._Hour = "";
 							Table.Stations[n].Arrival.Minute = "";
 							Table.Stations[n].Arrival.Second = "";
 						}
@@ -126,14 +118,14 @@ namespace OpenBve {
 							int minutes = (int)Math.Floor(x / 60.0);
 							x -= 60.0 * (double)minutes;
 							int seconds = (int)Math.Floor(x);
-							Table.Stations[n].Departure._Hour = hours.ToString("00", Culture);
 							Table.Stations[n].Departure.Hour = hours != LastDepartureHours ? hours.ToString("00", Culture) : "";
+							Table.Stations[n].Departure._Hour = hours.ToString("00", Culture);
 							Table.Stations[n].Departure.Minute = minutes.ToString("00", Culture);
 							Table.Stations[n].Departure.Second = seconds.ToString("00", Culture);
 							LastDepartureHours = hours;
 						} else {
-							Table.Stations[n].Departure._Hour = "";
 							Table.Stations[n].Departure.Hour = "";
+							Table.Stations[n].Arrival._Hour = "";
 							Table.Stations[n].Departure.Minute = "";
 							Table.Stations[n].Departure.Second = "";
 						}

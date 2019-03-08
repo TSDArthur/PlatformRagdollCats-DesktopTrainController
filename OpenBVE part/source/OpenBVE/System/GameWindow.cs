@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
@@ -11,6 +11,7 @@ using OpenBveApi.Runtime;
 using OpenBveApi.Interface;
 using OpenTK;
 using OpenTK.Graphics;
+using OpenTK.Input;
 using GL = OpenTK.Graphics.OpenGL.GL;
 using MatrixMode = OpenTK.Graphics.OpenGL.MatrixMode;
 
@@ -147,6 +148,10 @@ namespace OpenBve
 			}
 			Renderer.UpdateLighting();
 			Renderer.RenderScene(TimeElapsed);
+			if (Renderer.DebugTouchMode)
+			{
+				Renderer.DebugTouchArea();
+			}
 			Sounds.Update(TimeElapsed, Interface.CurrentOptions.SoundModel);
 			Program.currentGameWindow.SwapBuffers();
 			Game.UpdateBlackBox();
@@ -238,7 +243,7 @@ namespace OpenBve
 					TimeElapsed = 0.0;
 				}
 #endif
-				TotalTimeElapsedForInfo += TimeElapsed;
+				TotalTimeElapsedForInfo += RealTimeElapsed;
 				TotalTimeElapsedForSectionUpdate += TimeElapsed;
 
 
@@ -309,6 +314,7 @@ namespace OpenBve
 
 		protected override void OnLoad(EventArgs e)
 		{
+			Program.FileSystem.AppendToLogFile("Game window initialised successfully.");
 			Renderer.DetermineMaxAFLevel();
 			//Initialise the loader thread queues
 			jobs = new Queue<ThreadStart>(10);
@@ -323,6 +329,7 @@ namespace OpenBve
 			KeyDown	+= MainLoop.keyDownEvent;
 			KeyUp	+= MainLoop.keyUpEvent;
 			MouseDown	+= MainLoop.mouseDownEvent;
+			MouseUp += MainLoop.mouseUpEvent;
 			MouseMove	+= MainLoop.mouseMoveEvent;
 			MouseWheel  += MainLoop.mouseWheelEvent;
 
@@ -387,6 +394,39 @@ namespace OpenBve
 			}
 			base.OnClosing(e);
 		}
+
+		protected override void OnMouseMove(MouseMoveEventArgs e)
+		{
+			base.OnMouseMove(e);
+
+			if (Game.CurrentInterface == Game.InterfaceType.Normal)
+			{
+				OpenBve.Cursor.Status Status;
+				if (Renderer.MoveCheck(new Vector2(e.X, e.Y), out Status))
+				{
+					if (Cursors.CurrentCursor != null)
+					{
+						switch (Status)
+						{
+							case OpenBve.Cursor.Status.Default:
+								Cursor = Cursors.CurrentCursor;
+								break;
+							case OpenBve.Cursor.Status.Plus:
+								Cursor = Cursors.CurrentCursorPlus;
+								break;
+							case OpenBve.Cursor.Status.Minus:
+								Cursor = Cursors.CurrentCursorMinus;
+								break;
+						}
+					}
+				}
+				else
+				{
+					Cursor = MouseCursor.Default;
+				}
+			}
+		}
+
 		/// <summary>This method is called once the route and train data have been preprocessed, in order to physically setup the simulation</summary>
 		private void SetupSimulation()
 		{
@@ -394,7 +434,11 @@ namespace OpenBve
 			{
 				Close();
 			}
-			Timetable.CreateTimetable();
+
+			lock (Illustrations.Locker)
+			{
+				Timetable.CreateTimetable();
+			}
 			//Check if any critical errors have occured during the route or train loading
 			for (int i = 0; i < Interface.MessageCount; i++)
 			{
@@ -460,9 +504,9 @@ namespace OpenBve
 					PlayerFirstStationPosition = Game.Stations[PlayerFirstStationIndex].Stops[s].TrackPosition;
 
 					double TrainLength = 0.0;
-					for (int c = 0; c < TrainManager.Trains[TrainManager.PlayerTrain.TrainIndex].Cars.Length; c++)
+					for (int c = 0; c < TrainManager.PlayerTrain.Cars.Length; c++)
 					{
-						TrainLength += TrainManager.Trains[TrainManager.PlayerTrain.TrainIndex].Cars[c].Length;
+						TrainLength += TrainManager.PlayerTrain.Cars[c].Length;
 					}
 
 					for (int j = 0; j < Game.BufferTrackPositions.Length; j++)
@@ -569,7 +613,7 @@ namespace OpenBve
 			for (int i = 0; i < TrainManager.Trains.Length; i++)
 			{
 				TrainManager.Trains[i].Initialize();
-				int s = i == TrainManager.PlayerTrain.TrainIndex ? PlayerFirstStationIndex : OtherFirstStationIndex;
+				int s = TrainManager.Trains[i] == TrainManager.PlayerTrain ? PlayerFirstStationIndex : OtherFirstStationIndex;
 				if (s >= 0)
 				{
 					if (Game.Stations[s].OpenLeftDoors)
@@ -594,8 +638,8 @@ namespace OpenBve
 				for (int j = 0; j < TrainManager.Trains[i].Cars.Length; j++)
 				{
 					double length = TrainManager.Trains[i].Cars[0].Length;
-					TrainManager.Trains[i].Cars[j].Move(-length, 0.01);
-					TrainManager.Trains[i].Cars[j].Move(length, 0.01);
+					TrainManager.Trains[i].Cars[j].Move(-length);
+					TrainManager.Trains[i].Cars[j].Move(length);
 				}
 			}
 			// score
@@ -625,7 +669,7 @@ namespace OpenBve
 			for (int i = 0; i < TrainManager.Trains.Length; i++)
 			{
 				double p;
-				if (i == TrainManager.PlayerTrain.TrainIndex)
+				if (TrainManager.Trains[i] == TrainManager.PlayerTrain)
 				{
 					p = PlayerFirstStationPosition;
 				}
@@ -640,7 +684,7 @@ namespace OpenBve
 				}
 				for (int j = 0; j < TrainManager.Trains[i].Cars.Length; j++)
 				{
-					TrainManager.Trains[i].Cars[j].Move(p, 0.01);
+					TrainManager.Trains[i].Cars[j].Move(p);
 				}
 			}
 			// timetable
@@ -745,7 +789,7 @@ namespace OpenBve
 					}
 				}
 				string NotFound = null;
-				string Messages = null;
+				string Messages;
 				if (filesNotFound != 0)
 				{
 					NotFound = filesNotFound.ToString() + " file(s) not found";

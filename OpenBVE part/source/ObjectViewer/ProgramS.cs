@@ -52,6 +52,9 @@ namespace OpenBve {
         internal static GraphicsMode currentGraphicsMode;
 
 		internal static OpenBveApi.Hosts.HostInterface CurrentHost;
+
+		internal static Object LockObj = new Object();
+
 		// main
 	    [STAThread]
 	    internal static void Main(string[] args)
@@ -107,7 +110,6 @@ namespace OpenBve {
 	        Interface.CurrentOptions.ObjectOptimizationFullThreshold = 250;
 	        Interface.CurrentOptions.AntialiasingLevel = 16;
 	        Interface.CurrentOptions.AnisotropicFilteringLevel = 16;
-		    Interface.CurrentOptions.UseNewXParser = 1; //TODO: Either save in options or remove when the new parser is fully functional
 	        // initialize camera
 
 	        currentGraphicsMode = new GraphicsMode(new ColorFormat(8, 8, 8, 8), 24, 8,Interface.CurrentOptions.AntialiasingLevel);
@@ -153,9 +155,7 @@ namespace OpenBve {
 			if(e.Delta != 0)
 			{
 				double dx = -0.025 * e.Delta;
-				World.AbsoluteCameraPosition.X += dx * World.AbsoluteCameraDirection.X;
-				World.AbsoluteCameraPosition.Y += dx * World.AbsoluteCameraDirection.Y;
-				World.AbsoluteCameraPosition.Z += dx * World.AbsoluteCameraDirection.Z;
+				World.AbsoluteCameraPosition += dx * World.AbsoluteCameraDirection;
 				ReducedMode = false;
 			}
 		}
@@ -199,11 +199,31 @@ namespace OpenBve {
 				            try
 				            {
 #endif
-				ObjectManager.UnifiedObject o = ObjectManager.LoadObject(Files[i], System.Text.Encoding.UTF8,
-					ObjectLoadMode.Normal, false, false, false);
-				ObjectManager.CreateObject(o, Vector3.Zero,
-					new Transformation(0.0, 0.0, 0.0), new Transformation(0.0, 0.0, 0.0), true, 0.0, 0.0, 25.0,
-					0.0);
+				if (String.Compare(System.IO.Path.GetFileName(Files[i]), "extensions.cfg", StringComparison.OrdinalIgnoreCase) == 0)
+				{
+					UnifiedObject[] carObjects;
+					UnifiedObject[] bogieObjects;
+					TrainManager.Train train;
+					ExtensionsCfgParser.ParseExtensionsConfig(Files[i], System.Text.Encoding.UTF8, out carObjects, out bogieObjects, out train, true);
+					double z = 0.0;
+					for (int j = 0; j < carObjects.Length; j++)
+					{
+						ObjectManager.CreateObject(carObjects[j], new Vector3(0.0, 0.0, z),
+						                           new Transformation(0.0, 0.0, 0.0), new Transformation(0.0, 0.0, 0.0), true, 0.0, 0.0, 25.0,
+						                           0.0);
+						if (j < train.Cars.Length - 1)
+						{
+							z -= (train.Cars[j].Length + train.Cars[j + 1].Length) / 2;
+						}
+					}
+				}
+				else
+				{
+					UnifiedObject o = ObjectManager.LoadObject(Files[i], System.Text.Encoding.UTF8, false, false, false);
+					ObjectManager.CreateObject(o, Vector3.Zero,
+					                           new Transformation(0.0, 0.0, 0.0), new Transformation(0.0, 0.0, 0.0), true, 0.0, 0.0, 25.0,
+					                           0.0);
+				}
 #if !DEBUG
 				            }
 				            catch (Exception ex)
@@ -255,26 +275,18 @@ namespace OpenBve {
 	            {
                     World.AbsoluteCameraPosition = MouseCameraPosition;
                     double dx = -0.025 * (double)(currentMouseState.X - previousMouseState.X);
-                    World.AbsoluteCameraPosition.X += dx * World.AbsoluteCameraSide.X;
-                    World.AbsoluteCameraPosition.Y += dx * World.AbsoluteCameraSide.Y;
-                    World.AbsoluteCameraPosition.Z += dx * World.AbsoluteCameraSide.Z;
+                    World.AbsoluteCameraPosition += dx * World.AbsoluteCameraSide;
                     double dy = 0.025 * (double)(currentMouseState.Y - previousMouseState.Y);
-                    World.AbsoluteCameraPosition.X += dy * World.AbsoluteCameraUp.X;
-                    World.AbsoluteCameraPosition.Y += dy * World.AbsoluteCameraUp.Y;
-                    World.AbsoluteCameraPosition.Z += dy * World.AbsoluteCameraUp.Z;
+                    World.AbsoluteCameraPosition += dy * World.AbsoluteCameraUp;
                     ReducedMode = false;
 	            }
 	            else
 	            {
                     World.AbsoluteCameraPosition = MouseCameraPosition;
                     double dx = -0.025 * (double)(currentMouseState.X - previousMouseState.X);
-                    World.AbsoluteCameraPosition.X += dx * World.AbsoluteCameraSide.X;
-                    World.AbsoluteCameraPosition.Y += dx * World.AbsoluteCameraSide.Y;
-                    World.AbsoluteCameraPosition.Z += dx * World.AbsoluteCameraSide.Z;
+                    World.AbsoluteCameraPosition += dx * World.AbsoluteCameraSide;
                     double dz = -0.025 * (double)(currentMouseState.Y - previousMouseState.Y);
-                    World.AbsoluteCameraPosition.X += dz * World.AbsoluteCameraDirection.X;
-                    World.AbsoluteCameraPosition.Y += dz * World.AbsoluteCameraDirection.Y;
-                    World.AbsoluteCameraPosition.Z += dz * World.AbsoluteCameraDirection.Z;
+                    World.AbsoluteCameraPosition += dz * World.AbsoluteCameraDirection;
                     ReducedMode = false;
 	            }
 	        }
@@ -303,11 +315,31 @@ namespace OpenBve {
 #if !DEBUG
 									try {
 										#endif
-	                    ObjectManager.UnifiedObject o = ObjectManager.LoadObject(Files[i], System.Text.Encoding.UTF8,
-	                        ObjectLoadMode.Normal, false, false, false);
-	                    ObjectManager.CreateObject(o, Vector3.Zero,
-	                        new Transformation(0.0, 0.0, 0.0), new Transformation(0.0, 0.0, 0.0), true, 0.0,
-	                        0.0, 25.0, 0.0);
+		                if (String.Compare(System.IO.Path.GetFileName(Files[i]), "extensions.cfg", StringComparison.OrdinalIgnoreCase) == 0)
+		                {
+		                	UnifiedObject[] carObjects;
+		                	UnifiedObject[] bogieObjects;
+		                	TrainManager.Train train;
+		                	ExtensionsCfgParser.ParseExtensionsConfig(Files[i], System.Text.Encoding.UTF8, out carObjects, out bogieObjects, out train, true);
+		                	double z = 0.0;
+		                	for (int j = 0; j < carObjects.Length; j++)
+		                	{
+		                		ObjectManager.CreateObject(carObjects[j], new Vector3(0.0, 0.0, z),
+		                		                           new Transformation(0.0, 0.0, 0.0), new Transformation(0.0, 0.0, 0.0), true, 0.0, 0.0, 25.0,
+		                		                           0.0);
+		                		if (j < train.Cars.Length - 1)
+		                		{
+		                			z -= (train.Cars[j].Length + train.Cars[j + 1].Length) / 2;
+		                		}
+		                	}
+		                }
+		                else
+		                {
+		                	UnifiedObject o = ObjectManager.LoadObject(Files[i], System.Text.Encoding.UTF8, false, false, false);
+		                	ObjectManager.CreateObject(o, Vector3.Zero,
+		                	                           new Transformation(0.0, 0.0, 0.0), new Transformation(0.0, 0.0, 0.0), true, 0.0, 0.0, 25.0,
+		                	                           0.0);
+		                }
 #if !DEBUG
 									} catch (Exception ex) {
 										Interface.AddMessage(MessageType.Critical, false, "Unhandled error (" + ex.Message + ") encountered while processing the file " + Files[i] + ".");
@@ -324,7 +356,7 @@ namespace OpenBve {
 		            {
 			            CheckFileExists = true,
 			            Multiselect = true,
-			            Filter = @"All supported object files|*.csv;*.b3d;*.x;*.animated;*.l3dobj;*.l3dgrp;*.obj;*.s|openBVE Objects|*.csv;*.b3d;*.x;*.animated|LokSim 3D Objects|*.l3dobj;*.l3dgrp|Wavefront Objects|*.obj|Microsoft Train Simulator Objects|*.s|All files|*"
+			            Filter = @"All supported object files|*.csv;*.b3d;*.x;*.animated;extensions.cfg;*.l3dobj;*.l3dgrp;*.obj;*.s|openBVE Objects|*.csv;*.b3d;*.x;*.animated;extensions.cfg|LokSim 3D Objects|*.l3dobj;*.l3dgrp|Wavefront Objects|*.obj|Microsoft Train Simulator Objects|*.s|All files|*"
 		            };
 		            if (Dialog.ShowDialog() == DialogResult.OK)
 		            {
@@ -348,11 +380,31 @@ namespace OpenBve {
 				            try
 				            {
 #endif
-					            ObjectManager.UnifiedObject o = ObjectManager.LoadObject(Files[i], System.Text.Encoding.UTF8,
-						            ObjectLoadMode.Normal, false, false, false);
-					            ObjectManager.CreateObject(o, Vector3.Zero,
-						            new Transformation(0.0, 0.0, 0.0), new Transformation(0.0, 0.0, 0.0), true, 0.0, 0.0, 25.0,
-						            0.0);
+				            if (String.Compare(System.IO.Path.GetFileName(Files[i]), "extensions.cfg", StringComparison.OrdinalIgnoreCase) == 0)
+				            {
+				            	UnifiedObject[] carObjects;
+				            	UnifiedObject[] bogieObjects;
+				            	TrainManager.Train train;
+				            	ExtensionsCfgParser.ParseExtensionsConfig(Files[i], System.Text.Encoding.UTF8, out carObjects, out bogieObjects, out train, true);
+				            	double z = 0.0;
+				            	for (int j = 0; j < carObjects.Length; j++)
+				            	{
+				            		ObjectManager.CreateObject(carObjects[j], new Vector3(0.0, 0.0, z),
+				            		                           new Transformation(0.0, 0.0, 0.0), new Transformation(0.0, 0.0, 0.0), true, 0.0, 0.0, 25.0,
+				            		                           0.0);
+				            		if (j < train.Cars.Length - 1)
+				            		{
+				            			z -= (train.Cars[j].Length + train.Cars[j + 1].Length) / 2;
+				            		}
+				            	}
+				            }
+				            else
+				            {
+				            	UnifiedObject o = ObjectManager.LoadObject(Files[i], System.Text.Encoding.UTF8, false, false, false);
+				            	ObjectManager.CreateObject(o, Vector3.Zero,
+				            	                           new Transformation(0.0, 0.0, 0.0), new Transformation(0.0, 0.0, 0.0), true, 0.0, 0.0, 25.0,
+				            	                           0.0);
+				            }
 #if !DEBUG
 				            }
 				            catch (Exception ex)
@@ -472,6 +524,9 @@ namespace OpenBve {
                 case Key.F8:
                     formOptions.ShowOptions();
                     Application.DoEvents();
+                    break;
+                case Key.F10:
+                    formTrain.ShowTrainSettings();
                     break;
 	            case Key.G:
 	            case Key.C:

@@ -1,6 +1,7 @@
 ﻿using System;
 using OpenBveApi.Colors;
 using OpenBveApi.Textures;
+using OpenBveApi.Trains;
 
 namespace OpenBve {
 	internal static partial class Game {
@@ -36,9 +37,9 @@ namespace OpenBve {
 		}
 		internal static float NoFogStart = 800.0f; // must not be 600 or below
 		internal static float NoFogEnd = 1600.0f;
-		internal static Fog PreviousFog = new Fog(NoFogStart, NoFogEnd, new Color24(128, 128, 128), 0.0);
-		internal static Fog CurrentFog = new Fog(NoFogStart, NoFogEnd, new Color24(128, 128, 128), 0.5);
-		internal static Fog NextFog = new Fog(NoFogStart, NoFogEnd, new Color24(128, 128, 128), 1.0);
+		internal static Fog PreviousFog = new Fog(NoFogStart, NoFogEnd, Color24.Grey, 0.0);
+		internal static Fog CurrentFog = new Fog(NoFogStart, NoFogEnd, Color24.Grey, 0.5);
+		internal static Fog NextFog = new Fog(NoFogStart, NoFogEnd, Color24.Grey, 1.0);
 		
 		
 
@@ -47,15 +48,7 @@ namespace OpenBve {
 		internal static double PrecedingTrainSpeedLimit = double.PositiveInfinity;
 		
 
-		/// <summary>The startup state of the train</summary>
-		internal enum TrainStartMode {
-            /// <summary>The train will start with the service brakes applied, and the safety-system plugin initialised</summary>
-			ServiceBrakesAts = -1,
-            /// <summary>The train will start with the EB brakes applied, and the safety-system plugin initialised</summary>
-			EmergencyBrakesAts = 0,
-            /// <summary>The train will start with the EB brakes applied, and the safety-system plugin inactive</summary>
-			EmergencyBrakesNoAts = 1
-		}
+		
         /// <summary>The default mode for the train's safety system to start in</summary>
 		internal static TrainStartMode TrainStart = TrainStartMode.EmergencyBrakesAts;
         /// <summary>The name of the current train</summary>
@@ -99,9 +92,9 @@ namespace OpenBve {
 			TrainStart = TrainStartMode.EmergencyBrakesNoAts;
 			NoFogStart = (float)Math.Max(1.33333333333333 * Interface.CurrentOptions.ViewingDistance, 800.0);
 			NoFogEnd = (float)Math.Max(2.66666666666667 * Interface.CurrentOptions.ViewingDistance, 1600.0);
-			PreviousFog = new Fog(NoFogStart, NoFogEnd, new Color24(128, 128, 128), 0.0);
-			CurrentFog = new Fog(NoFogStart, NoFogEnd, new Color24(128, 128, 128), 0.5);
-			NextFog = new Fog(NoFogStart, NoFogEnd, new Color24(128, 128, 128), 1.0);
+			PreviousFog = new Fog(NoFogStart, NoFogEnd, Color24.Grey, 0.0);
+			CurrentFog = new Fog(NoFogStart, NoFogEnd, Color24.Grey, 0.5);
+			NextFog = new Fog(NoFogStart, NoFogEnd, Color24.Grey, 1.0);
 			InfoTotalTriangles = 0;
 			InfoTotalTriangleStrip = 0;
 			InfoTotalQuads = 0;

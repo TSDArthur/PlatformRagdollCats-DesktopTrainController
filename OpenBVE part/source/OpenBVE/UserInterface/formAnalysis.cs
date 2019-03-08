@@ -7,8 +7,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using OpenBve.UserInterface;
+using OpenBveApi.Packages;
+using OpenBve;
 
-namespace OpenBve.UserInterface
+namespace OpenBve
 {
 	public partial class formAnalysis : Form
 	{

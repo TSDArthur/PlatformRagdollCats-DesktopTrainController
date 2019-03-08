@@ -8,6 +8,8 @@
 using System;
 using OpenBveApi.Colors;
 using OpenBveApi.Math;
+using OpenBveApi.Textures;
+using OpenBveApi.Trains;
 
 namespace OpenBve {
 	internal static class Game {
@@ -34,9 +36,9 @@ namespace OpenBve {
 				this.TrackPosition = TrackPosition;
 			}
 		}
-		internal static Fog PreviousFog = new Fog(0.0f, 0.0f, new Color24(128, 128, 128), 0.0);
-		internal static Fog CurrentFog = new Fog(0.0f, 0.0f, new Color24(128, 128, 128), 0.5);
-		internal static Fog NextFog = new Fog(0.0f, 0.0f, new Color24(128, 128, 128), 1.0);
+		internal static Fog PreviousFog = new Fog(0.0f, 0.0f, Color24.Grey, 0.0);
+		internal static Fog CurrentFog = new Fog(0.0f, 0.0f, Color24.Grey, 0.5);
+		internal static Fog NextFog = new Fog(0.0f, 0.0f, Color24.Grey, 1.0);
 		internal static float NoFogStart = 800.0f;
 		internal static float NoFogEnd = 1600.0f;
 
@@ -100,12 +102,6 @@ namespace OpenBve {
 		internal static double[] PrecedingTrainTimeDeltas;
 		internal static double PrecedingTrainSpeedLimit;
 
-		// startup
-		internal enum TrainStartMode {
-			ServiceBrakesAts = -1,
-			EmergencyBrakesAts = 0,
-			EmergencyBrakesNoAts = 1
-		}
 		internal static TrainStartMode TrainStart = TrainStartMode.EmergencyBrakesNoAts;
 		internal static string TrainName = "";
 
@@ -148,14 +144,14 @@ namespace OpenBve {
 			Stations = new Station[] { };
 			Sections = new Section[] { };
 			BufferTrackPositions = new double[] { };
-			MarkerTextures = new int[] { };
+			MarkerTextures = new Texture[] { };
 			PointsOfInterest = new PointOfInterest[] { };
 			BogusPretrainInstructions = new BogusPretrainInstruction[] { };
 			TrainName = "";
 			TrainStart = TrainStartMode.EmergencyBrakesNoAts;
-			PreviousFog = new Fog(0.0f, 0.0f, new Color24(128, 128, 128), 0.0);
-			CurrentFog = new Fog(0.0f, 0.0f, new Color24(128, 128, 128), 0.5);
-			NextFog = new Fog(0.0f, 0.0f, new Color24(128, 128, 128), 1.0);
+			PreviousFog = new Fog(0.0f, 0.0f, Color24.Grey, 0.0);
+			CurrentFog = new Fog(0.0f, 0.0f, Color24.Grey, 0.5);
+			NextFog = new Fog(0.0f, 0.0f, Color24.Grey, 1.0);
 			NoFogStart = (float)World.BackgroundImageDistance + 200.0f;
 			NoFogEnd = 2.0f * NoFogStart;
 			InfoTotalTriangles = 0;
@@ -380,20 +376,20 @@ namespace OpenBve {
 		// ================================
 
 		// marker
-		internal static int[] MarkerTextures = new int[] { };
-		internal static void AddMarker(int TextureIndex) {
+		internal static Texture[] MarkerTextures = new Texture[] { };
+		internal static void AddMarker(Texture Texture) {
 			int n = MarkerTextures.Length;
-			Array.Resize<int>(ref MarkerTextures, n + 1);
-			MarkerTextures[n] = TextureIndex;
+			Array.Resize<Texture>(ref MarkerTextures, n + 1);
+			MarkerTextures[n] = Texture;
 		}
-		internal static void RemoveMarker(int TextureIndex) {
+		internal static void RemoveMarker(Texture Texture) {
 			int n = MarkerTextures.Length;
 			for (int i = 0; i < n; i++) {
-				if (MarkerTextures[i] == TextureIndex) {
+				if (MarkerTextures[i] == Texture) {
 					for (int j = i; j < n - 1; j++) {
 						MarkerTextures[j] = MarkerTextures[j + 1];
 					}
-					Array.Resize<int>(ref MarkerTextures, n - 1);
+					Array.Resize<Texture>(ref MarkerTextures, n - 1);
 					break;
 				}
 			}

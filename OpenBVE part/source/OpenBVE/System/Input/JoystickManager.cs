@@ -35,15 +35,11 @@ namespace OpenBve {
 
 		internal JoystickManager()
 		{
-			try
+			if (!Program.CurrentlyRunningOnWindows)
 			{
-				if (!Program.CurrentlyRunningOnWindows)
-				{
-					return;
-				}
-				devices = PIEDevice.EnumeratePIE();
+				return;
 			}
-			catch(Exception ex) { };
+			devices = PIEDevice.EnumeratePIE();
 		}
 
 		/// <summary>Holds all joysticks currently attached to the computer.</summary>

@@ -1,9 +1,10 @@
-﻿using System;
+using System;
 using System.Linq;
 using System.Windows.Forms;
 using OpenBve.BrakeSystems;
 using OpenBveApi.Math;
 using OpenBveApi.Interface;
+using OpenBveApi.Trains;
 
 namespace OpenBve {
 	internal static partial class TrainDatParser {
@@ -642,7 +643,7 @@ namespace OpenBve {
 										if (a <= 0.0) {
 											Interface.AddMessage(MessageType.Error, false, "UnexposedFrontalArea is expected to be positive at line " + (i + 1).ToString(Culture) + " in " + FileName);
 										} else {
-											CarExposedFrontalArea = a;
+											CarUnexposedFrontalArea = a;
 										} break;
 								}
 							} i++; n++;
@@ -675,7 +676,7 @@ namespace OpenBve {
 										Train.Handles.HasHoldBrake = a == 1.0; break;
 									case 5:
 										int dt = (int) Math.Round(a);
-										if (dt < 3 && dt > -1)
+										if (dt < 4 && dt > -1)
 										{
 											ReAdhesionDevice = (TrainManager.ReadhesionDeviceType)dt;
 										}
@@ -849,8 +850,6 @@ namespace OpenBve {
 			for (int i = 0; i < Train.Cars.Length; i++)
 			{
 				Train.Cars[i] = new TrainManager.Car(Train, i);
-				Train.Cars[i].FrontBogie = new TrainManager.Bogie(Train, Train.Cars[i]);
-				Train.Cars[i].RearBogie = new TrainManager.Bogie(Train, Train.Cars[i]);
 			}
 			double DistanceBetweenTheCars = 0.3;
 			
@@ -1057,7 +1056,7 @@ namespace OpenBve {
 			switch (Game.TrainStart)
 			{
 				// starting mode
-				case Game.TrainStartMode.ServiceBrakesAts:
+				case TrainStartMode.ServiceBrakesAts:
 					for (int i = 0; i < Cars; i++) {
 						Train.Cars[i].CarBrake.brakeCylinder.CurrentPressure = Train.Cars[i].CarBrake.brakeCylinder.ServiceMaximumPressure;
 						Train.Cars[i].CarBrake.brakePipe.CurrentPressure = Train.Cars[i].CarBrake.brakePipe.NormalPressure;
@@ -1084,7 +1083,7 @@ namespace OpenBve {
 					Train.Handles.Reverser.Driver = TrainManager.ReverserPosition.Forwards;
 					Train.Handles.Reverser.Actual = TrainManager.ReverserPosition.Forwards;
 					break;
-				case Game.TrainStartMode.EmergencyBrakesAts:
+				case TrainStartMode.EmergencyBrakesAts:
 					for (int i = 0; i < Cars; i++) {
 						Train.Cars[i].CarBrake.brakeCylinder.CurrentPressure = Train.Cars[i].CarBrake.brakeCylinder.EmergencyMaximumPressure;
 						Train.Cars[i].CarBrake.brakePipe.CurrentPressure = 0.0;
@@ -1158,7 +1157,6 @@ namespace OpenBve {
 				Train.Cars[i].Specs.AerodynamicDragCoefficient = AerodynamicDragCoefficient;
 				Train.Cars[i].Specs.ExposedFrontalArea = CarExposedFrontalArea;
 				Train.Cars[i].Specs.UnexposedFrontalArea = CarUnexposedFrontalArea;
-				Train.Cars[i].Doors = new TrainManager.Door[2];
 				Train.Cars[i].Doors[0].Direction = -1;
 				Train.Cars[i].Doors[0].State = 0.0;
 				Train.Cars[i].Doors[1].Direction = 1;

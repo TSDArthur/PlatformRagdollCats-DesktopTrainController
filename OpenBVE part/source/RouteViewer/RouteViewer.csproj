@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="12.0">
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="4.0">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -14,20 +14,18 @@
     <SourceAnalysisOverrideSettingsFile>C:\Documents and Settings\Administrator\Application Data\ICSharpCode/SharpDevelop3.0\Settings.SourceAnalysis</SourceAnalysisOverrideSettingsFile>
     <NoStdLib>False</NoStdLib>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
-    <TargetFrameworkProfile />
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
-    <Optimize>true</Optimize>
+    <Optimize>false</Optimize>
     <OutputPath>..\..\bin_debug\</OutputPath>
     <PlatformTarget>x86</PlatformTarget>
     <DefineConstants>TRACE;DEBUG</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>None</DebugType>
@@ -39,7 +37,6 @@
     <WarningLevel>4</WarningLevel>
     <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
     <DebugSymbols>false</DebugSymbols>
-    <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
@@ -58,9 +55,9 @@
     </AllowedReferenceRelatedFileExtensions>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="OpenTK, Version=3.0.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
+    <Reference Include="OpenTK, Version=1.1.0.0, Culture=neutral, PublicKeyToken=bad199fe84eb3df4, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\bin_debug\OpenTK.dll</HintPath>
+      <HintPath>..\..\dependencies\OpenTK.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -93,6 +90,7 @@
     <Compile Include="Parsers\CsvRwRouteParser.cs" />
     <Compile Include="Parsers\Ls3DGrpParser.cs" />
     <Compile Include="Parsers\Ls3DObjectParser.cs" />
+    <Compile Include="Parsers\MeshBuilder.cs" />
     <Compile Include="Parsers\WavefrontObjParser.cs" />
     <Compile Include="Parsers\XObjectParser.cs" />
     <Compile Include="Renderer.Loading.cs" />
@@ -128,7 +126,6 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
-    <None Include="app.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -144,6 +141,10 @@
     <Compile Include="WorldR.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\DevTools\LBAHeader\LBAHeader.csproj">
+      <Project>{e9b64673-65b7-4d77-a4db-4b441a7c9197}</Project>
+      <Name>LBAHeader</Name>
+    </ProjectReference>
     <ProjectReference Include="..\OpenBveApi\OpenBveApi.csproj">
       <Project>{27134980-4415-4375-A564-40A9014DFA5F}</Project>
       <Name>OpenBveApi</Name>
@@ -151,6 +152,19 @@
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <PropertyGroup>
+    <!-- Copy in dependancies and child projects -->
+    <!-- Finally, set LBA flag & cleanup -->
+    <PostBuildEvent Condition=" '$(OS)' != 'Unix' ">
+		xcopy "$(SolutionDir)assets\*.*" "$(TargetDir)Data" /Y /I /E /C	
+"$(TargetDir)DevTools\LBAHeader.exe" OpenBve.exe 
+	</PostBuildEvent>
+    <!-- NOTE: Whilst AtsPluginProxy.dll is Windows specific, we still want to copy it in the auto-generated nightly builds -->
+    <PostBuildEvent Condition=" '$(OS)' == 'Unix' ">
+		cp -rf "$(SolutionDir)assets/." "$(TargetDir)Data/"
+mono "$(TargetDir)DevTools\LBAHeader.exe" OpenBve.exe 
+	</PostBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
