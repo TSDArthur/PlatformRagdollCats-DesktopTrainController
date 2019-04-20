@@ -591,7 +591,7 @@ namespace OpenBve
 				if (Table.Stations.Length == 0) return errState;
 				for (int i = 0; i < Table.Stations.Length; i++)
 				{
-					double currentSectionPos = nowControl.Cars[nowControl.DriverCar].FrontAxle.Follower.TrackPosition + 1.9;
+					double currentSectionPos = nowControl.Cars[nowControl.DriverCar].FrontAxle.Follower.TrackPosition + 1.6;
 					int stationStopIndex = Game.Stations[i].GetStopIndex(nowControl.Cars.Length);
 					double nextStationPos = Game.Stations[i].Stops[stationStopIndex].TrackPosition;
 					if (currentSectionPos <= nextStationPos)
@@ -602,7 +602,7 @@ namespace OpenBve
 				}
 				if (stationIndex + 1 < Table.Stations.Length)
 				{
-					double currentSectionPos = nowControl.Cars[nowControl.DriverCar].FrontAxle.Follower.TrackPosition + 1.9;
+					double currentSectionPos = nowControl.Cars[nowControl.DriverCar].FrontAxle.Follower.TrackPosition + 1.6;
 					int currentStationStopIndex = Game.Stations[stationIndex].GetStopIndex(nowControl.Cars.Length);
 					double currentStationPos = Game.Stations[stationIndex].Stops[currentStationStopIndex].TrackPosition;
 					if (currentStationPos - currentSectionPos > 0 &&
@@ -735,7 +735,7 @@ namespace OpenBve
 				if (nextStationIndex == -1) return errState;
 				int currentSection = nowControl.CurrentSectionIndex;
 				int nextSection = Game.Sections[currentSection].NextSection;
-				double currentSectionPos = nowControl.Cars[nowControl.DriverCar].FrontAxle.Follower.TrackPosition + 1.9;
+				double currentSectionPos = nowControl.Cars[nowControl.DriverCar].FrontAxle.Follower.TrackPosition + 1.6;
 				int stationStopIndex = Game.Stations[nextStationIndex].GetStopIndex(nowControl.Cars.Length);
 				double nextStationPos = Game.Stations[nextStationIndex].Stops[stationStopIndex].TrackPosition;
 				stationDis = nextStationPos - currentSectionPos;
@@ -763,7 +763,7 @@ namespace OpenBve
 				if (nextStationIndex == -1 || nextStationIndex - 1 < 0) return errState;
 				int currentSection = nowControl.CurrentSectionIndex;
 				int nextSection = Game.Sections[currentSection].NextSection;
-				double currentSectionPos = nowControl.Cars[nowControl.DriverCar].FrontAxle.Follower.TrackPosition + 1.9;
+				double currentSectionPos = nowControl.Cars[nowControl.DriverCar].FrontAxle.Follower.TrackPosition + 1.6;
 				int stationStopIndex = Game.Stations[nextStationIndex - 1].GetStopIndex(nowControl.Cars.Length);
 				double preStationPos = Game.Stations[nextStationIndex - 1].Stops[stationStopIndex].TrackPosition;
 				stationDis = currentSectionPos - preStationPos;
