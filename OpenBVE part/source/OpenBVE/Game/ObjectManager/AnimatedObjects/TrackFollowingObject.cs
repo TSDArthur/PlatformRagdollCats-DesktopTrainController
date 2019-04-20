@@ -1,6 +1,7 @@
 ﻿using System;
 using OpenBveApi.Math;
 using OpenBveApi.Objects;
+using OpenBveApi.Trains;
 
 namespace OpenBve
 {
@@ -45,7 +46,7 @@ namespace OpenBve
 						double trainDistance = double.MaxValue;
 						for (int j = 0; j < TrainManager.Trains.Length; j++)
 						{
-							if (TrainManager.Trains[j].State == TrainManager.TrainState.Available)
+							if (TrainManager.Trains[j].State == TrainState.Available)
 							{
 								double distance;
 								if (TrainManager.Trains[j].Cars[0].FrontAxle.Follower.TrackPosition < TrackPosition)
@@ -70,7 +71,7 @@ namespace OpenBve
 						if (Visible)
 						{
 							//Calculate the distance travelled
-							double delta = UpdateTrackFollowerScript(false, train, train == null ? 0 : train.DriverCar, SectionIndex, TrackPosition, Position, false, timeDelta);
+							double delta = UpdateTrackFollowerScript(false, train, train == null ? 0 : train.DriverCar, SectionIndex, TrackPosition, Position, true, timeDelta);
 							//Update the front and rear axle track followers
 							FrontAxleFollower.Update((TrackPosition + FrontAxlePosition) + delta, true, true);
 							RearAxleFollower.Update((TrackPosition + RearAxlePosition) + delta, true, true);

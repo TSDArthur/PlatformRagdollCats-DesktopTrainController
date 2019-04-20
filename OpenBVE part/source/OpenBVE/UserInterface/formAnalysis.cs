@@ -31,8 +31,8 @@ namespace OpenBve
 		{
 			comboInterval.SelectedIndex = 0;
 			//
-			this.Location = new Point(formMonitor.formMonitorPosition.X + 438,
-				formMonitor.formMonitorPosition.Y - 540);
+			this.Location = new Point(formMonitor.formMonitorPosition.X + 436,
+				formMonitor.formMonitorPosition.Y - 594);
 			//this.TopMost = true;
 			//
 			isInRecord = false;

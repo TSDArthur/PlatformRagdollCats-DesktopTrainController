@@ -57,7 +57,7 @@ namespace OpenBve
         {
 			try
 			{
-				if (MessageBox.Show("Would you want to restart the simulator?", "RAGDOLL Controller",
+				if (MessageBox.Show("Would you want to restart the simulator?", "RAGLINK+ CabViewer",
 					MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
 				{
 					this.DisposeSerialPort();
@@ -217,7 +217,7 @@ namespace OpenBve
 				txtBoxReserver.Text = "REV : " + TrainMethods.GetReverser().ToString();
 				txtBoxSignal.Text = "SIG : " + TrainMethods.GetSignal().ToString();
 				txtBoxSignalDis.Text = "SIG_DIS : " + TrainMethods.GetSignalDis().ToString();
-				txtBoxSpeed.Text = "SPD : " + TrainMethods.GetSpeed().ToString();
+				txtBoxSpeed.Text = "SPD : " + ((double)((int)(TrainMethods.GetSpeedDouble() * 10)) / 10.0).ToString();
 				txtBoxSpdLimit.Text = "SPD_LIM : " + TrainMethods.GetSpeedLimit().ToString();
 				txtBoxBrakeHandle.Text = "BKE : " + TrainMethods.GetBrake().ToString();
 				txtBoxPowerHandle.Text = "PWR : " + trainInfo.Handles.Power.Driver.ToString();
@@ -228,14 +228,17 @@ namespace OpenBve
 					(TrainMethods.GetNextStationDis() >= 1000 ? 
 					decimal.Round(decimal.Parse((TrainMethods.GetNextStationDis() / 1000).ToString()) , 2) : 
 					decimal.Round(decimal.Parse((TrainMethods.GetNextStationDis()).ToString()), 1)) + 
-					" / " + 
-					(TrainMethods.GetNextStationStopMode() == 1 ? "VIA" : "STOP") + " / " + 
+					" / " + (TrainMethods.GetNextStationStopMode() == 1 ? "VIA" : "STOP") + " / " + 
 					(TrainMethods.GetStopDis() == double.NegativeInfinity ? "N/A" : decimal.Round(decimal.Parse(TrainMethods.GetStopDis().ToString()), 1).ToString());
 				txtBoxArrivalTime.Text = "AT : " + TrainMethods.GetNextStationArrialTime();
 				txtBoxDepartureTime.Text = "DT : " + TrainMethods.GetCurrentStationDepartureTime();
-				txtBoxCurrentTime.Text = "TME : " + TrainMethods.GetCurrentTime();
+				txtBoxCurrentTime.Text = "TIME : " + TrainMethods.GetCurrentTime();
 				txtBoxRouteName.Text = "ROUTE_NAME : " + TrainMethods.GetCurrentRouteName();
-				txBoxTrainName.Text = "T_ID : " + TrainMethods.GetCurrentTrainName();
+				txBoxTrainName.Text = "TRAIN : " + TrainMethods.GetCurrentTrainName();
+				txtBoxCylinder.Text = "CYL : " + TrainMethods.GetCylinderPressure().ToString();
+				txtBoxPipe.Text = "PIP : " + TrainMethods.GetPipePressure().ToString();
+				txtBoxDestination.Text = "DEST_STA : " + TrainMethods.GetDestinationName();
+				txtBoxStationCounter.Text = "STATION : " + TrainMethods.GetNextStationIndex().ToString() + " / " + TrainMethods.GetStationCount().ToString();
 				//
 				btnBack.Enabled = true;
 				btnDown.Enabled = true;
@@ -333,12 +336,12 @@ namespace OpenBve
 
 		private void formCM_Load(object sender, EventArgs e)
 		{
-			this.Top = 1;
+			this.Top = 60;
 			this.Left = 1;
 			this.cmbSerials.Items.AddRange(SerialPort.GetPortNames());
 			this.cmbSerials.SelectedIndex = this.cmbSerials.Items.Count - 1;
 			formMonitorPosition.X = this.Location.X;
-			formMonitorPosition.Y = this.Location.Y + 540;
+			formMonitorPosition.Y = this.Location.Y + 594;
 			TrainMethods.AttachMainTimerInterrupt(500);
 			isConnected = false;
 		}
@@ -418,36 +421,11 @@ namespace OpenBve
 			TrainMethods.SetAutoPilot(0);
 		}
 
-		private void txtBoxSpeed_TextChanged(object sender, EventArgs e)
-		{
-
-		}
-
-		private void txtBoxSpdLimit_TextChanged(object sender, EventArgs e)
-		{
-
-		}
-
-		private void txtBoxSignal_TextChanged(object sender, EventArgs e)
-		{
-
-		}
-
-		private void txtBoxPowerHandle_TextChanged(object sender, EventArgs e)
-		{
-
-		}
-
-		private void txtBoxSignalDis_TextChanged(object sender, EventArgs e)
-		{
-
-		}
-
 		private void btnRestartGame_Click(object sender, EventArgs e)
 		{
 			try
 			{
-				if (MessageBox.Show("Would you want to restart the simulator?", "RAGDOLL Controller",
+				if (MessageBox.Show("Would you want to restart the simulator?", "RAGLINK+ CabViewer",
 					MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
 				{
 					if (!TrainMethods.RestartGame())
@@ -485,7 +463,7 @@ namespace OpenBve
 		private void formMonitor_Move(object sender, EventArgs e)
 		{
 			formMonitorPosition.X = this.Location.X;
-			formMonitorPosition.Y = this.Location.Y + 540;
+			formMonitorPosition.Y = this.Location.Y + 594;
 		}
 	}
 }

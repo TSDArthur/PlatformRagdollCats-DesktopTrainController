@@ -77,9 +77,9 @@ namespace OpenBve {
 			double Limit = -1.0, LastLimit = 6.94444444444444;
 			int LastArrivalHours = -1, LastDepartureHours = -1;
 			double LastTime = -1.0;
-			for (int i = 0; i < TrackManager.CurrentTrack.Elements.Length; i++) {
-				for (int j = 0; j < TrackManager.CurrentTrack.Elements[i].Events.Length; j++) {
-					TrackManager.StationStartEvent sse = TrackManager.CurrentTrack.Elements[i].Events[j] as TrackManager.StationStartEvent;
+			for (int i = 0; i < TrackManager.Tracks[0].Elements.Length; i++) {
+				for (int j = 0; j < TrackManager.Tracks[0].Elements[i].Events.Length; j++) {
+					TrackManager.StationStartEvent sse = TrackManager.Tracks[0].Elements[i].Events[j] as TrackManager.StationStartEvent;
 					if (sse != null && Game.Stations[sse.StationIndex].Name != string.Empty) {
 						if (Limit == -1.0) Limit = LastLimit;
 						// update station
@@ -125,7 +125,6 @@ namespace OpenBve {
 							LastDepartureHours = hours;
 						} else {
 							Table.Stations[n].Departure.Hour = "";
-							Table.Stations[n].Arrival._Hour = "";
 							Table.Stations[n].Departure.Minute = "";
 							Table.Stations[n].Departure.Second = "";
 						}
@@ -179,7 +178,7 @@ namespace OpenBve {
 						n++;
 					}
 					if (n >= 1) {
-						TrackManager.LimitChangeEvent lce = TrackManager.CurrentTrack.Elements[i].Events[j] as TrackManager.LimitChangeEvent;
+						TrackManager.LimitChangeEvent lce = TrackManager.Tracks[0].Elements[i].Events[j] as TrackManager.LimitChangeEvent;
 						if (lce != null) {
 							if (lce.NextSpeedLimit != double.PositiveInfinity & lce.NextSpeedLimit > Limit) Limit = lce.NextSpeedLimit;
 						}

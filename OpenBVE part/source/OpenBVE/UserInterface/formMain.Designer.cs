@@ -44,6 +44,7 @@
             this.tabcontrolTrainDetails = new System.Windows.Forms.TabControl();
             this.tabpageTrainDescription = new System.Windows.Forms.TabPage();
             this.textboxTrainDescription = new System.Windows.Forms.TextBox();
+            this.pictureboxTrainImage = new System.Windows.Forms.PictureBox();
             this.tabpageTrainSettings = new System.Windows.Forms.TabPage();
             this.panelTrainEncoding = new System.Windows.Forms.Panel();
             this.labelTrainEncoding = new System.Windows.Forms.Label();
@@ -67,8 +68,11 @@
             this.tabcontrolRouteDetails = new System.Windows.Forms.TabControl();
             this.tabpageRouteDescription = new System.Windows.Forms.TabPage();
             this.textboxRouteDescription = new System.Windows.Forms.TextBox();
+            this.pictureboxRouteImage = new System.Windows.Forms.PictureBox();
             this.tabpageRouteMap = new System.Windows.Forms.TabPage();
+            this.pictureboxRouteMap = new System.Windows.Forms.PictureBox();
             this.tabpageRouteGradient = new System.Windows.Forms.TabPage();
+            this.pictureboxRouteGradient = new System.Windows.Forms.PictureBox();
             this.tabpageRouteSettings = new System.Windows.Forms.TabPage();
             this.panelRouteEncoding = new System.Windows.Forms.Panel();
             this.buttonRouteEncodingLatin1 = new System.Windows.Forms.Button();
@@ -108,6 +112,7 @@
             this.checkBoxEnableKiosk = new System.Windows.Forms.CheckBox();
             this.groupBoxAdvancedOptions = new System.Windows.Forms.GroupBox();
             this.checkBoxPanel2Extended = new System.Windows.Forms.CheckBox();
+            this.pictureboxCursor = new System.Windows.Forms.PictureBox();
             this.labelCursor = new System.Windows.Forms.Label();
             this.comboboxCursor = new System.Windows.Forms.ComboBox();
             this.checkBoxHacks = new System.Windows.Forms.CheckBox();
@@ -195,6 +200,7 @@
             this.groupboxSound = new System.Windows.Forms.GroupBox();
             this.updownSoundNumber = new System.Windows.Forms.NumericUpDown();
             this.labelSoundNumber = new System.Windows.Forms.Label();
+            this.pictureboxLanguage = new System.Windows.Forms.PictureBox();
             this.comboboxLanguages = new System.Windows.Forms.ComboBox();
             this.labelOptionsTitleSeparator = new System.Windows.Forms.Label();
             this.labelOptionsTitle = new System.Windows.Forms.Label();
@@ -259,6 +265,7 @@
             this.buttonControlRemove = new System.Windows.Forms.Button();
             this.buttonControlAdd = new System.Windows.Forms.Button();
             this.groupboxJoysticks = new System.Windows.Forms.GroupBox();
+            this.pictureboxJoysticks = new System.Windows.Forms.PictureBox();
             this.listviewControls = new System.Windows.Forms.ListView();
             this.columnheaderControlsCommands = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
             this.columnheaderType = ((System.Windows.Forms.ColumnHeader)(new System.Windows.Forms.ColumnHeader()));
@@ -329,6 +336,7 @@
             this.labelProgressFile = new System.Windows.Forms.Label();
             this.labelProgressPercent = new System.Windows.Forms.Label();
             this.labelPleaseWait = new System.Windows.Forms.Label();
+            this.pictureBoxProcessing = new System.Windows.Forms.PictureBox();
             this.panelPackageDependsAdd = new System.Windows.Forms.Panel();
             this.buttonBack = new System.Windows.Forms.Button();
             this.buttonRemove = new System.Windows.Forms.Button();
@@ -381,6 +389,7 @@
             this.labelPackageAuthor = new System.Windows.Forms.Label();
             this.textBoxPackageName = new System.Windows.Forms.TextBox();
             this.labelPackageName = new System.Windows.Forms.Label();
+            this.pictureBoxPackageImage = new System.Windows.Forms.PictureBox();
             this.panelVersionError = new System.Windows.Forms.Panel();
             this.buttonCancel = new System.Windows.Forms.Button();
             this.labelNewVersionNumber = new System.Windows.Forms.Label();
@@ -436,15 +445,6 @@
             this.openPackageFileDialog = new System.Windows.Forms.OpenFileDialog();
             this.savePackageDialog = new System.Windows.Forms.SaveFileDialog();
             this.pictureboxLogo = new System.Windows.Forms.PictureBox();
-            this.pictureboxCursor = new System.Windows.Forms.PictureBox();
-            this.pictureboxLanguage = new System.Windows.Forms.PictureBox();
-            this.pictureboxJoysticks = new System.Windows.Forms.PictureBox();
-            this.pictureboxTrainImage = new System.Windows.Forms.PictureBox();
-            this.pictureboxRouteImage = new System.Windows.Forms.PictureBox();
-            this.pictureboxRouteMap = new System.Windows.Forms.PictureBox();
-            this.pictureboxRouteGradient = new System.Windows.Forms.PictureBox();
-            this.pictureBoxProcessing = new System.Windows.Forms.PictureBox();
-            this.pictureBoxPackageImage = new System.Windows.Forms.PictureBox();
             this.labelFillerTwo = new System.Windows.Forms.Label();
             this.panelStart.SuspendLayout();
             this.groupboxTrainSelection.SuspendLayout();
@@ -455,6 +455,7 @@
             this.groupboxTrainDetails.SuspendLayout();
             this.tabcontrolTrainDetails.SuspendLayout();
             this.tabpageTrainDescription.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureboxTrainImage)).BeginInit();
             this.tabpageTrainSettings.SuspendLayout();
             this.panelTrainEncoding.SuspendLayout();
             this.groupboxRouteSelection.SuspendLayout();
@@ -464,8 +465,11 @@
             this.groupboxRouteDetails.SuspendLayout();
             this.tabcontrolRouteDetails.SuspendLayout();
             this.tabpageRouteDescription.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureboxRouteImage)).BeginInit();
             this.tabpageRouteMap.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureboxRouteMap)).BeginInit();
             this.tabpageRouteGradient.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureboxRouteGradient)).BeginInit();
             this.tabpageRouteSettings.SuspendLayout();
             this.panelRouteEncoding.SuspendLayout();
             this.panelOptions.SuspendLayout();
@@ -475,6 +479,7 @@
             this.groupBoxKioskMode.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownKioskTimeout)).BeginInit();
             this.groupBoxAdvancedOptions.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureboxCursor)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.updownTimeAccelerationFactor)).BeginInit();
             this.groupBoxPackageOptions.SuspendLayout();
             this.panelOptionsLeft.SuspendLayout();
@@ -501,6 +506,7 @@
             this.groupboxSimulation.SuspendLayout();
             this.groupboxSound.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.updownSoundNumber)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureboxLanguage)).BeginInit();
             this.panelPanels.SuspendLayout();
             this.panelReview.SuspendLayout();
             this.groupboxReviewDateTime.SuspendLayout();
@@ -510,6 +516,7 @@
             this.groupboxRating.SuspendLayout();
             this.panelControls.SuspendLayout();
             this.groupboxJoysticks.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureboxJoysticks)).BeginInit();
             this.groupboxControl.SuspendLayout();
             this.panelKeyboard.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.updownCommandOption)).BeginInit();
@@ -521,6 +528,7 @@
             this.panelDependancyError.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewDependancies)).BeginInit();
             this.panelPleaseWait.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxProcessing)).BeginInit();
             this.panelPackageDependsAdd.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.splitContainerDependancies)).BeginInit();
             this.splitContainerDependancies.Panel1.SuspendLayout();
@@ -531,6 +539,7 @@
             this.panelPackageList.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewPackages)).BeginInit();
             this.panelPackageInstall.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxPackageImage)).BeginInit();
             this.panelVersionError.SuspendLayout();
             this.groupBoxVersionErrorAction.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewBrokenDependancies)).BeginInit();
@@ -541,15 +550,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewReplacePackage)).BeginInit();
             this.panelNewPackage.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureboxLogo)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureboxCursor)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureboxLanguage)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureboxJoysticks)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureboxTrainImage)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureboxRouteImage)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureboxRouteMap)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureboxRouteGradient)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxProcessing)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxPackageImage)).BeginInit();
             this.SuspendLayout();
             // 
             // labelFillerOne
@@ -805,6 +805,19 @@
             this.textboxTrainDescription.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
             this.textboxTrainDescription.Size = new System.Drawing.Size(119, 136);
             this.textboxTrainDescription.TabIndex = 0;
+            // 
+            // pictureboxTrainImage
+            // 
+            this.pictureboxTrainImage.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.pictureboxTrainImage.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.pictureboxTrainImage.Location = new System.Drawing.Point(8, 8);
+            this.pictureboxTrainImage.Name = "pictureboxTrainImage";
+            this.pictureboxTrainImage.Size = new System.Drawing.Size(152, 136);
+            this.pictureboxTrainImage.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.pictureboxTrainImage.TabIndex = 0;
+            this.pictureboxTrainImage.TabStop = false;
+            this.pictureboxTrainImage.Click += new System.EventHandler(this.pictureboxTrainImage_Click);
             // 
             // tabpageTrainSettings
             // 
@@ -1113,6 +1126,19 @@
             this.textboxRouteDescription.Size = new System.Drawing.Size(119, 158);
             this.textboxRouteDescription.TabIndex = 0;
             // 
+            // pictureboxRouteImage
+            // 
+            this.pictureboxRouteImage.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.pictureboxRouteImage.Cursor = System.Windows.Forms.Cursors.Hand;
+            this.pictureboxRouteImage.Location = new System.Drawing.Point(8, 8);
+            this.pictureboxRouteImage.Name = "pictureboxRouteImage";
+            this.pictureboxRouteImage.Size = new System.Drawing.Size(152, 158);
+            this.pictureboxRouteImage.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.pictureboxRouteImage.TabIndex = 0;
+            this.pictureboxRouteImage.TabStop = false;
+            this.pictureboxRouteImage.Click += new System.EventHandler(this.pictureboxRouteImage_Click);
+            // 
             // tabpageRouteMap
             // 
             this.tabpageRouteMap.Controls.Add(this.pictureboxRouteMap);
@@ -1124,6 +1150,18 @@
             this.tabpageRouteMap.Text = "Map";
             this.tabpageRouteMap.UseVisualStyleBackColor = true;
             // 
+            // pictureboxRouteMap
+            // 
+            this.pictureboxRouteMap.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.pictureboxRouteMap.Location = new System.Drawing.Point(8, 8);
+            this.pictureboxRouteMap.Name = "pictureboxRouteMap";
+            this.pictureboxRouteMap.Size = new System.Drawing.Size(276, 136);
+            this.pictureboxRouteMap.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.pictureboxRouteMap.TabIndex = 0;
+            this.pictureboxRouteMap.TabStop = false;
+            // 
             // tabpageRouteGradient
             // 
             this.tabpageRouteGradient.Controls.Add(this.pictureboxRouteGradient);
@@ -1134,6 +1172,18 @@
             this.tabpageRouteGradient.TabIndex = 2;
             this.tabpageRouteGradient.Text = "Gradient profile";
             this.tabpageRouteGradient.UseVisualStyleBackColor = true;
+            // 
+            // pictureboxRouteGradient
+            // 
+            this.pictureboxRouteGradient.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.pictureboxRouteGradient.Location = new System.Drawing.Point(8, 7);
+            this.pictureboxRouteGradient.Name = "pictureboxRouteGradient";
+            this.pictureboxRouteGradient.Size = new System.Drawing.Size(276, 136);
+            this.pictureboxRouteGradient.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.pictureboxRouteGradient.TabIndex = 1;
+            this.pictureboxRouteGradient.TabStop = false;
             // 
             // tabpageRouteSettings
             // 
@@ -1591,6 +1641,15 @@
             this.checkBoxPanel2Extended.TabIndex = 17;
             this.checkBoxPanel2Extended.Text = "Enable Panel2 extend mode";
             this.checkBoxPanel2Extended.UseVisualStyleBackColor = true;
+            // 
+            // pictureboxCursor
+            // 
+            this.pictureboxCursor.Location = new System.Drawing.Point(8, 145);
+            this.pictureboxCursor.Name = "pictureboxCursor";
+            this.pictureboxCursor.Size = new System.Drawing.Size(32, 32);
+            this.pictureboxCursor.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.pictureboxCursor.TabIndex = 16;
+            this.pictureboxCursor.TabStop = false;
             // 
             // labelCursor
             // 
@@ -2686,6 +2745,15 @@
             this.labelSoundNumber.Text = "Number of allowed sounds:";
             this.labelSoundNumber.TextAlign = System.Drawing.ContentAlignment.TopRight;
             // 
+            // pictureboxLanguage
+            // 
+            this.pictureboxLanguage.Location = new System.Drawing.Point(8, 40);
+            this.pictureboxLanguage.Name = "pictureboxLanguage";
+            this.pictureboxLanguage.Size = new System.Drawing.Size(32, 20);
+            this.pictureboxLanguage.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.pictureboxLanguage.TabIndex = 15;
+            this.pictureboxLanguage.TabStop = false;
+            // 
             // comboboxLanguages
             // 
             this.comboboxLanguages.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
@@ -2742,7 +2810,7 @@
             // 
             // panelPanels
             // 
-            this.panelPanels.BackColor = System.Drawing.Color.Gray;
+            this.panelPanels.BackColor = System.Drawing.Color.Silver;
             this.panelPanels.Controls.Add(this.radioButtonPackages);
             this.panelPanels.Controls.Add(this.labelPanelsBottom);
             this.panelPanels.Controls.Add(this.radiobuttonOptions);
@@ -3430,6 +3498,18 @@
             this.groupboxJoysticks.TabIndex = 11;
             this.groupboxJoysticks.TabStop = false;
             this.groupboxJoysticks.Text = "Attached joysticks";
+            // 
+            // pictureboxJoysticks
+            // 
+            this.pictureboxJoysticks.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.pictureboxJoysticks.Location = new System.Drawing.Point(8, 16);
+            this.pictureboxJoysticks.Name = "pictureboxJoysticks";
+            this.pictureboxJoysticks.Size = new System.Drawing.Size(627, 144);
+            this.pictureboxJoysticks.TabIndex = 27;
+            this.pictureboxJoysticks.TabStop = false;
+            this.pictureboxJoysticks.Paint += new System.Windows.Forms.PaintEventHandler(this.pictureboxJoysticks_Paint);
             // 
             // listviewControls
             // 
@@ -4253,6 +4333,16 @@
             this.labelPleaseWait.Text = "Processing, please wait...";
             this.labelPleaseWait.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             // 
+            // pictureBoxProcessing
+            // 
+            this.pictureBoxProcessing.Anchor = System.Windows.Forms.AnchorStyles.None;
+            this.pictureBoxProcessing.Location = new System.Drawing.Point(154, 34);
+            this.pictureBoxProcessing.Name = "pictureBoxProcessing";
+            this.pictureBoxProcessing.Size = new System.Drawing.Size(350, 350);
+            this.pictureBoxProcessing.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
+            this.pictureBoxProcessing.TabIndex = 4;
+            this.pictureBoxProcessing.TabStop = false;
+            // 
             // panelPackageDependsAdd
             // 
             this.panelPackageDependsAdd.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -4878,6 +4968,19 @@
             this.labelPackageName.Text = "Package Name:";
             this.labelPackageName.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
+            // pictureBoxPackageImage
+            // 
+            this.pictureBoxPackageImage.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.pictureBoxPackageImage.Location = new System.Drawing.Point(8, 54);
+            this.pictureBoxPackageImage.Name = "pictureBoxPackageImage";
+            this.pictureBoxPackageImage.Size = new System.Drawing.Size(643, 216);
+            this.pictureBoxPackageImage.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.pictureBoxPackageImage.TabIndex = 3;
+            this.pictureBoxPackageImage.TabStop = false;
+            this.pictureBoxPackageImage.Click += new System.EventHandler(this.pictureBoxPackageImage_Click);
+            // 
             // panelVersionError
             // 
             this.panelVersionError.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
@@ -5481,126 +5584,22 @@
             this.pictureboxLogo.TabIndex = 1;
             this.pictureboxLogo.TabStop = false;
             // 
-            // pictureboxCursor
-            // 
-            this.pictureboxCursor.Location = new System.Drawing.Point(8, 145);
-            this.pictureboxCursor.Name = "pictureboxCursor";
-            this.pictureboxCursor.Size = new System.Drawing.Size(32, 32);
-            this.pictureboxCursor.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-            this.pictureboxCursor.TabIndex = 16;
-            this.pictureboxCursor.TabStop = false;
-            // 
-            // pictureboxLanguage
-            // 
-            this.pictureboxLanguage.Location = new System.Drawing.Point(8, 40);
-            this.pictureboxLanguage.Name = "pictureboxLanguage";
-            this.pictureboxLanguage.Size = new System.Drawing.Size(32, 20);
-            this.pictureboxLanguage.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-            this.pictureboxLanguage.TabIndex = 15;
-            this.pictureboxLanguage.TabStop = false;
-            // 
-            // pictureboxJoysticks
-            // 
-            this.pictureboxJoysticks.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.pictureboxJoysticks.Location = new System.Drawing.Point(8, 16);
-            this.pictureboxJoysticks.Name = "pictureboxJoysticks";
-            this.pictureboxJoysticks.Size = new System.Drawing.Size(627, 144);
-            this.pictureboxJoysticks.TabIndex = 27;
-            this.pictureboxJoysticks.TabStop = false;
-            this.pictureboxJoysticks.Paint += new System.Windows.Forms.PaintEventHandler(this.pictureboxJoysticks_Paint);
-            // 
-            // pictureboxTrainImage
-            // 
-            this.pictureboxTrainImage.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left)));
-            this.pictureboxTrainImage.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.pictureboxTrainImage.Location = new System.Drawing.Point(8, 8);
-            this.pictureboxTrainImage.Name = "pictureboxTrainImage";
-            this.pictureboxTrainImage.Size = new System.Drawing.Size(152, 136);
-            this.pictureboxTrainImage.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-            this.pictureboxTrainImage.TabIndex = 0;
-            this.pictureboxTrainImage.TabStop = false;
-            this.pictureboxTrainImage.Click += new System.EventHandler(this.pictureboxTrainImage_Click);
-            // 
-            // pictureboxRouteImage
-            // 
-            this.pictureboxRouteImage.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left)));
-            this.pictureboxRouteImage.Cursor = System.Windows.Forms.Cursors.Hand;
-            this.pictureboxRouteImage.Location = new System.Drawing.Point(8, 8);
-            this.pictureboxRouteImage.Name = "pictureboxRouteImage";
-            this.pictureboxRouteImage.Size = new System.Drawing.Size(152, 158);
-            this.pictureboxRouteImage.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-            this.pictureboxRouteImage.TabIndex = 0;
-            this.pictureboxRouteImage.TabStop = false;
-            this.pictureboxRouteImage.Click += new System.EventHandler(this.pictureboxRouteImage_Click);
-            // 
-            // pictureboxRouteMap
-            // 
-            this.pictureboxRouteMap.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.pictureboxRouteMap.Location = new System.Drawing.Point(8, 8);
-            this.pictureboxRouteMap.Name = "pictureboxRouteMap";
-            this.pictureboxRouteMap.Size = new System.Drawing.Size(276, 136);
-            this.pictureboxRouteMap.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-            this.pictureboxRouteMap.TabIndex = 0;
-            this.pictureboxRouteMap.TabStop = false;
-            // 
-            // pictureboxRouteGradient
-            // 
-            this.pictureboxRouteGradient.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.pictureboxRouteGradient.Location = new System.Drawing.Point(8, 7);
-            this.pictureboxRouteGradient.Name = "pictureboxRouteGradient";
-            this.pictureboxRouteGradient.Size = new System.Drawing.Size(276, 136);
-            this.pictureboxRouteGradient.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-            this.pictureboxRouteGradient.TabIndex = 1;
-            this.pictureboxRouteGradient.TabStop = false;
-            // 
-            // pictureBoxProcessing
-            // 
-            this.pictureBoxProcessing.Anchor = System.Windows.Forms.AnchorStyles.None;
-            this.pictureBoxProcessing.Location = new System.Drawing.Point(154, 34);
-            this.pictureBoxProcessing.Name = "pictureBoxProcessing";
-            this.pictureBoxProcessing.Size = new System.Drawing.Size(350, 350);
-            this.pictureBoxProcessing.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
-            this.pictureBoxProcessing.TabIndex = 4;
-            this.pictureBoxProcessing.TabStop = false;
-            // 
-            // pictureBoxPackageImage
-            // 
-            this.pictureBoxPackageImage.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.pictureBoxPackageImage.Location = new System.Drawing.Point(8, 54);
-            this.pictureBoxPackageImage.Name = "pictureBoxPackageImage";
-            this.pictureBoxPackageImage.Size = new System.Drawing.Size(643, 216);
-            this.pictureBoxPackageImage.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-            this.pictureBoxPackageImage.TabIndex = 3;
-            this.pictureBoxPackageImage.TabStop = false;
-            this.pictureBoxPackageImage.Click += new System.EventHandler(this.pictureBoxPackageImage_Click);
-            // 
             // labelFillerTwo
             // 
             this.labelFillerTwo.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left)));
-            this.labelFillerTwo.BackColor = System.Drawing.Color.Gray;
+            this.labelFillerTwo.BackColor = System.Drawing.Color.Silver;
             this.labelFillerTwo.Image = ((System.Drawing.Image)(resources.GetObject("labelFillerTwo.Image")));
-            this.labelFillerTwo.ImageAlign = System.Drawing.ContentAlignment.TopCenter;
-            this.labelFillerTwo.Location = new System.Drawing.Point(-1, 335);
+            this.labelFillerTwo.Location = new System.Drawing.Point(-1, 337);
             this.labelFillerTwo.Name = "labelFillerTwo";
-            this.labelFillerTwo.Size = new System.Drawing.Size(159, 132);
+            this.labelFillerTwo.Size = new System.Drawing.Size(159, 94);
             this.labelFillerTwo.TabIndex = 15;
             // 
             // formMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
-            this.BackColor = System.Drawing.Color.White;
+            this.BackColor = System.Drawing.Color.Silver;
             this.ClientSize = new System.Drawing.Size(819, 606);
             this.Controls.Add(this.labelFillerTwo);
             this.Controls.Add(this.labelVerticalSeparator);
@@ -5615,6 +5614,7 @@
             this.Controls.Add(this.panelStart);
             this.Controls.Add(this.panelPackages);
             this.Controls.Add(this.panelReview);
+            this.DoubleBuffered = true;
             this.KeyPreview = true;
             this.MaximizeBox = false;
             this.Name = "formMain";
@@ -5635,6 +5635,7 @@
             this.tabcontrolTrainDetails.ResumeLayout(false);
             this.tabpageTrainDescription.ResumeLayout(false);
             this.tabpageTrainDescription.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureboxTrainImage)).EndInit();
             this.tabpageTrainSettings.ResumeLayout(false);
             this.tabpageTrainSettings.PerformLayout();
             this.panelTrainEncoding.ResumeLayout(false);
@@ -5646,8 +5647,11 @@
             this.tabcontrolRouteDetails.ResumeLayout(false);
             this.tabpageRouteDescription.ResumeLayout(false);
             this.tabpageRouteDescription.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureboxRouteImage)).EndInit();
             this.tabpageRouteMap.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.pictureboxRouteMap)).EndInit();
             this.tabpageRouteGradient.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.pictureboxRouteGradient)).EndInit();
             this.tabpageRouteSettings.ResumeLayout(false);
             this.tabpageRouteSettings.PerformLayout();
             this.panelRouteEncoding.ResumeLayout(false);
@@ -5663,6 +5667,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.numericUpDownKioskTimeout)).EndInit();
             this.groupBoxAdvancedOptions.ResumeLayout(false);
             this.groupBoxAdvancedOptions.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureboxCursor)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.updownTimeAccelerationFactor)).EndInit();
             this.groupBoxPackageOptions.ResumeLayout(false);
             this.groupBoxPackageOptions.PerformLayout();
@@ -5696,6 +5701,7 @@
             this.groupboxSimulation.PerformLayout();
             this.groupboxSound.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.updownSoundNumber)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureboxLanguage)).EndInit();
             this.panelPanels.ResumeLayout(false);
             this.panelPanels.PerformLayout();
             this.panelReview.ResumeLayout(false);
@@ -5711,6 +5717,7 @@
             this.panelControls.ResumeLayout(false);
             this.panelControls.PerformLayout();
             this.groupboxJoysticks.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.pictureboxJoysticks)).EndInit();
             this.groupboxControl.ResumeLayout(false);
             this.groupboxControl.PerformLayout();
             this.panelKeyboard.ResumeLayout(false);
@@ -5728,6 +5735,7 @@
             this.panelDependancyError.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewDependancies)).EndInit();
             this.panelPleaseWait.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxProcessing)).EndInit();
             this.panelPackageDependsAdd.ResumeLayout(false);
             this.splitContainerDependancies.Panel1.ResumeLayout(false);
             this.splitContainerDependancies.Panel1.PerformLayout();
@@ -5741,6 +5749,7 @@
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewPackages)).EndInit();
             this.panelPackageInstall.ResumeLayout(false);
             this.panelPackageInstall.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxPackageImage)).EndInit();
             this.panelVersionError.ResumeLayout(false);
             this.panelVersionError.PerformLayout();
             this.groupBoxVersionErrorAction.ResumeLayout(false);
@@ -5758,15 +5767,6 @@
             this.panelNewPackage.ResumeLayout(false);
             this.panelNewPackage.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureboxLogo)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureboxCursor)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureboxLanguage)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureboxJoysticks)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureboxTrainImage)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureboxRouteImage)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureboxRouteMap)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureboxRouteGradient)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxProcessing)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBoxPackageImage)).EndInit();
             this.ResumeLayout(false);
 
         }

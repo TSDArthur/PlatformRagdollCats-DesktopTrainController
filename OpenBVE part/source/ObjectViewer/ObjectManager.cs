@@ -5,6 +5,7 @@ using OpenBveApi.Interface;
 using OpenBveApi.Math;
 using OpenBveApi.Objects;
 using OpenBveApi.Textures;
+using OpenBveApi.Trains;
 using OpenBveApi.World;
 
 namespace OpenBve
@@ -1828,7 +1829,7 @@ namespace OpenBve
                         double trainDistance = double.MaxValue;
                         for (int j = 0; j < TrainManager.Trains.Length; j++)
                         {
-                            if (TrainManager.Trains[j].State == TrainManager.TrainState.Available)
+                            if (TrainManager.Trains[j].State == TrainState.Available)
                             {
                                 double distance;
                                 if (TrainManager.Trains[j].Cars[0].FrontAxle.Follower.TrackPosition < AnimatedWorldObjects[i].TrackPosition)
@@ -1926,7 +1927,7 @@ namespace OpenBve
             {
                 case ".csv":
                 case ".b3d":
-                    Result = CsvB3dObjectParser.ReadObject(FileName, Encoding, ForceTextureRepeatX, ForceTextureRepeatY);
+                    Result = CsvB3dObjectParser.ReadObject(FileName, Encoding);
                     break;
                 case ".x":
 	                if (Interface.CurrentOptions.CurrentXParser > 0)
@@ -1958,7 +1959,7 @@ namespace OpenBve
                     Result = AnimatedObjectParser.ReadObject(FileName, Encoding);
                     break;
                 case ".l3dobj":
-                    Result = Ls3DObjectParser.ReadObject(FileName, Encoding, Rotation);
+                    Result = Ls3DObjectParser.ReadObject(FileName, Rotation);
                     break;
                 case ".l3dgrp":
                     Result = Ls3DGrpParser.ReadObject(FileName, Encoding, Rotation);
@@ -2042,7 +2043,7 @@ namespace OpenBve
             {
                 case ".csv":
                 case ".b3d":
-                    Result = CsvB3dObjectParser.ReadObject(FileName, Encoding, ForceTextureRepeatX, ForceTextureRepeatY);
+                    Result = CsvB3dObjectParser.ReadObject(FileName, Encoding);
                     break;
                 case ".x":
 	                if (Interface.CurrentOptions.CurrentXParser > 0)
@@ -2070,7 +2071,7 @@ namespace OpenBve
 	                }
                     break;
                 case ".l3dobj":
-                    Result = Ls3DObjectParser.ReadObject(FileName, Encoding, new Vector3());
+                    Result = Ls3DObjectParser.ReadObject(FileName, new Vector3());
                     if (Result == null)
                     {
                         return null;

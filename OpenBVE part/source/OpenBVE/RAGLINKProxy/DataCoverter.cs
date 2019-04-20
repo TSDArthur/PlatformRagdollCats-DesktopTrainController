@@ -23,7 +23,8 @@ namespace OpenBve
 		#define EMERGENCY 10
 		*/
 		//C# not support #define , use const int
-		const int TRAIN_DATA_NUMBER = 25;
+		const int TRAIN_DATA_NUMBER = 30;
+		const int TRAIN_DATA_PARSE = 25;
 		//
 		const int SPEED = 0;
 		const int REVERSER = 1;
@@ -50,6 +51,11 @@ namespace OpenBve
 		const int CURRENT_TIME = 22;
 		const int LDDOR_IN_OP = 23;
 		const int RDOOR_IN_OP = 24;
+		const int SPEED_HMI = 25;
+		const int CYLINER_PRESSURE = 26;
+		const int PIPE_PRESSURE = 27;
+		const int DEST_STATION_NAME = 28;
+		const int STATION_COUNTER = 29;
 		//
 		const int SPEED_MIN = 0;
 		const int SPEED_MAX = 400;
@@ -83,6 +89,10 @@ namespace OpenBve
 		const int EMERGENCY_OFF = 0;
 		const int OVERWRITE = 0;
 		const int NORMAL = 1;
+		const int CYLINER_DEF = 0;
+		const int PIPE_DEF = 0;
+		const int DEST_DEF = 0;
+		const int STA_COUNT_DEF = 0;
 		//
 		const int LDOOR_OPEN_DEF = 0;
 		const int RDDOR_OPEN_DEF = 0;
@@ -107,7 +117,7 @@ namespace OpenBve
 		const int _BOOL = 1;
 		const int _STRING = 3;
 		//
-		const int HMI_SCRIPT_NUM = 24;
+		const int HMI_SCRIPT_NUM = 28;
 		//
 		static public String controllerVersion = NO_DATA; 
 		//
@@ -116,25 +126,24 @@ namespace OpenBve
 		//
 		static private int[] dataDefault = new int[TRAIN_DATA_NUMBER] {
 			SPEED_MIN, REVERSER_NEUTRAL, POWER_MIN, BRAKE_MIN, SIGNAL_RED,
-											SIGNAL_DISTANCE_DE, SPEED_LIMIT_DEF, HORN_OFF, SPEED_CONST_MIN, MASTER_KEY_OFF,
-											EMERGENCY_OFF, NORMAL, LDOOR_OPEN_DEF, RDDOR_OPEN_DEF, SANDER_OFF, LIGHT_OFF, PANTO_UP, CURRENT_STATION_N, NEXT_STATION_N,
-											NEXT_STATION_DIS_DEF, CURRENT_STATION_DEPART_TIME_DEF, NEXT_STATION_ARRIVAL_TIME_DEF, CURRENT_TIME_DEF, LDOOR_IN_OP_DEF, RDOOR_IN_OP_DEF
-		};
+			SIGNAL_DISTANCE_DE, SPEED_LIMIT_DEF, HORN_OFF, SPEED_CONST_MIN, MASTER_KEY_OFF,
+			EMERGENCY_OFF, NORMAL, LDOOR_OPEN_DEF, RDDOR_OPEN_DEF, SANDER_OFF, LIGHT_OFF,
+			PANTO_UP, CURRENT_STATION_N, NEXT_STATION_N,NEXT_STATION_DIS_DEF, CURRENT_STATION_DEPART_TIME_DEF,
+			NEXT_STATION_ARRIVAL_TIME_DEF, CURRENT_TIME_DEF, LDOOR_IN_OP_DEF,RDOOR_IN_OP_DEF, SPEED_MIN, CYLINER_DEF,
+			PIPE_DEF, DEST_DEF, STA_COUNT_DEF};
 
-		static private int[] dataType = new int[TRAIN_DATA_NUMBER] {_INT, _INT, _INT, _INT, _INT, _INT, _INT, _BOOL, _INT, _BOOL, _BOOL, _BOOL, _BOOL, _BOOL,
-										 _BOOL, _BOOL, _INT, _STRING, _STRING, _STRING, _STRING, _STRING, _STRING, _BOOL, _BOOL
-										};
+		static private int[] dataType = new int[TRAIN_DATA_NUMBER] {_INT, _INT, _INT, _INT, _INT, _INT, _INT, _BOOL, _INT, _BOOL,
+			_BOOL, _BOOL, _BOOL, _BOOL,_BOOL, _BOOL, _INT, _STRING, _STRING, _STRING, _STRING, _STRING, _STRING, _BOOL, _BOOL,
+			_INT, _INT, _INT, _STRING, _STRING};
 
 		static private String[] HMIScript= new string[HMI_SCRIPT_NUM] { "a.val=", "b.val=", "u.txt=", "c.val=", "d.val=", "e.val=", "v.txt=",
-										  "u.txt=", "f.val=", "g.val=", "h.val=", "i.val=",
-										   "j.val=", "v.txt=", "k.val=", "l.val=", "m.val=", "n.val=",
-										   "o.val=", "p.val=", "q.txt=", "r.txt=", "s.txt=", "t.txt="
-										 };
+			"u.txt=", "f.val=", "g.val=", "h.val=", "i.val=","j.val=", "v.txt=", "k.val=", "l.val=", "m.val=","n.val=","o.val=", "p.val=",
+			"q.txt=", "r.txt=", "s.txt=", "t.txt=","cyl.val=", "pip.val=", "dest.txt=", "stacount.txt="};
 
-		static private int[] HMIMap = new int[HMI_SCRIPT_NUM]  {SPEED, REVERSER, NEXT_STATION_DIS, POWER, BRAKE, SIGNAL_INFO, CURRENT_TIME,
-									NEXT_STATION_DIS, SIGNAL_DISTANCE, SPEED_LIMIT, HORN, MASTER_KEY, LDOOR_OPEN, CURRENT_TIME, LDDOR_IN_OP, RDOOR_OPEN, RDOOR_IN_OP,
-									SANDER_OPEN, LIGHT_OPEN, PANTO_OPEN, CURRENT_STATION_NAME, CURRENT_STATION_DEPART, NEXT_STATION_NAME, NEXT_STATION_ARRIVAL
-								   };
+		static private int[] HMIMap = new int[HMI_SCRIPT_NUM]  {SPEED_HMI, REVERSER, NEXT_STATION_DIS, POWER, BRAKE, SIGNAL_INFO, CURRENT_TIME,
+			NEXT_STATION_DIS, SIGNAL_DISTANCE, SPEED_LIMIT, HORN, MASTER_KEY, LDOOR_OPEN, CURRENT_TIME, LDDOR_IN_OP,RDOOR_OPEN, RDOOR_IN_OP,
+			SANDER_OPEN, LIGHT_OPEN, PANTO_OPEN, CURRENT_STATION_NAME, CURRENT_STATION_DEPART, NEXT_STATION_NAME, NEXT_STATION_ARRIVAL, CYLINER_PRESSURE,
+			PIPE_PRESSURE, DEST_STATION_NAME, STATION_COUNTER};
 
 		//
 		/// <summary>
@@ -146,7 +155,7 @@ namespace OpenBve
 			{
 				int strLength = 0;
 				int operationNum = 0;
-				string[] operation = new string[TRAIN_DATA_NUMBER];
+				string[] operation = new string[TRAIN_DATA_PARSE];
 				strLength = data.Length;
 				data = data.Substring(1, strLength - 2);
 				operation = data.Split(FILTER);
@@ -244,6 +253,8 @@ namespace OpenBve
 			{
 				case SPEED:
 					return TrainMethods.GetSpeed().ToString();
+				case SPEED_HMI:
+					return ((int)(TrainMethods.GetSpeedDouble() * 10)).ToString();
 				case POWER:
 					return TrainMethods.GetPower().ToString();
 				case BRAKE:
@@ -301,6 +312,15 @@ namespace OpenBve
 						if (Invoker == 0) return " ";
 						return TrainMethods.GetCurrentTime();
 					}
+				case CYLINER_PRESSURE:
+					return ((int)(TrainMethods.GetCylinderPressure() * 10)).ToString();
+				case PIPE_PRESSURE:
+					return ((int)(TrainMethods.GetPipePressure() * 10)).ToString();
+				case DEST_STATION_NAME:
+					return TrainMethods.GetDestinationName();
+				case STATION_COUNTER:
+					return TrainMethods.GetNextStationIndex().ToString() + " / " + TrainMethods.GetStationCount().ToString();
+
 			}
 			return dataType[dataID] != _STRING ? trainData[dataID].ToString() : trainDataStr[dataID];
 		}
@@ -312,7 +332,7 @@ namespace OpenBve
 		{
 			string data = NO_DATA;
 			data += START_SYM;
-			for (int i = 0; i < TRAIN_DATA_NUMBER; i++)
+			for (int i = 0; i < TRAIN_DATA_PARSE; i++)
 			{
 				data += GetData(i, 0);
 				data += FILTER;

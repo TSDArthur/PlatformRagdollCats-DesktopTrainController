@@ -44,7 +44,7 @@
             this.pictureBoxLogo.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.pictureBoxLogo.Location = new System.Drawing.Point(12, 12);
+            this.pictureBoxLogo.Location = new System.Drawing.Point(12, 11);
             this.pictureBoxLogo.Name = "pictureBoxLogo";
             this.pictureBoxLogo.Size = new System.Drawing.Size(128, 128);
             this.pictureBoxLogo.SizeMode = System.Windows.Forms.PictureBoxSizeMode.AutoSize;
@@ -58,7 +58,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.labelProductName.AutoSize = true;
             this.labelProductName.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.labelProductName.Location = new System.Drawing.Point(146, 12);
+            this.labelProductName.Location = new System.Drawing.Point(146, 11);
             this.labelProductName.Name = "labelProductName";
             this.labelProductName.Size = new System.Drawing.Size(201, 25);
             this.labelProductName.TabIndex = 0;
@@ -71,11 +71,11 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.textBoxMain.BackColor = System.Drawing.SystemColors.Control;
             this.textBoxMain.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.textBoxMain.Location = new System.Drawing.Point(147, 41);
+            this.textBoxMain.Location = new System.Drawing.Point(147, 38);
             this.textBoxMain.Multiline = true;
             this.textBoxMain.Name = "textBoxMain";
             this.textBoxMain.ReadOnly = true;
-            this.textBoxMain.Size = new System.Drawing.Size(315, 80);
+            this.textBoxMain.Size = new System.Drawing.Size(315, 74);
             this.textBoxMain.TabIndex = 1;
             this.textBoxMain.TabStop = false;
             this.textBoxMain.Text = resources.GetString("textBoxMain.Text");
@@ -87,7 +87,7 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.label1.AutoSize = true;
             this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label1.Location = new System.Drawing.Point(12, 143);
+            this.label1.Location = new System.Drawing.Point(12, 132);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(251, 25);
             this.label1.TabIndex = 2;
@@ -99,12 +99,12 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.textBoxOpenSourceLicences.BackColor = System.Drawing.SystemColors.Control;
-            this.textBoxOpenSourceLicences.Location = new System.Drawing.Point(17, 188);
+            this.textBoxOpenSourceLicences.Location = new System.Drawing.Point(17, 174);
             this.textBoxOpenSourceLicences.Multiline = true;
             this.textBoxOpenSourceLicences.Name = "textBoxOpenSourceLicences";
             this.textBoxOpenSourceLicences.ReadOnly = true;
             this.textBoxOpenSourceLicences.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.textBoxOpenSourceLicences.Size = new System.Drawing.Size(454, 160);
+            this.textBoxOpenSourceLicences.Size = new System.Drawing.Size(454, 148);
             this.textBoxOpenSourceLicences.TabIndex = 4;
             this.textBoxOpenSourceLicences.TabStop = false;
             this.textBoxOpenSourceLicences.Text = resources.GetString("textBoxOpenSourceLicences.Text");
@@ -115,9 +115,9 @@
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
             this.labelOpenSourceHeader.AutoSize = true;
-            this.labelOpenSourceHeader.Location = new System.Drawing.Point(17, 169);
+            this.labelOpenSourceHeader.Location = new System.Drawing.Point(17, 156);
             this.labelOpenSourceHeader.Name = "labelOpenSourceHeader";
-            this.labelOpenSourceHeader.Size = new System.Drawing.Size(445, 13);
+            this.labelOpenSourceHeader.Size = new System.Drawing.Size(533, 12);
             this.labelOpenSourceHeader.TabIndex = 3;
             this.labelOpenSourceHeader.Text = "OpenBVE makes use of several open-source libraries, whose licences are reproduced" +
     " below:";
@@ -125,9 +125,9 @@
             // buttonClose
             // 
             this.buttonClose.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.buttonClose.Location = new System.Drawing.Point(328, 354);
+            this.buttonClose.Location = new System.Drawing.Point(328, 327);
             this.buttonClose.Name = "buttonClose";
-            this.buttonClose.Size = new System.Drawing.Size(144, 24);
+            this.buttonClose.Size = new System.Drawing.Size(144, 22);
             this.buttonClose.TabIndex = 5;
             this.buttonClose.Text = "Close";
             this.buttonClose.UseVisualStyleBackColor = true;
@@ -135,9 +135,9 @@
             // 
             // formAbout
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(484, 387);
+            this.ClientSize = new System.Drawing.Size(484, 357);
             this.Controls.Add(this.buttonClose);
             this.Controls.Add(this.labelOpenSourceHeader);
             this.Controls.Add(this.textBoxOpenSourceLicences);
@@ -145,6 +145,7 @@
             this.Controls.Add(this.textBoxMain);
             this.Controls.Add(this.labelProductName);
             this.Controls.Add(this.pictureBoxLogo);
+            this.DoubleBuffered = true;
             this.Name = "formAbout";
             this.Text = "About";
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxLogo)).EndInit();

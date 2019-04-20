@@ -79,7 +79,7 @@ namespace OpenBve
         internal static bool OptionLighting = true;
         internal static Color24 OptionAmbientColor = new Color24(160, 160, 160);
         internal static Color24 OptionDiffuseColor = new Color24(159, 159, 159);
-        internal static Vector3 OptionLightPosition = new Vector3(0.215920077052065f, 0.875724044222352f, -0.431840154104129f);
+        internal static Vector3 OptionLightPosition = new Vector3(0.215900077052065f, 0.875724044222352f, -0.431840154104129f);
         internal static float OptionLightingResultingAmount = 1.0f;
         internal static bool OptionNormals = false;
         internal static bool OptionWireframe = false;
@@ -152,7 +152,7 @@ namespace OpenBve
             OptionLighting = true;
             OptionAmbientColor = new Color24(160, 160, 160);
             OptionDiffuseColor = new Color24(160, 160, 160);
-            OptionLightPosition = new Vector3(0.215920077052065f, 0.875724044222352f, -0.431840154104129f);
+            OptionLightPosition = new Vector3(0.215900077052065f, 0.875724044222352f, -0.431840154104129f);
             OptionLightingResultingAmount = 1.0f;
             GL.Disable(EnableCap.Fog); FogEnabled = false;
         }

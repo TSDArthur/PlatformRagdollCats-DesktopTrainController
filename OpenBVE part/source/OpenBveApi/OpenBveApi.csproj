@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ProjectGuid>{27134980-4415-4375-A564-40A9014DFA5F}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -7,7 +7,7 @@
     <OutputType>Library</OutputType>
     <RootNamespace>OpenBveApi</RootNamespace>
     <AssemblyName>OpenBveApi</AssemblyName>
-    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <SourceAnalysisOverrideSettingsFile>C:\Documents and Settings\Administrator\Application Data\ICSharpCode/SharpDevelop3.0\Settings.SourceAnalysis</SourceAnalysisOverrideSettingsFile>
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
@@ -46,6 +46,8 @@
     <OutputPath>..\..\bin_debug\</OutputPath>
     <DocumentationFile>..\..\bin_debug\OpenBveApi.xml</DocumentationFile>
     <PlatformTarget>x86</PlatformTarget>
+    <Optimize>true</Optimize>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x86'">
     <Prefer32Bit>false</Prefer32Bit>
@@ -102,8 +104,10 @@
     <Compile Include="Objects\Damping.cs" />
     <Compile Include="Objects\Glow.AttenuationMode.cs" />
     <Compile Include="Objects\ObjectType.cs" />
+    <Compile Include="Train\AbstractCar.cs" />
     <Compile Include="Train\AbstractTrain.cs" />
     <Compile Include="Train\TrainStartMode.cs" />
+    <Compile Include="Train\TrainState.cs" />
     <Compile Include="World\Orientation3.cs" />
     <Compile Include="Packages\Packages.cs" />
     <Compile Include="Packages\Packages.Database.cs" />

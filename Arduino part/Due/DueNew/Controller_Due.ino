@@ -36,7 +36,7 @@ Type:3.ENCODER -> CHANGE (in developing)
 #define KEY_UP 0
 #define KEY_WAITTING 1
 #define KEY_DOWN 2
-#define SA_COUNT_SF 500
+#define SA_COUNT_SF 300
 #define SA_COUNT_SC 300
 //
 #define SPEED_MIN 0
@@ -140,12 +140,10 @@ Type:3.ENCODER -> CHANGE (in developing)
 #define NO_DATA ""
 #define RECIEVE_DELAY 2
 #define SEND_DELAY 25
-#define TIMER_TICK 500000
+#define TIMER_TICK 200
 //
 
 #define NOP do { __asm__ __volatile__ ("nop"); } while (0)
-
-#include "DueTimer.h"
 
 typedef void (*funcPoint)();
 //
@@ -184,7 +182,7 @@ void process16();
 
 //change device type here
 const int deviceType[DEVICE_NUMBER] = {SWITCH_C, SWITCH_C, SWITCH_C, SWITCH_C, SWITCH_C, SWITCH_C, SWITCH_C, SWITCH_C, SWITCH_C, SWITCH_C,
-                                       SWITCH_C, DIG_OUT, SWITCH_C, DIG_OUT, SWITCH_C, SWITCH_C, SWITCH_C
+                                       SWITCH_C, DIG_OUT, SWITCH_C, DIG_OUT, SWITCH_C, SWITCH_F, SWITCH_C
                                       };
 //change functions here
 const int devicePinsType[] = {INPUT_PULLUP, INPUT_PULLUP, INPUT_PULLUP, OUTPUT};
@@ -342,7 +340,7 @@ private:
 	String sendData;
 	String sender;
 	String tmp;
-	int length, st, ed, pos, sendEd;
+	int length, st, pos, sendEd;
 public:
 	CommunicationManager()
 	{
@@ -351,7 +349,7 @@ public:
 		sendData = NO_DATA;
 		recieveData = NO_DATA;
 		sender = NO_DATA;
-		length = st = ed = pos = 0;
+		length = st = pos = 0;
 		sendEd = 0;
 	}
 
@@ -366,30 +364,24 @@ public:
 			char currentRead = char(Serial.read());
 			recieveData += currentRead;
 			Devices.delay_(RECIEVE_DELAY);
-			//if (currentRead == END_SYM)break;
+			if (currentRead == END_SYM)break;
 		}
 		length = recieveData.length();
 		//no data exit
 		if (!length)return false;
 		//find start pos
 		//Serial.println(recieveData);
-		st = ed = 0;
+		st =  0;
 		for (int i = 0; i < length; i++)
 			if (recieveData.charAt(i) == START_SYM)
 			{
 				st = i;
 				break;
 			}
-		//find end pos
-		for (int i = length - 1; i >= 0; i--)
-			if (recieveData.charAt(i) == END_SYM)
-			{
-				ed = i;
-				break;
-			}
+
 		//cover data
 		pos = 0;
-		for (int i = st; i <= ed; i++)
+		for (int i = st; i < length; i++)
 		{
 			if (recieveData.charAt(i) != START_SYM && recieveData.charAt(i) != END_SYM && recieveData.charAt(i) != FILTER)tmp += recieveData.charAt(i);
 			if (recieveData.charAt(i) == FILTER)
@@ -410,9 +402,8 @@ public:
 	//
 	bool SendDataToPC(TrainManager & p)
 	{
-		sendData = NO_DATA;
 		//add start symbol
-		sendData += START_SYM;
+		sendData = START_SYM;
 		//add contents
 		for (int i = 0; i < TRAIN_DATA_NUMBER; i++)
 		{
@@ -482,7 +473,6 @@ void process0()
 {
 	//
 	int deviceState = Devices.GetState(0);
-	isHandleZero++;
 	if (deviceState == ACTIVE)
 	{
 		processData.SetData(MASTER_KEY, MASTER_KEY_ON);
@@ -550,7 +540,7 @@ void process4()
 	int deviceState = Devices.GetState(4);
 	if (deviceState == ACTIVE)
 	{
-		isHandleZero --;
+		isHandleZero = 0;
 		processData.SetData(POWER, 0);
 		processData.SetData(BRAKE, 6);
 	}
@@ -568,7 +558,7 @@ void process5()
 	int deviceState = Devices.GetState(5);
 	if (deviceState == ACTIVE)
 	{
-		isHandleZero --;
+		isHandleZero = 0;
 		processData.SetData(POWER, 0);
 		processData.SetData(BRAKE, 4);
 	}
@@ -586,7 +576,7 @@ void process6()
 	int deviceState = Devices.GetState(6);
 	if (deviceState == ACTIVE)
 	{
-		isHandleZero --;
+		isHandleZero = 0;
 		processData.SetData(POWER, 0);
 		processData.SetData(BRAKE, 2);
 	}
@@ -604,7 +594,7 @@ void process7()
 	int deviceState = Devices.GetState(7);
 	if (deviceState == ACTIVE)
 	{
-		isHandleZero --;
+		isHandleZero = 0;
 		processData.SetData(POWER, 1);
 		processData.SetData(BRAKE, 0);
 	}
@@ -622,7 +612,7 @@ void process8()
 	int deviceState = Devices.GetState(8);
 	if (deviceState == ACTIVE)
 	{
-		isHandleZero --;
+		isHandleZero = 0;
 		processData.SetData(POWER, 2);
 		processData.SetData(BRAKE, 0);
 	}
@@ -640,16 +630,15 @@ void process9()
 	int deviceState = Devices.GetState(9);
 	if (deviceState == ACTIVE)
 	{
-		isHandleZero --;
+		isHandleZero = 0;
 		processData.SetData(POWER, 3);
 		processData.SetData(BRAKE, 0);
 	}
-	//
-	if (isHandleZero > 600)
+	else if (isHandleZero > 500)
 	{
+		isHandleZero = 0;
 		processData.SetData(POWER, 0);
 		processData.SetData(BRAKE, 0);
-		isHandleZero = 0;
 	}
 	return;
 }
@@ -744,25 +733,31 @@ void process16()
 
 void TimerInterrupt()
 {
-	Timer1.stop();
 	Communication.SendDataToPC(currentData);
 	Communication.RecieveDataFromPC(currentData);
-	Timer1.start();
 }
 
 void setup()
 {
 	Serial.begin(115200);
-	Timer1.attachInterrupt(TimerInterrupt);
-	Timer1.setPeriod(TIMER_TICK);
-	Timer1.start();
 }
+
+int lastTime = 0;
 
 void loop()
 {
 	//state automatic
 	Queue.GetLastState(processData);
-	for (int i = 0; i < DEVICE_NUMBER; i++)Process[i]();
+	isHandleZero ++;
+	for (int i = 0; i < DEVICE_NUMBER; i++)
+	{
+		Process[i]();
+	}
 	Queue.UpdateData(processData);
 	Queue.AddProc(processData);
+	if(millis() - lastTime > TIMER_TICK)
+	{
+		TimerInterrupt();
+		lastTime = millis();
+	}
 }

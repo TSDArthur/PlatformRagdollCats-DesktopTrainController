@@ -76,6 +76,10 @@
             this.btnRightDoorOpen = new System.Windows.Forms.Button();
             this.btnRightDoorClose = new System.Windows.Forms.Button();
             this.pictureBox = new System.Windows.Forms.PictureBox();
+            this.txtBoxCylinder = new System.Windows.Forms.TextBox();
+            this.txtBoxPipe = new System.Windows.Forms.TextBox();
+            this.txtBoxDestination = new System.Windows.Forms.TextBox();
+            this.txtBoxStationCounter = new System.Windows.Forms.TextBox();
             this.toolScripMain.SuspendLayout();
             this.toolStrip.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).BeginInit();
@@ -246,7 +250,7 @@
             // 
             this.txtBoxSend.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
             this.txtBoxSend.ForeColor = System.Drawing.Color.White;
-            this.txtBoxSend.Location = new System.Drawing.Point(221, 424);
+            this.txtBoxSend.Location = new System.Drawing.Point(220, 478);
             this.txtBoxSend.Multiline = true;
             this.txtBoxSend.Name = "txtBoxSend";
             this.txtBoxSend.ReadOnly = true;
@@ -257,7 +261,7 @@
             // 
             this.txtBoxRecieve.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
             this.txtBoxRecieve.ForeColor = System.Drawing.Color.White;
-            this.txtBoxRecieve.Location = new System.Drawing.Point(9, 424);
+            this.txtBoxRecieve.Location = new System.Drawing.Point(9, 478);
             this.txtBoxRecieve.Multiline = true;
             this.txtBoxRecieve.Name = "txtBoxRecieve";
             this.txtBoxRecieve.ReadOnly = true;
@@ -301,7 +305,6 @@
             this.txtBoxPowerHandle.Size = new System.Drawing.Size(100, 21);
             this.txtBoxPowerHandle.TabIndex = 13;
             this.txtBoxPowerHandle.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.txtBoxPowerHandle.TextChanged += new System.EventHandler(this.txtBoxPowerHandle_TextChanged);
             // 
             // txtBoxBrakeHandle
             // 
@@ -376,7 +379,6 @@
             this.txtBoxSpdLimit.Size = new System.Drawing.Size(100, 21);
             this.txtBoxSpdLimit.TabIndex = 7;
             this.txtBoxSpdLimit.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.txtBoxSpdLimit.TextChanged += new System.EventHandler(this.txtBoxSpdLimit_TextChanged);
             // 
             // txtBoxSpeed
             // 
@@ -388,7 +390,6 @@
             this.txtBoxSpeed.Size = new System.Drawing.Size(100, 21);
             this.txtBoxSpeed.TabIndex = 6;
             this.txtBoxSpeed.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.txtBoxSpeed.TextChanged += new System.EventHandler(this.txtBoxSpeed_TextChanged);
             // 
             // txtBoxSignalDis
             // 
@@ -400,7 +401,6 @@
             this.txtBoxSignalDis.Size = new System.Drawing.Size(100, 21);
             this.txtBoxSignalDis.TabIndex = 5;
             this.txtBoxSignalDis.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.txtBoxSignalDis.TextChanged += new System.EventHandler(this.txtBoxSignalDis_TextChanged);
             // 
             // txtBoxSignal
             // 
@@ -412,7 +412,6 @@
             this.txtBoxSignal.Size = new System.Drawing.Size(100, 21);
             this.txtBoxSignal.TabIndex = 4;
             this.txtBoxSignal.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.txtBoxSignal.TextChanged += new System.EventHandler(this.txtBoxSignal_TextChanged);
             // 
             // txtBoxReserver
             // 
@@ -437,7 +436,7 @@
             this.toolStrip.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.toolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripLabel});
-            this.toolStrip.Location = new System.Drawing.Point(0, 483);
+            this.toolStrip.Location = new System.Drawing.Point(0, 537);
             this.toolStrip.Name = "toolStrip";
             this.toolStrip.Size = new System.Drawing.Size(435, 25);
             this.toolStrip.TabIndex = 41;
@@ -476,7 +475,7 @@
             // 
             this.txtBoxArrivalTime.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
             this.txtBoxArrivalTime.ForeColor = System.Drawing.Color.White;
-            this.txtBoxArrivalTime.Location = new System.Drawing.Point(327, 370);
+            this.txtBoxArrivalTime.Location = new System.Drawing.Point(327, 396);
             this.txtBoxArrivalTime.Name = "txtBoxArrivalTime";
             this.txtBoxArrivalTime.ReadOnly = true;
             this.txtBoxArrivalTime.Size = new System.Drawing.Size(100, 21);
@@ -487,7 +486,7 @@
             // 
             this.txtBoxNextStationDis.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
             this.txtBoxNextStationDis.ForeColor = System.Drawing.Color.White;
-            this.txtBoxNextStationDis.Location = new System.Drawing.Point(9, 371);
+            this.txtBoxNextStationDis.Location = new System.Drawing.Point(9, 397);
             this.txtBoxNextStationDis.Name = "txtBoxNextStationDis";
             this.txtBoxNextStationDis.ReadOnly = true;
             this.txtBoxNextStationDis.Size = new System.Drawing.Size(206, 21);
@@ -498,7 +497,7 @@
             // 
             this.txtBoxDepartureTime.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
             this.txtBoxDepartureTime.ForeColor = System.Drawing.Color.White;
-            this.txtBoxDepartureTime.Location = new System.Drawing.Point(221, 370);
+            this.txtBoxDepartureTime.Location = new System.Drawing.Point(221, 396);
             this.txtBoxDepartureTime.Name = "txtBoxDepartureTime";
             this.txtBoxDepartureTime.ReadOnly = true;
             this.txtBoxDepartureTime.Size = new System.Drawing.Size(100, 21);
@@ -509,7 +508,7 @@
             // 
             this.txtBoxCurrentTime.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
             this.txtBoxCurrentTime.ForeColor = System.Drawing.Color.White;
-            this.txtBoxCurrentTime.Location = new System.Drawing.Point(9, 397);
+            this.txtBoxCurrentTime.Location = new System.Drawing.Point(9, 451);
             this.txtBoxCurrentTime.Name = "txtBoxCurrentTime";
             this.txtBoxCurrentTime.ReadOnly = true;
             this.txtBoxCurrentTime.Size = new System.Drawing.Size(418, 21);
@@ -612,12 +611,60 @@
             this.pictureBox.TabIndex = 3;
             this.pictureBox.TabStop = false;
             // 
+            // txtBoxCylinder
+            // 
+            this.txtBoxCylinder.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.txtBoxCylinder.ForeColor = System.Drawing.Color.White;
+            this.txtBoxCylinder.Location = new System.Drawing.Point(9, 424);
+            this.txtBoxCylinder.Name = "txtBoxCylinder";
+            this.txtBoxCylinder.ReadOnly = true;
+            this.txtBoxCylinder.Size = new System.Drawing.Size(206, 21);
+            this.txtBoxCylinder.TabIndex = 55;
+            this.txtBoxCylinder.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
+            // txtBoxPipe
+            // 
+            this.txtBoxPipe.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.txtBoxPipe.ForeColor = System.Drawing.Color.White;
+            this.txtBoxPipe.Location = new System.Drawing.Point(220, 424);
+            this.txtBoxPipe.Name = "txtBoxPipe";
+            this.txtBoxPipe.ReadOnly = true;
+            this.txtBoxPipe.Size = new System.Drawing.Size(206, 21);
+            this.txtBoxPipe.TabIndex = 56;
+            this.txtBoxPipe.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
+            // txtBoxDestination
+            // 
+            this.txtBoxDestination.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.txtBoxDestination.ForeColor = System.Drawing.Color.White;
+            this.txtBoxDestination.Location = new System.Drawing.Point(9, 370);
+            this.txtBoxDestination.Name = "txtBoxDestination";
+            this.txtBoxDestination.ReadOnly = true;
+            this.txtBoxDestination.Size = new System.Drawing.Size(206, 21);
+            this.txtBoxDestination.TabIndex = 57;
+            this.txtBoxDestination.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
+            // txtBoxStationCounter
+            // 
+            this.txtBoxStationCounter.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(64)))), ((int)(((byte)(64)))), ((int)(((byte)(64)))));
+            this.txtBoxStationCounter.ForeColor = System.Drawing.Color.White;
+            this.txtBoxStationCounter.Location = new System.Drawing.Point(220, 369);
+            this.txtBoxStationCounter.Name = "txtBoxStationCounter";
+            this.txtBoxStationCounter.ReadOnly = true;
+            this.txtBoxStationCounter.Size = new System.Drawing.Size(206, 21);
+            this.txtBoxStationCounter.TabIndex = 58;
+            this.txtBoxStationCounter.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
             // formMonitor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.DimGray;
-            this.ClientSize = new System.Drawing.Size(435, 508);
+            this.ClientSize = new System.Drawing.Size(435, 562);
+            this.Controls.Add(this.txtBoxStationCounter);
+            this.Controls.Add(this.txtBoxDestination);
+            this.Controls.Add(this.txtBoxPipe);
+            this.Controls.Add(this.txtBoxCylinder);
             this.Controls.Add(this.btnRightDoorClose);
             this.Controls.Add(this.btnRightDoorOpen);
             this.Controls.Add(this.btnLeftDoorClose);
@@ -662,7 +709,7 @@
             this.MaximizeBox = false;
             this.Name = "formMonitor";
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
-            this.Text = "RAGLINK+ CabViewer 3.1";
+            this.Text = "RAGLINK+ CabViewer Controller Manager";
             this.TopMost = true;
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.frmMain_FormClosing);
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.formCM_FormClosed);
@@ -726,6 +773,10 @@
 		private System.Windows.Forms.Button btnLeftDoorClose;
 		private System.Windows.Forms.Button btnRightDoorOpen;
 		private System.Windows.Forms.Button btnRightDoorClose;
+		private System.Windows.Forms.TextBox txtBoxCylinder;
+		private System.Windows.Forms.TextBox txtBoxPipe;
+		private System.Windows.Forms.TextBox txtBoxDestination;
+		private System.Windows.Forms.TextBox txtBoxStationCounter;
 	}
 }
 

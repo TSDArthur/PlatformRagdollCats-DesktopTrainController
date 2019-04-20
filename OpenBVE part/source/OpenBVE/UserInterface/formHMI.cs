@@ -44,7 +44,7 @@ namespace OpenBve
         {
 			try
 			{
-				if (MessageBox.Show("Would you want to restart the simulator?", "RAGDOLL Controller",
+				if (MessageBox.Show("Would you want to restart the simulator?", "RAGLINK+ CabViewer",
 					MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes)
 				{
 					this.DisposeSerialPort();
@@ -119,13 +119,34 @@ namespace OpenBve
 				this.txtBoxSend.Text = mcuFrame;
 				port.Write(endSymmbol, 0, 3);
 			}
+
 			//update something everytime
-			mcuFrame = DataCoverter.GetDataToHMI(1); //speed
+			mcuFrame = DataCoverter.GetDataToHMI(0); //speed
 			port.Write(mcuFrame);
 			//this.txtBoxSend.Text = mcuFrame;
 			port.Write(endSymmbol, 0, 3);
 
 			mcuFrame = DataCoverter.GetDataToHMI(2); //distance to next station
+			port.Write(mcuFrame);
+			//this.txtBoxSend.Text = mcuFrame;
+			port.Write(endSymmbol, 0, 3);
+
+			mcuFrame = DataCoverter.GetDataToHMI(3); //power level
+			port.Write(mcuFrame);
+			//this.txtBoxSend.Text = mcuFrame;
+			port.Write(endSymmbol, 0, 3);
+
+			mcuFrame = DataCoverter.GetDataToHMI(4); //brake level
+			port.Write(mcuFrame);
+			//this.txtBoxSend.Text = mcuFrame;
+			port.Write(endSymmbol, 0, 3);
+
+			mcuFrame = DataCoverter.GetDataToHMI(24);//cyliner pressure
+			port.Write(mcuFrame);
+			//this.txtBoxSend.Text = mcuFrame;
+			port.Write(endSymmbol, 0, 3);
+
+			mcuFrame = DataCoverter.GetDataToHMI(25);//pipe pressure
 			port.Write(mcuFrame);
 			//this.txtBoxSend.Text = mcuFrame;
 			port.Write(endSymmbol, 0, 3);
@@ -141,16 +162,13 @@ namespace OpenBve
 			tmrSend.Enabled = false;
 			try
 			{
-				//update next station distance every time
-
 				//invoke the TrainManager to throw a error
-				for (int i = 0; i < 2; i++)
+				for (int i = 0; i < 4; i++)
 				{
 					doEvents();
 				}
 			}
-			catch (Exception ex)
-			{}
+			catch (Exception ex){}
 			tmrSend.Enabled = true;
 		}
 

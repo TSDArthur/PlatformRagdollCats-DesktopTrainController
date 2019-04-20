@@ -5,6 +5,7 @@ using OpenBveApi.Interface;
 using OpenBveApi.Math;
 using OpenBveApi.Objects;
 using OpenBveApi.Textures;
+using OpenBveApi.Trains;
 using OpenBveApi.World;
 
 namespace OpenBve {
@@ -1003,7 +1004,9 @@ namespace OpenBve {
 				Result.States = new AnimatedObjectState[this.States.Length];
 				for (int i = 0; i < this.States.Length; i++) {
 					Result.States[i].Position = this.States[i].Position;
-					Result.States[i].Object = this.States[i].Object.Clone();
+					if (this.States[i].Object != null) {
+						Result.States[i].Object = this.States[i].Object.Clone();
+					}
 				}
 				Result.StateFunction = this.StateFunction == null ? null : this.StateFunction.Clone();
 				Result.CurrentState = this.CurrentState;
@@ -1055,6 +1058,9 @@ namespace OpenBve {
 			{
 				for (int i = 0; i < Objects.Length; i++) {
 					for (int j = 0; j < Objects[i].States.Length; j++) {
+						if (Objects[i].States[j].Object == null) {
+							continue;
+						}
 						Objects[i].States[j].Object.OptimizeObject(PreserveVerticies);
 					}
 				}
@@ -1614,7 +1620,7 @@ namespace OpenBve {
 						TrainManager.Train train = null;
 						double trainDistance = double.MaxValue;
 						for (int j = 0; j < TrainManager.Trains.Length; j++) {
-							if (TrainManager.Trains[j].State == TrainManager.TrainState.Available) {
+							if (TrainManager.Trains[j].State == TrainState.Available) {
 								double distance;
 								if (TrainManager.Trains[j].Cars[0].FrontAxle.Follower.TrackPosition < AnimatedWorldObjects[i].TrackPosition) {
 									distance = AnimatedWorldObjects[i].TrackPosition - TrainManager.Trains[j].Cars[0].FrontAxle.Follower.TrackPosition;
@@ -1654,8 +1660,7 @@ namespace OpenBve {
 				#endif
 				if (!System.IO.Path.HasExtension(FileName)) {
 					while (true) {
-						string f;
-						f = OpenBveApi.Path.CombineFile(System.IO.Path.GetDirectoryName(FileName), System.IO.Path.GetFileName(FileName) + ".x");
+						string f = OpenBveApi.Path.CombineFile(System.IO.Path.GetDirectoryName(FileName), System.IO.Path.GetFileName(FileName) + ".x");
 						if (System.IO.File.Exists(f)) {
 							FileName = f;
 							break;
@@ -1686,7 +1691,7 @@ namespace OpenBve {
 						Result = AnimatedObjectParser.ReadObject(FileName, Encoding);
 						break;
 					case ".l3dobj":
-						Result = Ls3DObjectParser.ReadObject(FileName, Encoding, new Vector3());
+						Result = Ls3DObjectParser.ReadObject(FileName, new Vector3());
 						break;
 					case ".l3dgrp":
 						Result = Ls3DGrpParser.ReadObject(FileName, Encoding, new Vector3());
@@ -1713,8 +1718,7 @@ namespace OpenBve {
 				#endif
 				if (!System.IO.Path.HasExtension(FileName)) {
 					while (true) {
-						string f;
-						f = OpenBveApi.Path.CombineFile(System.IO.Path.GetDirectoryName(FileName), System.IO.Path.GetFileName(FileName) + ".x");
+						string f = OpenBveApi.Path.CombineFile(System.IO.Path.GetDirectoryName(FileName), System.IO.Path.GetFileName(FileName) + ".x");
 						if (System.IO.File.Exists(f)) {
 							FileName = f;
 							break;

@@ -23,7 +23,7 @@ namespace OpenBve {
 	internal static class Program {
 
 		// system
-		internal static bool CurrentlyRunOnMono = false;
+		private static bool CurrentlyRunOnMono = false;
 		internal static FileSystem FileSystem = null;
 
 		internal static bool CpuReducedMode = false;
@@ -49,7 +49,7 @@ namespace OpenBve {
 		internal static GraphicsMode currentGraphicsMode;
 
 		// mouse
-		internal static int MouseButton;
+		private static int MouseButton;
 
 		/// <summary>The host API used by this program.</summary>
 		internal static Host CurrentHost = null;
@@ -97,6 +97,9 @@ namespace OpenBve {
 				}
 			}
 			Options.LoadOptions();
+			var options = new ToolkitOptions();
+			options.Backend = PlatformBackend.PreferX11;
+			Toolkit.Init(options);
 			Interface.CurrentOptions.UseSound = true;
 			Interface.CurrentOptions.ObjectOptimizationBasicThreshold = 1000;
 			Interface.CurrentOptions.ObjectOptimizationFullThreshold = 250;
@@ -299,19 +302,20 @@ namespace OpenBve {
 				case Key.F5:
 					if (CurrentRoute != null && CurrentlyLoading == false)
 					{
+						Bitmap bitmap = null;
 						CurrentlyLoading = true;
 						Renderer.OptionInterface = false;
 						if (!Interface.CurrentOptions.LoadingBackground)
 						{
 							Renderer.RenderScene(0.0);
 							currentGameWindow.SwapBuffers();
-							Bitmap bitmap = new Bitmap(Renderer.ScreenWidth, Renderer.ScreenHeight, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+							bitmap = new Bitmap(Renderer.ScreenWidth, Renderer.ScreenHeight, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
 							BitmapData bData = bitmap.LockBits(new Rectangle(0, 0, bitmap.Width, bitmap.Height), ImageLockMode.ReadWrite, bitmap.PixelFormat);
 							GL.ReadPixels(0, 0, Renderer.ScreenWidth, Renderer.ScreenHeight, OpenTK.Graphics.OpenGL.PixelFormat.Bgra, PixelType.UnsignedByte, bData.Scan0);
 							bitmap.UnlockBits(bData);
 							bitmap.RotateFlip(RotateFlipType.RotateNoneFlipY);
 							Renderer.TextureLoadingBkg = Textures.RegisterTexture(bitmap, new TextureParameters(null, null));
-							bitmap.Dispose();
+							
 						}
 						World.CameraAlignment a = World.CameraCurrentAlignment;
 						if (LoadRoute())
@@ -328,6 +332,11 @@ namespace OpenBve {
 						CurrentlyLoading = false;
 						Renderer.OptionInterface = true;
 						Textures.UnloadTexture(Renderer.TextureLoadingBkg);
+						if (bitmap != null)
+						{
+							bitmap.Dispose();
+						}
+						
 					}
 					break;
 				case Key.F7:

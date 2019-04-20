@@ -36,7 +36,7 @@ Type:3.ENCODER -> CHANGE (in developing)
 #define KEY_UP 0
 #define KEY_WAITTING 1
 #define KEY_DOWN 2
-#define SA_COUNT_SF 500
+#define SA_COUNT_SF 300
 #define SA_COUNT_SC 300
 //
 #define SPEED_MIN 0
@@ -135,13 +135,12 @@ Type:3.ENCODER -> CHANGE (in developing)
 #define NO_DATA ""
 #define RECIEVE_DELAY 2
 #define SEND_DELAY 25
-#define TIMER_TICK 200
+#define TIMER_TICK 1500
 //Special Args
 #define CONTROLLER_INFO "#ver|"
 
 #define NOP do { __asm__ __volatile__ ("nop"); } while (0)
 
-#include "FlexiTimer2.h"
 #include "avr/wdt.h"
 #include "HardwareSerial.h"
 
@@ -182,7 +181,7 @@ void process16();
 
 //change device type here
 const int deviceType[DEVICE_NUMBER] = {SWITCH_C, SWITCH_C, SWITCH_C, SWITCH_C, SWITCH_C, SWITCH_C, SWITCH_C, SWITCH_C, SWITCH_C, SWITCH_C,
-                                       SWITCH_C, DIG_OUT, SWITCH_C, DIG_OUT, SWITCH_C, SWITCH_C, SWITCH_C
+                                       SWITCH_C, DIG_OUT, SWITCH_C, DIG_OUT, SWITCH_C, SWITCH_F, SWITCH_C
                                       };
 //change functions here
 const int devicePinsType[] = {INPUT_PULLUP, INPUT_PULLUP, INPUT_PULLUP, OUTPUT};
@@ -344,7 +343,7 @@ public:
 		sendData = NO_DATA;
 		recieveData = NO_DATA;
 		sender = NO_DATA;
-		length = st = ed = pos = 0;
+		length = st = pos = 0;
 		sendEd = 0;
 	}
 
@@ -373,12 +372,12 @@ public:
 		{
 			char currentRead = char(Serial.read());
 			recieveData += currentRead;
-			Devices.delay_(RECIEVE_DELAY);
-			//if (currentRead == END_SYM)break;
+			if (currentRead == END_SYM)break;
 		}
 		length = recieveData.length();
 		//no data exit
 		if (!length)return false;
+		wdt_reset();
 		//find start pos
 		//Serial.println(recieveData);
 
@@ -389,23 +388,17 @@ public:
 			return true;
 		}
 
-		st = ed = 0;
+		st = 0;
 		for (int i = 0; i < length; i++)
 			if (recieveData.charAt(i) == START_SYM)
 			{
 				st = i;
 				break;
 			}
-		//find end pos
-		for (int i = length - 1; i >= 0; i--)
-			if (recieveData.charAt(i) == END_SYM)
-			{
-				ed = i;
-				break;
-			}
+
 		//cover data
 		pos = 0;
-		for (int i = st; i <= ed; i++)
+		for (int i = st; i < length; i++)
 		{
 			if (recieveData.charAt(i) != START_SYM && recieveData.charAt(i) != END_SYM && recieveData.charAt(i) != FILTER)tmp += recieveData.charAt(i);
 			if (recieveData.charAt(i) == FILTER)
@@ -426,9 +419,8 @@ public:
 	//
 	bool SendDataToPC(TrainManager & p)
 	{
-		sendData = NO_DATA;
 		//add start symbol
-		sendData += START_SYM;
+		sendData = START_SYM;
 		//add contents
 		for (int i = 0; i < TRAIN_DATA_NUMBER; i++)
 		{
@@ -441,6 +433,8 @@ public:
 		if (!sendData.length())return false;
 		//send data to PC
 		Serial.print(sendData);
+		wdt_reset();
+		delay(50);
 		return true;
 	}
 };
@@ -493,12 +487,10 @@ TaskManager Queue;
 
 int isHandleZero = 0;
 
-
 void process0()
 {
 	//
 	int deviceState = Devices.GetState(0);
-	isHandleZero++;
 	if (deviceState == ACTIVE)
 	{
 		processData.SetData(MASTER_KEY, MASTER_KEY_ON);
@@ -566,7 +558,7 @@ void process4()
 	int deviceState = Devices.GetState(4);
 	if (deviceState == ACTIVE)
 	{
-		isHandleZero --;
+		isHandleZero = 0;
 		processData.SetData(POWER, 0);
 		processData.SetData(BRAKE, 6);
 	}
@@ -584,7 +576,7 @@ void process5()
 	int deviceState = Devices.GetState(5);
 	if (deviceState == ACTIVE)
 	{
-		isHandleZero --;
+		isHandleZero = 0;
 		processData.SetData(POWER, 0);
 		processData.SetData(BRAKE, 4);
 	}
@@ -602,7 +594,7 @@ void process6()
 	int deviceState = Devices.GetState(6);
 	if (deviceState == ACTIVE)
 	{
-		isHandleZero --;
+		isHandleZero = 0;
 		processData.SetData(POWER, 0);
 		processData.SetData(BRAKE, 2);
 	}
@@ -620,7 +612,7 @@ void process7()
 	int deviceState = Devices.GetState(7);
 	if (deviceState == ACTIVE)
 	{
-		isHandleZero --;
+		isHandleZero = 0;
 		processData.SetData(POWER, 1);
 		processData.SetData(BRAKE, 0);
 	}
@@ -638,7 +630,7 @@ void process8()
 	int deviceState = Devices.GetState(8);
 	if (deviceState == ACTIVE)
 	{
-		isHandleZero --;
+		isHandleZero = 0;
 		processData.SetData(POWER, 2);
 		processData.SetData(BRAKE, 0);
 	}
@@ -656,16 +648,15 @@ void process9()
 	int deviceState = Devices.GetState(9);
 	if (deviceState == ACTIVE)
 	{
-		isHandleZero --;
+		isHandleZero = 0;
 		processData.SetData(POWER, 3);
 		processData.SetData(BRAKE, 0);
 	}
-	//
-	if (isHandleZero > 600)
+	else if (isHandleZero > 200)
 	{
+		isHandleZero = 0;
 		processData.SetData(POWER, 0);
 		processData.SetData(BRAKE, 0);
-		isHandleZero = 0;
 	}
 	return;
 }
@@ -739,11 +730,6 @@ void process15()
 	if (deviceState == ACTIVE)
 	{
 		processData.SetData(PANTO_OPEN, !processData.GetData(PANTO_OPEN));
-		while (Devices.GetState(15) == ACTIVE)
-		{
-			wdt_reset();
-		}
-		//while (Devices.GetState(14) == ACTIVE);
 	}
 }
 
@@ -763,29 +749,34 @@ void process16()
 
 void TimerInterrupt()
 {
-	FlexiTimer2::stop();
 	Communication.SendDataToPC(currentData);
+	wdt_reset();
 	Communication.RecieveDataFromPC(currentData);
-	FlexiTimer2::start();
 }
 
 void setup()
 {
 	Serial.begin(115200);
 	wdt_enable(WDTO_1S);
-	FlexiTimer2::set(TIMER_TICK, TimerInterrupt);
-	FlexiTimer2::start();
 }
+
+int lastTime = 0;
 
 void loop()
 {
 	//state automatic
-	Queue.GetLastState(processData);
+	isHandleZero ++;
+	lastTime ++;
 	for (int i = 0; i < DEVICE_NUMBER; i++)
 	{
 		Process[i]();
 		wdt_reset();
 	}
-	Queue.UpdateData(processData);
-	Queue.AddProc(processData);
+	if (lastTime > TIMER_TICK)
+	{
+		Queue.AddProc(processData);
+		TimerInterrupt();
+		Queue.UpdateData(processData);
+		lastTime = 0;
+	}
 }

@@ -254,7 +254,7 @@ namespace OpenBve
 		}
 
 		/// <summary>
-		/// get now speed
+		/// get curremt speed
 		/// </summary>
 		static public int GetSpeed()
 		{
@@ -262,6 +262,20 @@ namespace OpenBve
 			{
 				int currentDriveCar = nowControl.DriverCar;
 				return (int)(nowControl.Cars[currentDriveCar].Specs.CurrentSpeed * 3.6);
+			}
+			catch (Exception ex) { }
+			return 0;
+		}
+
+		/// <summary>
+		/// get curremt speed in double
+		/// </summary>
+		static public double GetSpeedDouble()
+		{
+			try
+			{
+				int currentDriveCar = nowControl.DriverCar;
+				return nowControl.Cars[currentDriveCar].Specs.CurrentSpeed * 3.6;
 			}
 			catch (Exception ex) { }
 			return 0;
@@ -578,7 +592,7 @@ namespace OpenBve
 				for (int i = 0; i < Table.Stations.Length; i++)
 				{
 					double currentSectionPos = nowControl.Cars[nowControl.DriverCar].FrontAxle.Follower.TrackPosition + 1.9;
-					int stationStopIndex = Game.GetStopIndex(i, nowControl.Cars.Length);
+					int stationStopIndex = Game.Stations[i].GetStopIndex(nowControl.Cars.Length);
 					double nextStationPos = Game.Stations[i].Stops[stationStopIndex].TrackPosition;
 					if (currentSectionPos <= nextStationPos)
 					{
@@ -589,11 +603,11 @@ namespace OpenBve
 				if (stationIndex + 1 < Table.Stations.Length)
 				{
 					double currentSectionPos = nowControl.Cars[nowControl.DriverCar].FrontAxle.Follower.TrackPosition + 1.9;
-					int currentStationStopIndex = Game.GetStopIndex(stationIndex, nowControl.Cars.Length);
+					int currentStationStopIndex = Game.Stations[stationIndex].GetStopIndex(nowControl.Cars.Length);
 					double currentStationPos = Game.Stations[stationIndex].Stops[currentStationStopIndex].TrackPosition;
 					if (currentStationPos - currentSectionPos > 0 &&
 						currentStationPos - currentSectionPos <= 50 &&
-						(nowControl.StationState == TrainManager.TrainStopState.Boarding || nowControl.StationState==TrainManager.TrainStopState.Completed))
+						(nowControl.StationState == TrainManager.TrainStopState.Boarding || nowControl.StationState == TrainManager.TrainStopState.Completed))
 					{
 						stationIndex++;
 					}
@@ -604,6 +618,62 @@ namespace OpenBve
 			{
 				return errState;
 			}
+		}
+
+		/// <summary>
+		/// get destination station index
+		/// </summary>
+		static public int GetDestinationID()
+		{
+			int errState = -1;
+			int stationIndex = -1;
+			try
+			{
+				if (!isTimetableReady) UpdateTimeTable();
+				if (Table.Stations.Length == 0) return errState;
+				stationIndex = Table.Stations.Length - 1;
+				return stationIndex;
+			}
+			catch (Exception ex)
+			{
+				return errState;
+			}
+		}
+
+		/// <summary>
+		/// get destination station name
+		/// </summary>
+		static public string GetDestinationName()
+		{
+			string errState = "N/A";
+			string stationName = String.Empty;
+			try
+			{
+				if (!isTimetableReady) UpdateTimeTable();
+				int destStationIndex = GetDestinationID();
+				if (Table.Stations.Length == 0 || destStationIndex - 1 < 0) return errState;
+				stationName = Table.Stations[destStationIndex].Name;
+				return stationName;
+			}
+			catch (Exception ex)
+			{
+				return errState;
+			}
+		}
+
+		/// <summary>
+		/// get station num count
+		/// </summary>
+		static public int GetStationCount()
+		{
+			int ret = 0;
+			try
+			{
+				ret = Table.Stations.Length;
+				return ret < 0 ? 0 : ret;
+			}
+			catch (Exception ex){}
+			return ret;
 		}
 
 		/// <summary>
@@ -666,7 +736,7 @@ namespace OpenBve
 				int currentSection = nowControl.CurrentSectionIndex;
 				int nextSection = Game.Sections[currentSection].NextSection;
 				double currentSectionPos = nowControl.Cars[nowControl.DriverCar].FrontAxle.Follower.TrackPosition + 1.9;
-				int stationStopIndex = Game.GetStopIndex(nextStationIndex, nowControl.Cars.Length);
+				int stationStopIndex = Game.Stations[nextStationIndex].GetStopIndex(nowControl.Cars.Length);
 				double nextStationPos = Game.Stations[nextStationIndex].Stops[stationStopIndex].TrackPosition;
 				stationDis = nextStationPos - currentSectionPos;
 				return stationDis < 0 ? 0 : stationDis;
@@ -694,7 +764,7 @@ namespace OpenBve
 				int currentSection = nowControl.CurrentSectionIndex;
 				int nextSection = Game.Sections[currentSection].NextSection;
 				double currentSectionPos = nowControl.Cars[nowControl.DriverCar].FrontAxle.Follower.TrackPosition + 1.9;
-				int stationStopIndex = Game.GetStopIndex(nextStationIndex - 1, nowControl.Cars.Length);
+				int stationStopIndex = Game.Stations[nextStationIndex - 1].GetStopIndex(nowControl.Cars.Length);
 				double preStationPos = Game.Stations[nextStationIndex - 1].Stops[stationStopIndex].TrackPosition;
 				stationDis = currentSectionPos - preStationPos;
 				return stationDis;
@@ -757,7 +827,7 @@ namespace OpenBve
 					Min = Table.Stations[nextStationIndex].Arrival.Minute;
 					Sec = Table.Stations[nextStationIndex].Arrival.Second;
 				}
-				if (Hour == string.Empty || Hour == " ") return errState;
+				if (Hour == string.Empty || Hour == " " || Hour == "  ") return errState;
 				arrivalTime = Hour + ":" + Min + ":" + Sec;
 				return arrivalTime;
 			}
@@ -785,7 +855,7 @@ namespace OpenBve
 				Hour = Table.Stations[nextStationIndex - 1].Departure._Hour;
 				Min = Table.Stations[nextStationIndex - 1].Departure.Minute;
 				Sec = Table.Stations[nextStationIndex - 1].Departure.Second;
-				if (Hour == string.Empty || Hour == " ") return errState;
+				if (Hour == string.Empty || Hour == " " || Hour == "  ") return errState;
 				departureTime = Hour + ":" + Min + ":" + Sec;
 				return departureTime;
 			}
@@ -925,6 +995,9 @@ namespace OpenBve
 			catch (Exception ex) { }
 		}
 
+		/// <summary>
+		/// get left door state
+		/// </summary>
 		static public int GetLeftDoorState()
 		{
 			try
@@ -939,6 +1012,9 @@ namespace OpenBve
 			return -1;
 		}
 
+		/// <summary>
+		/// get left door state
+		/// </summary>
 		static public int GetRightDoorState()
 		{
 			try
@@ -953,6 +1029,9 @@ namespace OpenBve
 			return -1;
 		}
 
+		/// <summary>
+		/// simulator state
+		/// </summary>
 		static public bool IsSimulatorReady()
 		{
 			bool ret = false;
@@ -969,6 +1048,9 @@ namespace OpenBve
 			return ret;
 		}
 
+		/// <summary>
+		/// get train acceleration
+		/// </summary>
 		static public double GetAcceleration()
 		{
 			double ret = 0;
@@ -979,6 +1061,9 @@ namespace OpenBve
 			return ret;
 		}
 
+		/// <summary>
+		/// get power rate
+		/// </summary>
 		static public double GetPowerRate()
 		{
 			double ret = 0;
@@ -999,6 +1084,54 @@ namespace OpenBve
 				}
 				double force = carWeight * currentAcceleration;
 				ret = force * currentSpeed;
+			}
+			catch (Exception ex) { };
+			return ret;
+		}
+
+		/// <summary>
+		/// get train cylinder pressure
+		/// </summary>
+		static public double GetCylinderPressure()
+		{
+			double ret = 0;
+			try
+			{
+				ret = ((int)((nowControl.Cars[nowControl.DriverCar].CarBrake.brakeCylinder.CurrentPressure / 1000) * 10) / 10.0);
+				ret = ret > 700 ? 700 : ret;
+				return ret;
+			}
+			catch (Exception ex) { };
+			return ret;
+
+		}
+
+		/// <summary>
+		/// get train brake pipe pressure
+		/// </summary>
+		static public double GetPipePressure()
+		{
+			double ret = 0;
+			try
+			{
+				ret = ((int)((nowControl.Cars[nowControl.DriverCar].CarBrake.brakePipe.CurrentPressure / 1000) * 10) / 10.0);
+				ret = ret > 700 ? 700 : ret;
+				return ret;
+			}
+			catch (Exception ex) { };
+			return ret;
+		}
+
+		/// <summary>
+		/// get train atc state
+		/// </summary>
+		static public bool GetATCState()
+		{
+			bool ret = true;
+			try
+			{
+				//In development
+				return ret;
 			}
 			catch (Exception ex) { };
 			return ret;

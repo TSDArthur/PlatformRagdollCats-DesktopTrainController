@@ -31,7 +31,10 @@
             this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(formHMI));
             this.toolScripMain = new System.Windows.Forms.ToolStrip();
+            this.toolStripLabel1 = new System.Windows.Forms.ToolStripLabel();
             this.cmbSerials = new System.Windows.Forms.ToolStripComboBox();
+            this.btnRefresh = new System.Windows.Forms.ToolStripButton();
+            this.lblMainSwitch = new System.Windows.Forms.ToolStripLabel();
             this.btnRead = new System.Windows.Forms.ToolStripButton();
             this.btnStopRead = new System.Windows.Forms.ToolStripButton();
             this.txtBoxSend = new System.Windows.Forms.TextBox();
@@ -40,9 +43,6 @@
             this.txtBoxRecieved = new System.Windows.Forms.TextBox();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.pictureBoxHMI1 = new System.Windows.Forms.PictureBox();
-            this.toolStripLabel1 = new System.Windows.Forms.ToolStripLabel();
-            this.btnRefresh = new System.Windows.Forms.ToolStripButton();
-            this.lblMainSwitch = new System.Windows.Forms.ToolStripLabel();
             this.toolScripMain.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBoxHMI1)).BeginInit();
@@ -52,6 +52,7 @@
             // 
             this.toolScripMain.AutoSize = false;
             this.toolScripMain.BackColor = System.Drawing.SystemColors.Control;
+            this.toolScripMain.ImageScalingSize = new System.Drawing.Size(32, 32);
             this.toolScripMain.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripLabel1,
             this.cmbSerials,
@@ -65,6 +66,13 @@
             this.toolScripMain.TabIndex = 0;
             this.toolScripMain.Text = "toolStrip1";
             // 
+            // toolStripLabel1
+            // 
+            this.toolStripLabel1.Image = global::OpenBve.Properties.Resources.Connected;
+            this.toolStripLabel1.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+            this.toolStripLabel1.Name = "toolStripLabel1";
+            this.toolStripLabel1.Size = new System.Drawing.Size(16, 22);
+            // 
             // cmbSerials
             // 
             this.cmbSerials.BackColor = System.Drawing.Color.Gray;
@@ -74,6 +82,23 @@
             this.cmbSerials.Name = "cmbSerials";
             this.cmbSerials.Size = new System.Drawing.Size(121, 25);
             this.cmbSerials.TextChanged += new System.EventHandler(this.cmbSerials_TextChanged);
+            // 
+            // btnRefresh
+            // 
+            this.btnRefresh.Image = global::OpenBve.Properties.Resources.Refresh;
+            this.btnRefresh.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+            this.btnRefresh.ImageTransparentColor = System.Drawing.Color.Magenta;
+            this.btnRefresh.Name = "btnRefresh";
+            this.btnRefresh.Size = new System.Drawing.Size(23, 22);
+            this.btnRefresh.ToolTipText = "Refresh controller device list.";
+            this.btnRefresh.Click += new System.EventHandler(this.btnRefresh_Click);
+            // 
+            // lblMainSwitch
+            // 
+            this.lblMainSwitch.Image = global::OpenBve.Properties.Resources.Switch;
+            this.lblMainSwitch.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
+            this.lblMainSwitch.Name = "lblMainSwitch";
+            this.lblMainSwitch.Size = new System.Drawing.Size(16, 22);
             // 
             // btnRead
             // 
@@ -150,29 +175,6 @@
             this.pictureBoxHMI1.TabIndex = 42;
             this.pictureBoxHMI1.TabStop = false;
             // 
-            // toolStripLabel1
-            // 
-            this.toolStripLabel1.Image = global::OpenBve.Properties.Resources.Connected;
-            this.toolStripLabel1.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
-            this.toolStripLabel1.Name = "toolStripLabel1";
-            this.toolStripLabel1.Size = new System.Drawing.Size(16, 22);
-            // 
-            // btnRefresh
-            // 
-            this.btnRefresh.Image = global::OpenBve.Properties.Resources.Refresh;
-            this.btnRefresh.ImageScaling = System.Windows.Forms.ToolStripItemImageScaling.None;
-            this.btnRefresh.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.btnRefresh.Name = "btnRefresh";
-            this.btnRefresh.Size = new System.Drawing.Size(23, 22);
-            this.btnRefresh.ToolTipText = "Refresh controller device list.";
-            this.btnRefresh.Click += new System.EventHandler(this.btnRefresh_Click);
-            // 
-            // lblMainSwitch
-            // 
-            this.lblMainSwitch.Image = global::OpenBve.Properties.Resources.Switch;
-            this.lblMainSwitch.Name = "lblMainSwitch";
-            this.lblMainSwitch.Size = new System.Drawing.Size(16, 22);
-            // 
             // formHMI
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 12F);
@@ -191,7 +193,7 @@
             this.MaximizeBox = false;
             this.Name = "formHMI";
             this.StartPosition = System.Windows.Forms.FormStartPosition.Manual;
-            this.Text = "HMI Panel";
+            this.Text = "RAGLING+ CabViewer HMI Manager";
             this.TopMost = true;
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.frmMain_FormClosing);
             this.FormClosed += new System.Windows.Forms.FormClosedEventHandler(this.formCM_FormClosed);

@@ -8,6 +8,7 @@
 using System;
 using OpenBveApi.Colors;
 using OpenBveApi.Math;
+using OpenBveApi.Runtime;
 using OpenBveApi.Textures;
 using OpenBveApi.Trains;
 
@@ -189,49 +190,30 @@ namespace OpenBve {
 			Ats = 0,
 			Atc = 1
 		}
-		internal enum StationStopMode {
-			AllStop = 0,
-			AllPass = 1,
-			PlayerStop = 2,
-			PlayerPass = 3
-		}
-		internal enum StationType {
-			Normal = 0,
-			ChangeEnds = 1,
-			Terminal = 2
-		}
-		internal struct Station {
-			internal string Name;
-			internal double ArrivalTime;
+		internal class Station : OpenBveApi.Runtime.Station {
 			internal Sounds.SoundBuffer ArrivalSoundBuffer;
-			internal double DepartureTime;
 			internal Sounds.SoundBuffer DepartureSoundBuffer;
-			internal double StopTime;
 			internal Vector3 SoundOrigin;
-			internal StationStopMode StopMode;
-			internal StationType StationType;
-			internal bool ForceStopSignal;
-			internal bool OpenLeftDoors;
-			internal bool OpenRightDoors;
 			internal SafetySystem SafetySystem;
 			internal StationStop[] Stops;
 			internal double PassengerRatio;
 			internal int TimetableDaytimeTexture;
 			internal int TimetableNighttimeTexture;
-			internal double DefaultTrackPosition;
+
+			internal int GetStopIndex(int Cars) {
+				int j = -1;
+				for (int i = Stops.Length - 1; i >= 0; i--) {
+					if (Cars <= Stops[i].Cars | Stops[i].Cars == 0) {
+						j = i;
+					}
+				}
+				if (j == -1) {
+					return Stops.Length - 1;
+				} else return j;
+			}
 		}
 		internal static Station[] Stations = new Station[] { };
-		internal static int GetStopIndex(int StationIndex, int Cars) {
-			int j = -1;
-			for (int i = Stations[StationIndex].Stops.Length - 1; i >= 0; i--) {
-				if (Cars <= Stations[StationIndex].Stops[i].Cars | Stations[StationIndex].Stops[i].Cars == 0) {
-					j = i;
-				}
-			}
-			if (j == -1) {
-				return Stations[StationIndex].Stops.Length - 1;
-			} else return j;
-		}
+		
 
 		// ================================
 
@@ -313,7 +295,7 @@ namespace OpenBve {
 			if (d >= 0) {
 				// look for train in previous blocks
 				//int l = Sections[SectionIndex].PreviousSection;
-				if (Stations[d].StationType != StationType.Normal) {
+				if (Stations[d].Type != StationType.Normal) {
 					settored = true;
 				}
 			}
