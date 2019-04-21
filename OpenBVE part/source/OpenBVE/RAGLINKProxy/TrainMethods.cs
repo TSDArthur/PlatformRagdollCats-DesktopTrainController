@@ -588,6 +588,7 @@ namespace OpenBve
 			{
 				if (!isTimetableReady) UpdateTimeTable();
 				if (Table.Stations.Length == 0) return errState;
+				stationIndex = Table.Stations.Length;
 				for (int i = 0; i < Table.Stations.Length; i++)
 				{
 					double currentSectionPos = nowControl.Cars[nowControl.DriverCar].FrontAxle.Follower.TrackPosition + 2.3;
@@ -723,7 +724,7 @@ namespace OpenBve
 		/// </summary>
 		static public double GetNextStationDis()
 		{
-			double errState = -1;
+			double errState = 0;
 			double stationDis = 0;
 			try
 			{
@@ -751,7 +752,7 @@ namespace OpenBve
 		/// </summary>
 		static public double GetPreStationDis()
 		{
-			double errState = -1;
+			double errState = 0;
 			double stationDis;
 			try
 			{

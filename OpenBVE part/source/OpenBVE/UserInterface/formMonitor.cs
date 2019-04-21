@@ -213,23 +213,21 @@ namespace OpenBve
 			try
 			{
 				//invoke the TrainManager to throw a error
-				TrainManager.Train trainInfo = TrainManager.PlayerTrain;
 				txtBoxReserver.Text = "REV : " + TrainMethods.GetReverser().ToString();
 				txtBoxSignal.Text = "SIG : " + TrainMethods.GetSignal().ToString();
 				txtBoxSignalDis.Text = "SIG_DIS : " + TrainMethods.GetSignalDis().ToString();
 				txtBoxSpeed.Text = "SPD : " + ((double)((int)(TrainMethods.GetSpeedDouble() * 10)) / 10.0).ToString();
 				txtBoxSpdLimit.Text = "SPD_LIM : " + TrainMethods.GetSpeedLimit().ToString();
 				txtBoxBrakeHandle.Text = "BKE : " + TrainMethods.GetBrake().ToString();
-				txtBoxPowerHandle.Text = "PWR : " + trainInfo.Handles.Power.Driver.ToString();
+				txtBoxPowerHandle.Text = "PWR : " + TrainMethods.GetPower().ToString();
 				txtBoxConstSpeed.Text = "ATC_SPD : " + ((double)((int)(TrainMethods.GetATCCurrentSpeed() * 10)) / 10.0).ToString();
 				txtBoxCurrentStation.Text = "CUR_STA : " + TrainMethods.GetCurrentStationName();
 				txtBoxNextStation.Text = "NEX_STA : " + TrainMethods.GetNextStationName();
-				txtBoxNextStationDis.Text = "NEX_STADIS : " + 
-					(TrainMethods.GetNextStationDis() >= 1000 ? 
-					decimal.Round(decimal.Parse((TrainMethods.GetNextStationDis() / 1000).ToString()) , 2) : 
-					decimal.Round(decimal.Parse((TrainMethods.GetNextStationDis()).ToString()), 1)) + 
-					" / " + (TrainMethods.GetNextStationStopMode() == 1 ? "VIA" : "STOP") + " / " + 
-					(TrainMethods.GetStopDis() == double.NegativeInfinity ? "N/A" : decimal.Round(decimal.Parse(TrainMethods.GetStopDis().ToString()), 1).ToString());
+				txtBoxNextStationDis.Text = "NEX_STADIS : " +
+					(TrainMethods.GetNextStationDis() >= 1000 ?
+					decimal.Round(decimal.Parse((TrainMethods.GetNextStationDis() / 1000).ToString()), 2) :
+					decimal.Round(decimal.Parse((TrainMethods.GetNextStationDis()).ToString()), 1)) +
+					" / " + (TrainMethods.GetNextStationStopMode() == 1 ? "VIA" : "STOP");
 				txtBoxArrivalTime.Text = "AT : " + TrainMethods.GetNextStationArrialTime();
 				txtBoxDepartureTime.Text = "DT : " + TrainMethods.GetCurrentStationDepartureTime();
 				txtBoxCurrentTime.Text = "TIME : " + TrainMethods.GetCurrentTime();
