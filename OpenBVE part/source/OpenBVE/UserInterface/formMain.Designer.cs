@@ -24,8 +24,8 @@
         /// </summary>
         private void InitializeComponent() {
             this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(formMain));
             this.labelFillerOne = new System.Windows.Forms.Label();
+            this.pictureboxLogo = new System.Windows.Forms.PictureBox();
             this.labelVerticalSeparator = new System.Windows.Forms.Label();
             this.buttonClose = new System.Windows.Forms.Button();
             this.panelStart = new System.Windows.Forms.Panel();
@@ -87,6 +87,7 @@
             this.labelStartTitle = new System.Windows.Forms.Label();
             this.label13 = new System.Windows.Forms.Label();
             this.labelStartTitleBackground = new System.Windows.Forms.Label();
+            this.labelFillerTwo = new System.Windows.Forms.Label();
             this.panelOptions = new System.Windows.Forms.Panel();
             this.buttonOptionsPrevious = new System.Windows.Forms.Button();
             this.buttonOptionsNext = new System.Windows.Forms.Button();
@@ -444,8 +445,7 @@
             this.labelNewGUID = new System.Windows.Forms.Label();
             this.openPackageFileDialog = new System.Windows.Forms.OpenFileDialog();
             this.savePackageDialog = new System.Windows.Forms.SaveFileDialog();
-            this.pictureboxLogo = new System.Windows.Forms.PictureBox();
-            this.labelFillerTwo = new System.Windows.Forms.Label();
+            ((System.ComponentModel.ISupportInitialize)(this.pictureboxLogo)).BeginInit();
             this.panelStart.SuspendLayout();
             this.groupboxTrainSelection.SuspendLayout();
             this.tabcontrolTrainSelection.SuspendLayout();
@@ -549,7 +549,6 @@
             this.panelReplacePackage.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewReplacePackage)).BeginInit();
             this.panelNewPackage.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureboxLogo)).BeginInit();
             this.SuspendLayout();
             // 
             // labelFillerOne
@@ -559,6 +558,16 @@
             this.labelFillerOne.Name = "labelFillerOne";
             this.labelFillerOne.Size = new System.Drawing.Size(160, 160);
             this.labelFillerOne.TabIndex = 0;
+            // 
+            // pictureboxLogo
+            // 
+            this.pictureboxLogo.BackColor = System.Drawing.Color.Silver;
+            this.pictureboxLogo.Location = new System.Drawing.Point(16, 16);
+            this.pictureboxLogo.Name = "pictureboxLogo";
+            this.pictureboxLogo.Size = new System.Drawing.Size(128, 128);
+            this.pictureboxLogo.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
+            this.pictureboxLogo.TabIndex = 1;
+            this.pictureboxLogo.TabStop = false;
             // 
             // labelVerticalSeparator
             // 
@@ -1358,6 +1367,18 @@
             this.labelStartTitleBackground.Name = "labelStartTitleBackground";
             this.labelStartTitleBackground.Size = new System.Drawing.Size(659, 32);
             this.labelStartTitleBackground.TabIndex = 0;
+            // 
+            // labelFillerTwo
+            // 
+            this.labelFillerTwo.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+            | System.Windows.Forms.AnchorStyles.Left)));
+            this.labelFillerTwo.BackColor = System.Drawing.Color.Silver;
+            this.labelFillerTwo.Image = global::OpenBve.Properties.Resources.Logo;
+            this.labelFillerTwo.ImageAlign = System.Drawing.ContentAlignment.TopLeft;
+            this.labelFillerTwo.Location = new System.Drawing.Point(-2, 334);
+            this.labelFillerTwo.Name = "labelFillerTwo";
+            this.labelFillerTwo.Size = new System.Drawing.Size(160, 134);
+            this.labelFillerTwo.TabIndex = 2;
             // 
             // panelOptions
             // 
@@ -2810,7 +2831,7 @@
             // 
             // panelPanels
             // 
-            this.panelPanels.BackColor = System.Drawing.Color.Silver;
+            this.panelPanels.BackColor = System.Drawing.Color.Gray;
             this.panelPanels.Controls.Add(this.radioButtonPackages);
             this.panelPanels.Controls.Add(this.labelPanelsBottom);
             this.panelPanels.Controls.Add(this.radiobuttonOptions);
@@ -5574,32 +5595,11 @@
             this.labelNewGUID.TabIndex = 24;
             this.labelNewGUID.Text = "The new package has been assigned the following GUID:";
             // 
-            // pictureboxLogo
-            // 
-            this.pictureboxLogo.BackColor = System.Drawing.Color.Silver;
-            this.pictureboxLogo.Location = new System.Drawing.Point(16, 16);
-            this.pictureboxLogo.Name = "pictureboxLogo";
-            this.pictureboxLogo.Size = new System.Drawing.Size(128, 128);
-            this.pictureboxLogo.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
-            this.pictureboxLogo.TabIndex = 1;
-            this.pictureboxLogo.TabStop = false;
-            // 
-            // labelFillerTwo
-            // 
-            this.labelFillerTwo.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left)));
-            this.labelFillerTwo.BackColor = System.Drawing.Color.Silver;
-            this.labelFillerTwo.Image = ((System.Drawing.Image)(resources.GetObject("labelFillerTwo.Image")));
-            this.labelFillerTwo.Location = new System.Drawing.Point(-1, 337);
-            this.labelFillerTwo.Name = "labelFillerTwo";
-            this.labelFillerTwo.Size = new System.Drawing.Size(159, 94);
-            this.labelFillerTwo.TabIndex = 15;
-            // 
             // formMain
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
-            this.BackColor = System.Drawing.Color.Silver;
+            this.BackColor = System.Drawing.Color.White;
             this.ClientSize = new System.Drawing.Size(819, 606);
             this.Controls.Add(this.labelFillerTwo);
             this.Controls.Add(this.labelVerticalSeparator);
@@ -5616,13 +5616,13 @@
             this.Controls.Add(this.panelReview);
             this.DoubleBuffered = true;
             this.KeyPreview = true;
-            this.MaximizeBox = false;
             this.Name = "formMain";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "openBVE";
+            this.Text = "OpenBVE [RAGLINK+ CabViewer V3.2 SP1] ";
             this.Load += new System.EventHandler(this.formMain_Load);
             this.Shown += new System.EventHandler(this.formMain_Shown);
             this.Resize += new System.EventHandler(this.formMain_Resize);
+            ((System.ComponentModel.ISupportInitialize)(this.pictureboxLogo)).EndInit();
             this.panelStart.ResumeLayout(false);
             this.panelStart.PerformLayout();
             this.groupboxTrainSelection.ResumeLayout(false);
@@ -5766,7 +5766,6 @@
             ((System.ComponentModel.ISupportInitialize)(this.dataGridViewReplacePackage)).EndInit();
             this.panelNewPackage.ResumeLayout(false);
             this.panelNewPackage.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureboxLogo)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -5791,6 +5790,7 @@
         private System.Windows.Forms.Label labelVerticalSeparator;
         private System.Windows.Forms.Button buttonClose;
         private System.Windows.Forms.Panel panelStart;
+        private System.Windows.Forms.Label labelFillerTwo;
         private System.Windows.Forms.Panel panelOptions;
         private System.Windows.Forms.Label labelStartTitle;
         private System.Windows.Forms.Label labelStartTitleBackground;
@@ -6193,6 +6193,5 @@
 		private System.Windows.Forms.ComboBox comboBoxXparser;
 		private System.Windows.Forms.Label labelObjparser;
 		private System.Windows.Forms.ComboBox comboBoxObjparser;
-		private System.Windows.Forms.Label labelFillerTwo;
 	}
 }

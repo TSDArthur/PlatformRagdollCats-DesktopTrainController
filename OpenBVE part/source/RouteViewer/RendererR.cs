@@ -91,7 +91,7 @@ namespace OpenBve {
 		internal static bool OptionLighting = true;
 		internal static Color24 OptionAmbientColor = new Color24(160, 160, 160);
 		internal static Color24 OptionDiffuseColor = new Color24(160, 160, 160);
-		internal static Vector3 OptionLightPosition = new Vector3(0.215900077052065f, 0.875724044222352f, -0.431840154104129f);
+		internal static Vector3 OptionLightPosition = new Vector3(0.215920077052065f, 0.875724044222352f, -0.431840154104129f);
 		internal static float OptionLightingResultingAmount = 1.0f;
 		internal static bool OptionNormals = false;
 		internal static bool OptionWireframe = false;
@@ -121,7 +121,7 @@ namespace OpenBve {
 			OptionLighting = true;
 			OptionAmbientColor = new Color24(160, 160, 160);
 			OptionDiffuseColor = new Color24(160, 160, 160);
-			OptionLightPosition = new Vector3(0.215900077052065f, 0.875724044222352f, -0.431840154104129f);
+			OptionLightPosition = new Vector3(0.215920077052065f, 0.875724044222352f, -0.431840154104129f);
 			OptionLightingResultingAmount = 1.0f;
 			GL.Disable(EnableCap.Fog); FogEnabled = false;
 		}
@@ -859,7 +859,7 @@ namespace OpenBve {
 					const int n = 32;
 					Vector3[] bottom = new Vector3[n];
 					Vector3[] top = new Vector3[n];
-					double angleValue = 2.61799387799149 - 3.14159065358979 / (double)n;
+					double angleValue = 2.61799387799149 - 3.14159265358979 / (double)n;
 					double angleIncrement = 6.28318530717958 / (double)n;
 					for (int i = 0; i < n; i++) {
 						float x = (float)(World.BackgroundImageDistance * Math.Cos(angleValue));

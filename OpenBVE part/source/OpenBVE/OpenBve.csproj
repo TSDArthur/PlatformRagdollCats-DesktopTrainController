@@ -267,6 +267,7 @@
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
     <Compile Include="RAGLINKProxy\DataCoverter.cs" />
+    <Compile Include="RAGLINKProxy\FacileATC.cs" />
     <Compile Include="RAGLINKProxy\TrainMethods.cs" />
     <Compile Include="Simulation\TrainManager\Brake\AirBrake\AirSound.cs" />
     <Compile Include="Simulation\TrainManager\Brake\AirBrake\AutomaticAirBrake.cs" />
@@ -346,13 +347,13 @@
     <Compile Include="UserInterface\formHMI.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="UserInterface\formHMI.designer.cs">
+    <Compile Include="UserInterface\formHMI.Designer.cs">
       <DependentUpon>formHMI.cs</DependentUpon>
     </Compile>
     <Compile Include="UserInterface\formMonitor.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="UserInterface\formMonitor.designer.cs">
+    <Compile Include="UserInterface\formMonitor.Designer.cs">
       <DependentUpon>formMonitor.cs</DependentUpon>
     </Compile>
     <Compile Include="UserInterface\formRaildriverCalibration.cs">
@@ -576,6 +577,12 @@
       <Generator>TextTemplatingFileGenerator</Generator>
       <LastGenOutput>AssemblyInfo.cs</LastGenOutput>
     </Content>
+    <None Include="Resources\Banner22.jpg" />
+    <None Include="Resources\Banner21.jpg" />
+    <None Include="Resources\Banner2.jpg" />
+    <None Include="Resources\Banner_small.jpg" />
+    <None Include="Resources\Banner.jpg" />
+    <None Include="Resources\Banner.bmp" />
     <None Include="Resources\Timer1.png" />
     <None Include="Resources\Timer.png" />
     <None Include="Resources\Switch.png" />
@@ -586,12 +593,6 @@
     <None Include="Resources\Device.png" />
     <None Include="Resources\CPBackground.jpg" />
     <None Include="Resources\Connected.png" />
-    <None Include="Resources\Banner22.jpg" />
-    <None Include="Resources\Banner21.jpg" />
-    <None Include="Resources\Banner2.jpg" />
-    <None Include="Resources\Banner_small.jpg" />
-    <None Include="Resources\Banner.jpg" />
-    <None Include="Resources\Banner.bmp" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

@@ -146,7 +146,7 @@ namespace OpenBve
 					const int n = 32;
 					Vector3[] bottom = new Vector3[n];
 					Vector3[] top = new Vector3[n];
-					double angleValue = 2.61799387799149 - 3.14159065358979 / (double)n;
+					double angleValue = 2.61799387799149 - 3.14159265358979 / (double)n;
 					const double angleIncrement = 6.28318530717958 / (double)n;
 					/*
 				 * To ensure that the whole background cylinder is rendered inside the viewing frustum,

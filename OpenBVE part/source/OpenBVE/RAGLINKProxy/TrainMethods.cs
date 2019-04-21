@@ -13,12 +13,11 @@ namespace OpenBve
 	public partial class TrainMethods
 	{
 		static private TrainManager.Train nowControl;
-		//for autopilot
-		static int constSpeed = 0;
-		static int TimerTick = 500;
+		//for ATC
+		static int TimerTick = 100;
 		private static int inTimer = 0;
 		private static bool initTimer = false;
-		private static double destSpeed = 0;
+		private static bool inATC = false;
 		private static System.Threading.Timer APTimer;
 		//for master key
 		private static bool MasterKey = false;
@@ -67,7 +66,7 @@ namespace OpenBve
 			{
 				initTimer = true;
 				inTimer = 0;
-				APTimer = new System.Threading.Timer(new System.Threading.TimerCallback(AutoPilotProcess), null, TimerTick, TimerTick);
+				APTimer = new System.Threading.Timer(new System.Threading.TimerCallback(SpeedConstISP), null, TimerTick, TimerTick);
 			}
 			catch (Exception ex) { }
 		}
@@ -98,7 +97,7 @@ namespace OpenBve
 					//Master key
 					if (!MasterKey)
 					{
-						SetAutoPilot(0);
+						SetATCState(false);
 						SetBrake(0);
 						SetPower(0);
 						ReverserNeutral();
@@ -107,7 +106,7 @@ namespace OpenBve
 					//emergency
 					if (Emergency)
 					{
-						SetAutoPilot(0);
+						SetATCState(false);
 						nowControl.ApplyEmergencyBrake();
 					}
 					else
@@ -124,7 +123,7 @@ namespace OpenBve
 						{
 							SetBrake(nowControl.Handles.Brake.MaximumNotch);
 							SetReverser(0);
-							SetAutoPilot(0);
+							SetATCState(false);
 						}
 						inRedLight = false;
 					}
@@ -428,17 +427,16 @@ namespace OpenBve
 		/// <summary>
 		/// set autopilot state
 		/// </summary>
-		static public void SetAutoPilot(int setSpeed)
+		static public void SetATCState(bool isApllied)
 		{
 			try
 			{
+				inATC = isApllied;
 				inSettingAP = true;
-				constSpeed = setSpeed;
-				if (setSpeed <= 0)
+				if (!isApllied)
 				{
 					if (initTimer)
 						APTimer.Change(Timeout.Infinite, Timeout.Infinite);
-					destSpeed = 0;
 				}
 				else
 				{
@@ -446,7 +444,6 @@ namespace OpenBve
 						APAttachTimerInterrupt(TimerTick);
 					else
 						APTimer.Change(TimerTick, TimerTick);
-					destSpeed = constSpeed / 3.6;
 				}
 				inSettingAP = false;
 				return;
@@ -460,66 +457,68 @@ namespace OpenBve
 		/// <summary>
 		/// autopilot process
 		/// </summary>
-		static private void AutoPilotProcess(object state)
+		static private void SpeedConstISP(object state)
 		{
 			if (Interlocked.Exchange(ref inTimer, 1) == 0)
 			{
-				if (constSpeed > 0)
-				{
-					try
-					{
-						//PID const
-						//set destSpeed
-						destSpeed = Math.Min(GetSpeedLimit() / 3.6, constSpeed / 3.6);
-						//get accurate speed
-						int currentDriveCar = TrainManager.PlayerTrain.DriverCar;
-						double currentSpeed = (TrainManager.PlayerTrain.Cars[currentDriveCar].Specs.CurrentSpeed);
-						double accSpeed = TrainManager.PlayerTrain.Cars[currentDriveCar].Specs.CurrentAcceleration;
-						//
-						if (inRedLight)
-						{
-							if (GetSignalDis() / currentSpeed <= 15 && Math.Abs(currentSpeed / (Math.Abs(accSpeed) + 1e-5)) <= 30) destSpeed = 0;
-							else destSpeed = Math.Min(30 / 3.6, destSpeed);
-						}
-						//
-						double relativeSpeed = destSpeed - currentSpeed;
-						double K1 = 0.8;
-						//PID control
-						if (relativeSpeed > 0)
-						{
-							SetBrake(0);
-							if (accSpeed < 0) PowerUp();
-							if (accSpeed > 0)
-							{
-								if (Math.Abs(relativeSpeed / accSpeed) <= K1) PowerDown();
-								else PowerUp();
-							}
-						}
-						else if (relativeSpeed < 0)
-						{
-							SetPower(0);
-							if (accSpeed > 0) PowerDown();
-							if (accSpeed < 0)
-							{
-								if (Math.Abs(relativeSpeed / accSpeed) <= K1) PowerUp();
-								else PowerDown();
-							}
-						}
-					}
-					catch (Exception ex) { }
-				}
+				double constSpeed = GetATCCurrentSpeed();
+				double destSpeed = constSpeed;
+				ConstSpeedControl(true, constSpeed);
 				Interlocked.Exchange(ref inTimer, 0);
 			}
 		}
 
-		static public int GetConstSpeed()
+		static private void ConstSpeedControl(bool ignoreReadLight, double constSpeed)
 		{
-			return (int)(destSpeed * 3.6);
+			if (constSpeed >= 0)
+			{
+				try
+				{
+					//set destSpeed
+					double destSpeed = Math.Min(GetSpeedLimit() / 3.6, constSpeed);
+					//get accurate speed
+					int currentDriveCar = TrainManager.PlayerTrain.DriverCar;
+					double currentSpeed = (TrainManager.PlayerTrain.Cars[currentDriveCar].Specs.CurrentSpeed);
+					double accSpeed = TrainManager.PlayerTrain.Cars[currentDriveCar].Specs.CurrentAcceleration;
+					//
+					if (inRedLight && !ignoreReadLight)
+					{
+						if (GetSignalDis() / currentSpeed <= 15 && Math.Abs(currentSpeed / (Math.Abs(accSpeed) + 1e-5)) <= 30) destSpeed = 0;
+						else destSpeed = Math.Min(30 / 3.6, destSpeed);
+					}
+					//
+					double relativeSpeed = destSpeed - currentSpeed;
+					double pid_k = 0.6;
+					//PID control
+					if (relativeSpeed > 0)
+					{
+						SetBrake(0);
+						if (accSpeed < 0) PowerUp();
+						else if (accSpeed > 0)
+						{
+							if (Math.Abs(relativeSpeed / accSpeed) <= pid_k) PowerDown();
+							else PowerUp();
+						}
+					}
+					else if (relativeSpeed < 0)
+					{
+						SetPower(0);
+						if (accSpeed > 0) PowerDown();
+						else if(accSpeed < 0)
+						{
+							if (Math.Abs(relativeSpeed / accSpeed) <= pid_k) PowerUp();
+							else PowerDown();
+						}
+					}
+				}
+				catch (Exception ex) { }
+			}
 		}
 
-		static public int GetSetConstSpeed()
+		static public double GetATCCurrentSpeed()
 		{
-			return (int)(constSpeed);
+			return FacileATC.GetControlSpeedValue(GetCurrentTime(), GetNextStationArrialTime(),
+				GetSpeedLimit() / 3.6, GetSpeedDouble() / 3.6, GetNextStationDis());
 		}
 
 		/// <summary>
@@ -532,7 +531,7 @@ namespace OpenBve
 				MasterKey = value == 0 ? false : true;
 				if (!MasterKey)
 				{
-					SetAutoPilot(0);
+					SetATCState(false);
 					SetBrake(0);
 					SetPower(0);
 					ReverserNeutral();
@@ -591,7 +590,7 @@ namespace OpenBve
 				if (Table.Stations.Length == 0) return errState;
 				for (int i = 0; i < Table.Stations.Length; i++)
 				{
-					double currentSectionPos = nowControl.Cars[nowControl.DriverCar].FrontAxle.Follower.TrackPosition + 1.6;
+					double currentSectionPos = nowControl.Cars[nowControl.DriverCar].FrontAxle.Follower.TrackPosition + 2.3;
 					int stationStopIndex = Game.Stations[i].GetStopIndex(nowControl.Cars.Length);
 					double nextStationPos = Game.Stations[i].Stops[stationStopIndex].TrackPosition;
 					if (currentSectionPos <= nextStationPos)
@@ -602,7 +601,7 @@ namespace OpenBve
 				}
 				if (stationIndex + 1 < Table.Stations.Length)
 				{
-					double currentSectionPos = nowControl.Cars[nowControl.DriverCar].FrontAxle.Follower.TrackPosition + 1.6;
+					double currentSectionPos = nowControl.Cars[nowControl.DriverCar].FrontAxle.Follower.TrackPosition + 2.3;
 					int currentStationStopIndex = Game.Stations[stationIndex].GetStopIndex(nowControl.Cars.Length);
 					double currentStationPos = Game.Stations[stationIndex].Stops[currentStationStopIndex].TrackPosition;
 					if (currentStationPos - currentSectionPos > 0 &&
@@ -735,7 +734,7 @@ namespace OpenBve
 				if (nextStationIndex == -1) return errState;
 				int currentSection = nowControl.CurrentSectionIndex;
 				int nextSection = Game.Sections[currentSection].NextSection;
-				double currentSectionPos = nowControl.Cars[nowControl.DriverCar].FrontAxle.Follower.TrackPosition + 1.6;
+				double currentSectionPos = nowControl.Cars[nowControl.DriverCar].FrontAxle.Follower.TrackPosition + 2.3;
 				int stationStopIndex = Game.Stations[nextStationIndex].GetStopIndex(nowControl.Cars.Length);
 				double nextStationPos = Game.Stations[nextStationIndex].Stops[stationStopIndex].TrackPosition;
 				stationDis = nextStationPos - currentSectionPos;
@@ -763,7 +762,7 @@ namespace OpenBve
 				if (nextStationIndex == -1 || nextStationIndex - 1 < 0) return errState;
 				int currentSection = nowControl.CurrentSectionIndex;
 				int nextSection = Game.Sections[currentSection].NextSection;
-				double currentSectionPos = nowControl.Cars[nowControl.DriverCar].FrontAxle.Follower.TrackPosition + 1.6;
+				double currentSectionPos = nowControl.Cars[nowControl.DriverCar].FrontAxle.Follower.TrackPosition + 2.3;
 				int stationStopIndex = Game.Stations[nextStationIndex - 1].GetStopIndex(nowControl.Cars.Length);
 				double preStationPos = Game.Stations[nextStationIndex - 1].Stops[stationStopIndex].TrackPosition;
 				stationDis = currentSectionPos - preStationPos;
@@ -1127,10 +1126,11 @@ namespace OpenBve
 		/// </summary>
 		static public bool GetATCState()
 		{
-			bool ret = true;
+			bool ret = false;
 			try
 			{
 				//In development
+				ret = inATC;
 				return ret;
 			}
 			catch (Exception ex) { };

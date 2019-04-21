@@ -103,7 +103,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.buttonClose;
-            this.ClientSize = new System.Drawing.Size(590, 256);
+            this.ClientSize = new System.Drawing.Size(592, 256);
             this.Controls.Add(this.buttonSave);
             this.Controls.Add(this.buttonClipboard);
             this.Controls.Add(this.listviewMessages);

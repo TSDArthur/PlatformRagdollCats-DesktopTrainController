@@ -268,7 +268,7 @@ namespace OpenBve
 				case SPEED_LIMIT:
 					return TrainMethods.GetSpeedLimit().ToString();
 				case RC_MODE:
-					return TrainMethods.GetSetConstSpeed() == 0 ? NORMAL.ToString() : OVERWRITE.ToString();
+					return TrainMethods.GetATCState() == false ? NORMAL.ToString() : OVERWRITE.ToString();
 				case LDOOR_OPEN:
 					return TrainMethods.GetLeftDoorState() != -1 ? TrainMethods.GetLeftDoorState().ToString() : "0";
 				case RDOOR_OPEN:

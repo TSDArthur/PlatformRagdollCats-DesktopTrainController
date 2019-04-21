@@ -177,7 +177,7 @@
             this.btnAPOFF.Name = "btnAPOFF";
             this.btnAPOFF.Size = new System.Drawing.Size(100, 23);
             this.btnAPOFF.TabIndex = 39;
-            this.btnAPOFF.Text = "AP OFF";
+            this.btnAPOFF.Text = "ATC OFF";
             this.btnAPOFF.UseVisualStyleBackColor = false;
             this.btnAPOFF.Click += new System.EventHandler(this.btnAPOFF_Click);
             // 
@@ -216,7 +216,7 @@
             this.btnAPON.Name = "btnAPON";
             this.btnAPON.Size = new System.Drawing.Size(100, 23);
             this.btnAPON.TabIndex = 36;
-            this.btnAPON.Text = "AP ON";
+            this.btnAPON.Text = "ATC ON";
             this.btnAPON.UseVisualStyleBackColor = false;
             this.btnAPON.Click += new System.EventHandler(this.btnAPON_Click);
             // 

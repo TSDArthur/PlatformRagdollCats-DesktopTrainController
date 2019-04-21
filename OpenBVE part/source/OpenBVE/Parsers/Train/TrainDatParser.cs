@@ -786,6 +786,7 @@ namespace OpenBve {
 									} m++;
 								} i++; n++;
 							}
+
 							if (n != 0)
 							{
 								/*

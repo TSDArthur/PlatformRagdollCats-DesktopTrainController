@@ -106,7 +106,6 @@ namespace OpenBve {
 							LastArrivalHours = hours;
 						} else {
 							Table.Stations[n].Arrival.Hour = "";
-							Table.Stations[n].Arrival._Hour = "";
 							Table.Stations[n].Arrival.Minute = "";
 							Table.Stations[n].Arrival.Second = "";
 						}
@@ -119,8 +118,8 @@ namespace OpenBve {
 							x -= 60.0 * (double)minutes;
 							int seconds = (int)Math.Floor(x);
 							Table.Stations[n].Departure.Hour = hours != LastDepartureHours ? hours.ToString("00", Culture) : "";
-							Table.Stations[n].Departure._Hour = hours.ToString("00", Culture);
 							Table.Stations[n].Departure.Minute = minutes.ToString("00", Culture);
+							Table.Stations[n].Departure._Hour = hours.ToString("00", Culture);
 							Table.Stations[n].Departure.Second = seconds.ToString("00", Culture);
 							LastDepartureHours = hours;
 						} else {

@@ -221,7 +221,7 @@ namespace OpenBve
 				txtBoxSpdLimit.Text = "SPD_LIM : " + TrainMethods.GetSpeedLimit().ToString();
 				txtBoxBrakeHandle.Text = "BKE : " + TrainMethods.GetBrake().ToString();
 				txtBoxPowerHandle.Text = "PWR : " + trainInfo.Handles.Power.Driver.ToString();
-				txtBoxConstSpeed.Text = "CON_SPD : " + TrainMethods.GetSetConstSpeed().ToString();
+				txtBoxConstSpeed.Text = "ATC_SPD : " + ((double)((int)(TrainMethods.GetATCCurrentSpeed() * 10)) / 10.0).ToString();
 				txtBoxCurrentStation.Text = "CUR_STA : " + TrainMethods.GetCurrentStationName();
 				txtBoxNextStation.Text = "NEX_STA : " + TrainMethods.GetNextStationName();
 				txtBoxNextStationDis.Text = "NEX_STADIS : " + 
@@ -336,7 +336,7 @@ namespace OpenBve
 
 		private void formCM_Load(object sender, EventArgs e)
 		{
-			this.Top = 60;
+			this.Top = 50;
 			this.Left = 1;
 			this.cmbSerials.Items.AddRange(SerialPort.GetPortNames());
 			this.cmbSerials.SelectedIndex = this.cmbSerials.Items.Count - 1;
@@ -413,12 +413,12 @@ namespace OpenBve
 
 		private void btnAPON_Click(object sender, EventArgs e)
 		{
-			TrainMethods.SetAutoPilot(TrainMethods.GetSpeed());
+			TrainMethods.SetATCState(true);
 		}
 
 		private void btnAPOFF_Click(object sender, EventArgs e)
 		{
-			TrainMethods.SetAutoPilot(0);
+			TrainMethods.SetATCState(false);
 		}
 
 		private void btnRestartGame_Click(object sender, EventArgs e)

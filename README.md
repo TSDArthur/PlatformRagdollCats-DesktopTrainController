@@ -12,7 +12,7 @@ RAGLINK+ CabViewer Controller Version: 3.2 SP1
 
 RAGLINK+ CabViewer OpenBVE Proxy Version: 3.2 SP1
 
-OpenBVE Version: 1.4.1178.1015
+OpenBVE Version: 1.4.1178.1042
 
 Lincense: GPL
 
